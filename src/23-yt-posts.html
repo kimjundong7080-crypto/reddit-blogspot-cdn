@@ -450,6 +450,59 @@ html.jt-home-page .jt-hero-sub{
   color:rgba(255,255,255,.86);
 }
 
+/* 홈 전용 푸터 */
+html.jt-home-page .jt-home-footer{
+  margin-top:56px;
+  padding:34px 20px 26px;
+  background:#101214;
+  color:#e5e7eb;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+html.jt-home-page .jt-home-footer-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:24px;
+  align-items:start;
+}
+html.jt-home-page .jt-home-footer-brand{
+  margin:0 0 6px;
+  font-size:18px;
+  font-weight:700;
+  color:#fff;
+}
+html.jt-home-page .jt-home-footer-desc{
+  margin:0;
+  font-size:12px;
+  line-height:1.6;
+  color:rgba(255,255,255,.62);
+}
+html.jt-home-page .jt-home-footer-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+  padding-top:2px;
+}
+html.jt-home-page .jt-home-footer-nav a{
+  color:rgba(255,255,255,.82) !important;
+  font-size:12px;
+  text-decoration:none !important;
+}
+html.jt-home-page .jt-home-footer-nav a:hover{color:#fff !important}
+html.jt-home-page .jt-home-footer-copy{
+  grid-column:1/-1;
+  margin:8px 0 0;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.1);
+  font-size:11px;
+  color:rgba(255,255,255,.45);
+}
+@media screen and (max-width:600px){
+  html.jt-home-page .jt-home-footer{margin-top:36px;padding:28px 16px 22px}
+  html.jt-home-page .jt-home-footer-inner{grid-template-columns:1fr;gap:18px}
+}
+
 /* 추천 글 사이드바 스크롤바 숨김 */
 body.rd3-layout .sidebar-container{
   scrollbar-width:none;
@@ -572,6 +625,17 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       };
     }
   }
+  function initHomeFooter(){
+    if(document.querySelector('.jt-home-footer'))return;
+    var footer=document.createElement('footer');
+    footer.className='jt-home-footer';
+    footer.innerHTML='<div class="jt-home-footer-inner">'
+      +'<div><p class="jt-home-footer-brand">JUST TECH</p><p class="jt-home-footer-desc">산업 자동화·로봇·설비 기술 자료를 기록하는 블로그입니다.</p></div>'
+      +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about-us.html">About</a><a href="/p/contact-us.html">Contact</a></nav>'
+      +'<p class="jt-home-footer-copy">© 2026 JUST TECH. All rights reserved.</p>'
+      +'</div>';
+    (document.querySelector('.all-container')||document.body).appendChild(footer);
+  }
   function fetchFeed(start,max){
     var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
     return fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
@@ -584,7 +648,7 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
   ready(function(){
     initTheme();
     initQuickNav();
-    if(location.pathname==='/p/home.html'){initHomeHero();return;}
+    if(location.pathname==='/p/home.html'){initHomeHero();initHomeFooter();return;}
     setTimeout(watchPostImages,800);
     var root=document.getElementById('ytPosts');
     if(!root)return;

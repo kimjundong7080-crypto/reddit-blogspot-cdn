@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.50 */
+/* Reddit-style Blogger YouTube post list — v1.0.51 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -108,6 +108,17 @@
       };
     }
   }
+  function initHomeFooter(){
+    if(document.querySelector('.jt-home-footer'))return;
+    var footer=document.createElement('footer');
+    footer.className='jt-home-footer';
+    footer.innerHTML='<div class="jt-home-footer-inner">'
+      +'<div><p class="jt-home-footer-brand">JUST TECH</p><p class="jt-home-footer-desc">산업 자동화·로봇·설비 기술 자료를 기록하는 블로그입니다.</p></div>'
+      +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about-us.html">About</a><a href="/p/contact-us.html">Contact</a></nav>'
+      +'<p class="jt-home-footer-copy">© 2026 JUST TECH. All rights reserved.</p>'
+      +'</div>';
+    (document.querySelector('.all-container')||document.body).appendChild(footer);
+  }
   function fetchFeed(start,max){
     var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
     return fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
@@ -120,7 +131,7 @@
   ready(function(){
     initTheme();
     initQuickNav();
-    if(location.pathname==='/p/home.html'){initHomeHero();return;}
+    if(location.pathname==='/p/home.html'){initHomeHero();initHomeFooter();return;}
     setTimeout(watchPostImages,800);
     var root=document.getElementById('ytPosts');
     if(!root)return;

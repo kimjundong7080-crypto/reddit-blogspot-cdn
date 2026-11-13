@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.50 */
+/* Reddit-style Blogger YouTube post list — v1.0.51 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -448,6 +448,59 @@ html.jt-home-page .jt-hero-sub{
   margin:8px 0 0;
   font-size:clamp(12px,1.3vw,16px);
   color:rgba(255,255,255,.86);
+}
+
+/* 홈 전용 푸터 */
+html.jt-home-page .jt-home-footer{
+  margin-top:56px;
+  padding:34px 20px 26px;
+  background:#101214;
+  color:#e5e7eb;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+html.jt-home-page .jt-home-footer-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:24px;
+  align-items:start;
+}
+html.jt-home-page .jt-home-footer-brand{
+  margin:0 0 6px;
+  font-size:18px;
+  font-weight:700;
+  color:#fff;
+}
+html.jt-home-page .jt-home-footer-desc{
+  margin:0;
+  font-size:12px;
+  line-height:1.6;
+  color:rgba(255,255,255,.62);
+}
+html.jt-home-page .jt-home-footer-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+  padding-top:2px;
+}
+html.jt-home-page .jt-home-footer-nav a{
+  color:rgba(255,255,255,.82) !important;
+  font-size:12px;
+  text-decoration:none !important;
+}
+html.jt-home-page .jt-home-footer-nav a:hover{color:#fff !important}
+html.jt-home-page .jt-home-footer-copy{
+  grid-column:1/-1;
+  margin:8px 0 0;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.1);
+  font-size:11px;
+  color:rgba(255,255,255,.45);
+}
+@media screen and (max-width:600px){
+  html.jt-home-page .jt-home-footer{margin-top:36px;padding:28px 16px 22px}
+  html.jt-home-page .jt-home-footer-inner{grid-template-columns:1fr;gap:18px}
 }
 
 /* 추천 글 사이드바 스크롤바 숨김 */
