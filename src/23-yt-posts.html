@@ -149,6 +149,100 @@
   }
   #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#252a31,#343b45)}
 }
+
+/* ===== Light / Dark mode toggle ===== */
+#jtThemeToggle{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:99999;
+  width:42px;
+  height:42px;
+  padding:0;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:50%;
+  background:rgba(255,255,255,.94);
+  color:#292929;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font:20px/1 system-ui,sans-serif;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.16);
+  -webkit-tap-highlight-color:transparent;
+}
+#jtThemeToggle:hover{background:#fff}
+@media screen and (max-width:600px){
+  #jtThemeToggle{right:12px;bottom:12px;width:40px;height:40px;font-size:19px}
+}
+
+html[data-theme="dark"]{color-scheme:dark;background:#0f1113}
+html[data-theme="dark"] body{
+  background:#0f1113 !important;
+  color:#e6e8eb !important;
+}
+html[data-theme="dark"] body.rd3-layout{
+  --rd3-border:rgba(255,255,255,.14);
+  --rd3-muted:#9CA3AF;
+  --rd3-hover:rgba(255,255,255,.06);
+  --rd3-active:rgba(255,255,255,.10);
+}
+html[data-theme="dark"] .centered-top-container,
+html[data-theme="dark"] .centered-top,
+html[data-theme="dark"] .page_body,
+html[data-theme="dark"] .main_content_container,
+html[data-theme="dark"] .post-outer-container,
+html[data-theme="dark"] .post-content,
+html[data-theme="dark"] .post-body,
+html[data-theme="dark"] .post-body-container{
+  background:transparent !important;
+  color:#e6e8eb !important;
+}
+html[data-theme="dark"] .post-title-container{
+  background:#176b5a !important;
+}
+html[data-theme="dark"] .post-title-container .post-title{
+  color:#fff !important;
+}
+html[data-theme="dark"] .centered-top-container a,
+html[data-theme="dark"] .blog-title,
+html[data-theme="dark"] .blog-title a,
+html[data-theme="dark"] .post-body a{
+  color:#8cc8ff !important;
+}
+html[data-theme="dark"] .post-body-container img{
+  border-color:rgba(255,255,255,.22) !important;
+  background:#111 !important;
+}
+html[data-theme="dark"] .sidebar-container,
+html[data-theme="dark"] .rd3-left-inner{
+  border-color:rgba(255,255,255,.14) !important;
+}
+html[data-theme="dark"] .sidebar-container .widget{
+  background:transparent !important;
+  color:#e6e8eb !important;
+}
+html[data-theme="dark"] .search input,
+html[data-theme="dark"] .search-input input,
+html[data-theme="dark"] input[type="text"]{
+  background:#1a1d21 !important;
+  color:#e6e8eb !important;
+  border-color:rgba(255,255,255,.18) !important;
+}
+html[data-theme="dark"] #jtThemeToggle{
+  background:#1f2429;
+  color:#f2f3f5;
+  border-color:rgba(255,255,255,.18);
+}
+html[data-theme="dark"] #ytPosts .yt-count,
+html[data-theme="dark"] #ytPosts .yt-meta,
+html[data-theme="dark"] #ytPosts .yt-empty{color:#9CA3AF}
+html[data-theme="dark"] #ytPosts .yt-item:hover{background:rgba(255,255,255,.06)}
+html[data-theme="dark"] #ytPosts .yt-thumb{background:#252a31}
+html[data-theme="dark"] #ytPosts .yt-thumb:before{
+  background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,0) 70%);
+}
+html[data-theme="dark"] #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#252a31,#343b45)}
 </style>
 <script>
 //<![CDATA[
@@ -166,6 +260,32 @@
     if(isNaN(d.getTime()))return '';
     return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
   }
+  function initTheme(){
+    var key='jt-theme',saved=null;
+    try{saved=localStorage.getItem(key);}catch(e){}
+    var mode=(saved==='dark'||saved==='light')?saved:((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+    var btn=document.getElementById('jtThemeToggle');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='jtThemeToggle';
+      btn.type='button';
+      document.body.appendChild(btn);
+    }
+    function apply(m){
+      document.documentElement.setAttribute('data-theme',m);
+      var dark=m==='dark';
+      btn.textContent=dark?'☀':'☾';
+      btn.setAttribute('aria-pressed',dark?'true':'false');
+      btn.setAttribute('aria-label',dark?'라이트 모드로 전환':'다크 모드로 전환');
+      btn.title=dark?'라이트 모드로 전환':'다크 모드로 전환';
+    }
+    btn.onclick=function(){
+      var next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+      apply(next);
+      try{localStorage.setItem(key,next);}catch(e){}
+    };
+    apply(mode);
+  }
   function fetchFeed(){
     return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
@@ -175,6 +295,7 @@
       });
   }
   ready(function(){
+    initTheme();
     var root=document.getElementById('ytPosts');
     if(!root)return;
     var head=el('div','yt-head');

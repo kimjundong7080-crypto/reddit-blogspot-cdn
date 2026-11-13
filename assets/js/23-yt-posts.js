@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.19 */
+/* Reddit-style Blogger YouTube post list — v1.0.20 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -13,6 +13,32 @@
     if(isNaN(d.getTime()))return '';
     return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
   }
+  function initTheme(){
+    var key='jt-theme',saved=null;
+    try{saved=localStorage.getItem(key);}catch(e){}
+    var mode=(saved==='dark'||saved==='light')?saved:((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+    var btn=document.getElementById('jtThemeToggle');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='jtThemeToggle';
+      btn.type='button';
+      document.body.appendChild(btn);
+    }
+    function apply(m){
+      document.documentElement.setAttribute('data-theme',m);
+      var dark=m==='dark';
+      btn.textContent=dark?'☀':'☾';
+      btn.setAttribute('aria-pressed',dark?'true':'false');
+      btn.setAttribute('aria-label',dark?'라이트 모드로 전환':'다크 모드로 전환');
+      btn.title=dark?'라이트 모드로 전환':'다크 모드로 전환';
+    }
+    btn.onclick=function(){
+      var next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+      apply(next);
+      try{localStorage.setItem(key,next);}catch(e){}
+    };
+    apply(mode);
+  }
   function fetchFeed(){
     return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
@@ -22,6 +48,7 @@
       });
   }
   ready(function(){
+    initTheme();
     var root=document.getElementById('ytPosts');
     if(!root)return;
     var head=el('div','yt-head');
