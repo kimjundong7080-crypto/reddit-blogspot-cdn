@@ -28,6 +28,14 @@ const targets = [
     source: 'src/22-post-image.html',
     css: 'assets/css/22-post-image.css',
     cssTitle: 'Reddit-style Blogger post image'
+  },
+  {
+    name: '23-yt-posts',
+    source: 'src/23-yt-posts.html',
+    css: 'assets/css/23-yt-posts.css',
+    js: 'assets/js/23-yt-posts.js',
+    cssTitle: 'Reddit-style Blogger YouTube post list',
+    jsTitle: 'Reddit-style Blogger YouTube post list'
   }
 ];
 
