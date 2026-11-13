@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.52 */
+/* Reddit-style Blogger 3-column layout — v1.0.53 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -520,7 +520,13 @@ html[data-theme="dark"] #jtLeftToggle{
   border-color:rgba(255,255,255,.16);
 }
 body.jt-left-hidden .rd3-left{display:none !important}
-body.jt-left-hidden.rd3-layout .main_content_container > .page{
+body.jt-left-hidden.rd3-layout .main_content_container > .page,
+body.jt-left-hidden.rd3-layout .main_content_container > .page #page_body,
+body.jt-left-hidden.rd3-layout .blog-posts.hfeed.container{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
   grid-column:1 !important;
 }
 body.jt-left-hidden.rd3-layout .main_content_container > .sidebar-container{

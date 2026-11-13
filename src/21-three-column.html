@@ -529,7 +529,13 @@ html[data-theme="dark"] #jtLeftToggle{
   border-color:rgba(255,255,255,.16);
 }
 body.jt-left-hidden .rd3-left{display:none !important}
-body.jt-left-hidden.rd3-layout .main_content_container > .page{
+body.jt-left-hidden.rd3-layout .main_content_container > .page,
+body.jt-left-hidden.rd3-layout .main_content_container > .page #page_body,
+body.jt-left-hidden.rd3-layout .blog-posts.hfeed.container{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
   grid-column:1 !important;
 }
 body.jt-left-hidden.rd3-layout .main_content_container > .sidebar-container{
