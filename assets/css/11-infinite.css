@@ -1,0 +1,64 @@
+/* Reddit-style Blogger post infinite scroll — v1.0.0 */
+#jtInfiniteFeed{
+  width:100%;
+  max-width:100%;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+#jtInfiniteFeed .jt-inf-post{
+  margin-top:32px;
+  padding-top:28px;
+  border-top:1px solid rgba(0,0,0,.12);
+  box-sizing:border-box;
+}
+#jtInfiniteFeed .jt-inf-post > .post-outer-container,
+#jtInfiniteFeed .jt-inf-post > .post-outer{
+  margin:0 !important;
+}
+#jtInfiniteFeed .jt-inf-post .post-share-buttons,
+#jtInfiniteFeed .jt-inf-post .post-sidebar,
+#jtInfiniteFeed .jt-inf-post .post-ads,
+#jtInfiniteFeed .jt-inf-post .inline-ad,
+#jtInfiniteFeed .jt-inf-post .comments,
+#jtInfiniteFeed .jt-inf-post #comments,
+#jtInfiniteFeed .jt-inf-post script,
+#jtInfiniteFeed .jt-inf-post iframe{
+  display:none !important;
+}
+.jt-inf-loader{
+  display:none;
+  text-align:center;
+  padding:24px 0 40px;
+  color:#6B7280;
+  font-size:13px;
+  font-weight:500;
+}
+.jt-inf-loader.on{display:block}
+.jt-inf-loader i{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  margin-right:8px;
+  border:2px solid rgba(0,0,0,.15);
+  border-top-color:#FF4500;
+  border-radius:50%;
+  animation:jtInfSpin .7s linear infinite;
+  vertical-align:middle;
+}
+@keyframes jtInfSpin{to{transform:rotate(360deg)}}
+.jt-inf-end{
+  display:none;
+  text-align:center;
+  padding:18px 0 32px;
+  color:#6B7280;
+  font-size:12px;
+}
+@media screen and (max-width:768px){
+  #jtInfiniteFeed .jt-inf-post{margin-top:22px;padding-top:20px}
+}
+@media (prefers-color-scheme:dark){
+  #jtInfiniteFeed .jt-inf-post{border-top-color:rgba(255,255,255,.14)}
+  .jt-inf-loader,.jt-inf-end{color:#9CA3AF}
+  .jt-inf-loader i{border-color:rgba(255,255,255,.18);border-top-color:#FF4500}
+}
