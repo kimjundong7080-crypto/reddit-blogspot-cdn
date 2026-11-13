@@ -459,6 +459,8 @@ html.jt-home-page .jt-landing{
   --jt-soft:#f5f8f6;
   --jt-card:#ffffff;
   --jt-landing-pad:clamp(16px,4vw,40px);
+  --jt-hz-mid:#edf4ef;
+  --jt-hz-bottom:#f2f7f4;
   color:var(--jt-ink);
   background:var(--jt-soft);
   margin:0;
@@ -808,6 +810,8 @@ html[data-theme="dark"] .jt-landing{
   --jt-line:#2c3530;
   --jt-soft:#101412;
   --jt-card:#171d19;
+  --jt-hz-mid:#151d19;
+  --jt-hz-bottom:#131a16;
 }
 html[data-theme="dark"] .jt-floating-card{background:rgba(23,29,25,.92);color:#eef2ef}
 html[data-theme="dark"] .jt-floating-card span{color:#aab4ae}
@@ -1080,8 +1084,8 @@ html.jt-home-page .jt-hz-features{
   background:linear-gradient(
     180deg,
     var(--jt-soft) 0%,
-    #edf4ef 52%,
-    #f2f7f4 82%,
+    var(--jt-hz-mid) 52%,
+    var(--jt-hz-bottom) 82%,
     var(--jt-soft) 100%
   );
 }
