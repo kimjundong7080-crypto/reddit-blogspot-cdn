@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.93 */
+/* Reddit-style Blogger post infinite scroll — v1.0.94 */
 #jtInfiniteFeed{
   width:100%;
   max-width:100%;
@@ -102,6 +102,8 @@
   height:180px;
   pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 48%,#fff 100%);
+  -webkit-backdrop-filter:blur(6px) saturate(1.05);
+  backdrop-filter:blur(6px) saturate(1.05);
 }
 #jtInfiniteFeed .jt-inf-post .post-content.jt-expanded{
   max-height:none;
