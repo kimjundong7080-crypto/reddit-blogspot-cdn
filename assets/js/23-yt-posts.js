@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.56 */
+/* Reddit-style Blogger YouTube post list — v1.0.57 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -119,6 +119,73 @@
       +'</div>';
     (document.querySelector('.all-container')||document.body).appendChild(footer);
   }
+  function initHomeLanding(){
+    if(document.querySelector('.jt-landing'))return;
+    var body=document.querySelector('.post-body');
+    if(!body)return;
+    document.body.classList.add('jt-landing-page');
+    var poster='https://i.ytimg.com/vi/lyFcrrULyN0/sddefault.jpg';
+    var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
+    var landing=document.createElement('div');
+    landing.className='jt-landing';
+    landing.innerHTML=
+      '<nav class="jt-landing-nav">'
+      +'<a class="jt-landing-brand" href="/p/home.html"><span class="jt-brand-mark">JT</span><span>JUST TECH<small>INDUSTRIAL AUTOMATION</small></span></a>'
+      +'<div class="jt-landing-navlinks"><a href="#jt-services">서비스</a><a href="#jt-projects">프로젝트</a><a href="#jt-about">소개</a></div>'
+      +'<a class="jt-landing-cta" href="mailto:qwe6973@proton.me">프로젝트 문의</a>'
+      +'</nav>'
+      +'<section class="jt-landing-hero">'
+      +'<div class="jt-landing-copy"><p class="jt-eyebrow">INDUSTRIAL AUTOMATION STUDIO</p>'
+      +'<h1>자동화의 모든 순간을<br><em>한 곳에서</em></h1>'
+      +'<p class="jt-lead">로봇·조립·검사·포장 설비까지. 현장 중심의 자동화 기술 자료와 프로젝트를 한눈에 확인하세요.</p>'
+      +'<div class="jt-hero-actions"><a class="jt-btn-primary" href="/search">프로젝트 보기</a><a class="jt-btn-secondary" href="mailto:qwe6973@proton.me">상담 문의</a></div>'
+      +'<div class="jt-trust"><span>로봇 자동화</span><span>조립 설비</span><span>검사 장비</span><span>포장 자동화</span></div></div>'
+      +'<div class="jt-hero-visual"><img src="'+poster+'" alt="자동화 설비" loading="eager" fetchpriority="high" decoding="async"><div class="jt-floating-card"><strong>현장 중심 자동화 아카이브</strong><span>로봇 · 설비 · 검사 · 포장</span></div></div>'
+      +'</section>'
+      +'<section class="jt-landing-section" id="jt-services"><div class="jt-section-head"><div><p class="jt-eyebrow">WHAT WE DO</p><h2>자동화의 전 과정을 다룹니다</h2></div><a href="/search">전체 자료 →</a></div>'
+      +'<div class="jt-cards">'
+      +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="7" width="16" height="11" rx="2"/><path d="M9 7V4m6 3V4M8 11h.01M16 11h.01M9 15h6"/></svg></span><h3>로봇 자동화</h3><p>용접·조립·핸들링 로봇과 셀 설계.</p></div>'
+      +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg></span><h3>조립 설비</h3><p>반자동·전자동 조립 라인 구축.</p></div>'
+      +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 3.5-3.5"/></svg></span><h3>검사 장비</h3><p>비전·치수·외관 검사 자동화.</p></div>'
+      +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 8 8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8M12 12v8"/></svg></span><h3>포장 자동화</h3><p>포장·라벨링·이송 시스템.</p></div>'
+      +'</div></section>'
+      +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
+      +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+'</div></section>'
+      +'<section class="jt-landing-section" id="jt-about"><div class="jt-section-head"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는 자동화 파트너</h2></div><a href="/search">기술 자료 →</a></div>'
+      +'<p class="jt-lead" style="max-width:760px">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p></section>'
+      +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
+    body.insertBefore(landing,body.firstChild);
+    setTimeout(loadLandingProjects,500);
+  }
+  function loadLandingProjects(){
+    var grid=document.getElementById('jtLandingProjects');
+    if(!grid)return;
+    fetchFeed(1,6).then(function(data){
+      var entries=(data.feed&&data.feed.entry)||[];
+      for(var i=0;i<entries.length&&i<3;i++){
+        var e=entries[i],card=grid.children[i];
+        if(!card)continue;
+        var links=e.link||[],href='';
+        for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
+        if(href)card.href=href;
+        var title=(e.title&&e.title.$t||'').trim();
+        var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
+        var t=card.querySelector('.jt-project-title'),d=card.querySelector('.jt-project-desc');
+        if(t&&title)t.textContent=title;
+        if(d&&cat)d.textContent=cat;
+        var thumb=e.media$thumbnail&&e.media$thumbnail.url||'';
+        if(thumb){
+          thumb=thumb.replace(/\/s\d+(-c)?\//,'/w600-h400-c/');
+          var img=card.querySelector('img');
+          if(img){
+            img.style.display='block';
+            img.onerror=function(){this.style.display='none';};
+            img.src=thumb;
+          }
+        }
+      }
+    })['catch'](function(){});
+  }
   function fetchFeed(start,max){
     var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
     return fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
@@ -131,7 +198,7 @@
   ready(function(){
     initTheme();
     initQuickNav();
-    if(location.pathname==='/p/home.html'){initHomeHero();initHomeFooter();return;}
+    if(location.pathname==='/p/home.html'){initHomeLanding();initHomeFooter();return;}
     setTimeout(watchPostImages,800);
     var root=document.getElementById('ytPosts');
     if(!root)return;
