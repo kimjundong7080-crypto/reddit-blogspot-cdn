@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.68 */
+/* Reddit-style Blogger YouTube post list — v1.0.69 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -458,10 +458,11 @@ html.jt-home-page .jt-landing{
   --jt-line:#dfe5e1;
   --jt-soft:#f5f8f6;
   --jt-card:#ffffff;
+  --jt-landing-pad:clamp(16px,4vw,40px);
   color:var(--jt-ink);
   background:var(--jt-soft);
-  margin:0 calc(-1 * clamp(0px, 2vw, 16px));
-  padding:0 clamp(16px, 4vw, 40px);
+  margin:0 calc(-1 * var(--jt-landing-pad));
+  padding:0 var(--jt-landing-pad);
 }
 html.jt-home-page .jt-landing *{box-sizing:border-box}
 html.jt-home-page .jt-landing a{text-decoration:none !important}
@@ -644,11 +645,11 @@ html.jt-home-page .jt-feature-label span{font-size:16px;font-weight:400}
 /* 최상단 WebGL 히어로 */
 html.jt-home-page .jt-home-hero-frame{
   display:block;
-  width:calc(100% + 2 * clamp(16px,4vw,40px));
+  width:calc(100% + 2 * var(--jt-landing-pad));
   height:100svh;
   min-height:620px;
   max-height:1100px;
-  margin:0 calc(-1 * clamp(16px,4vw,40px));
+  margin:0 calc(-1 * var(--jt-landing-pad));
   border:0;
   background:#05060a;
   pointer-events:none;
