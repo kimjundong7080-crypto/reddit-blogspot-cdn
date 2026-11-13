@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.33 */
+/* Reddit-style Blogger YouTube post list — v1.0.34 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -100,11 +100,12 @@
       +'<div class="jt-hero-copy"><p class="jt-hero-kicker">JUST TECH</p><h2 class="jt-hero-title">산업 자동화 기술 아카이브</h2><p class="jt-hero-sub">로봇·설비·자동화 현장을 기록합니다.</p></div>';
     body.insertBefore(hero,body.firstChild);
   }
-  function fetchFeed(){
-    return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
+  function fetchFeed(start,max){
+    var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
+    return fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       ['catch'](function(){
-        return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=20')
+        return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max='+max)
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
   }
@@ -122,66 +123,107 @@
     root.appendChild(head);
     var list=el('div','yt-list');
     root.appendChild(list);
+    var more=el('div','yt-more');
+    more.innerHTML='<i></i><span>더 불러오는 중…</span>';
+    root.appendChild(more);
+    var end=el('div','yt-end','모든 글을 불러왔습니다.');
+    root.appendChild(end);
 
-    fetchFeed().then(function(data){
-      var entries=(data.feed&&data.feed.entry)||[];
-      var seen={},n=0,idx=0;
+    var seen={},total=0,nextStart=1,pending=[],loading=false,finished=false,batchStart=0;
 
-      function addNext(){
-        while(idx<entries.length&&n<12){
-          var e=entries[idx++];
-          var links=e.link||[],href='';
-          for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
-          if(!href||seen[href])continue;
-          seen[href]=1;
-          var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
-          var title=(e.title&&e.title.$t||'').trim()||cat||'게시물';
-          var date=dateText(e.published&&e.published.$t);
-          var thumb=thumbUrl(e.media$thumbnail&&e.media$thumbnail.url||'');
+    function makeItem(e){
+      var links=e.link||[],href='';
+      for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
+      if(!href||seen[href])return null;
+      seen[href]=1;
+      var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
+      var title=(e.title&&e.title.$t||'').trim()||cat||'게시물';
+      var date=dateText(e.published&&e.published.$t);
+      var thumb=thumbUrl(e.media$thumbnail&&e.media$thumbnail.url||'');
 
-          var a=el('a','yt-item');
-          a.href=href;
-          var box=el('span','yt-thumb');
-          if(thumb){
-            var img=el('img');
-            box.classList.add('is-loading');
-            function loaded(){
-              box.classList.remove('is-loading');
-              box.classList.add('is-loaded');
-            }
-            img.onload=loaded;
-            img.onerror=function(){
-              img.style.display='none';
-              box.classList.remove('is-loading');
-              box.classList.add('yt-thumb-empty');
-            };
-            img.alt=title;
-            img.loading='lazy';
-            img.decoding='async';
-            img.setAttribute('fetchpriority','low');
-            img.src=thumb;
-            box.appendChild(img);
-            if(img.complete&&img.naturalWidth)loaded();
-          }else{
-            box.classList.add('yt-thumb-empty');
-          }
-          var info=el('span','yt-info');
-          var h=el('span','yt-title',title);
-          var meta=el('span','yt-meta',[date,cat].filter(Boolean).join(' · '));
-          info.appendChild(h);info.appendChild(meta);
-          a.appendChild(box);a.appendChild(info);
-          list.appendChild(a);
-          n++;
-          count.textContent=String(n);
-          setTimeout(addNext,35);
+      var a=el('a','yt-item');
+      a.href=href;
+      var box=el('span','yt-thumb');
+      if(thumb){
+        var img=el('img');
+        box.classList.add('is-loading');
+        function loaded(){
+          box.classList.remove('is-loading');
+          box.classList.add('is-loaded');
+        }
+        img.onload=loaded;
+        img.onerror=function(){
+          img.style.display='none';
+          box.classList.remove('is-loading');
+          box.classList.add('yt-thumb-empty');
+        };
+        img.alt=title;
+        img.loading='lazy';
+        img.decoding='async';
+        img.setAttribute('fetchpriority','low');
+        img.src=thumb;
+        box.appendChild(img);
+        if(img.complete&&img.naturalWidth)loaded();
+      }else{
+        box.classList.add('yt-thumb-empty');
+      }
+      var info=el('span','yt-info');
+      info.appendChild(el('span','yt-title',title));
+      info.appendChild(el('span','yt-meta',[date,cat].filter(Boolean).join(' · ')));
+      a.appendChild(box);a.appendChild(info);
+      return a;
+    }
+
+    function renderNext(){
+      while(pending.length){
+        var a=makeItem(pending.shift());
+        if(!a)continue;
+        list.appendChild(a);
+        total++;
+        count.textContent=String(total);
+        setTimeout(renderNext,35);
+        return;
+      }
+      loading=false;
+      more.classList.remove('on');
+      if(total===batchStart&&!total)finished=true;
+      if(finished)end.style.display='block';
+    }
+
+    function loadMore(){
+      if(loading||finished)return;
+      loading=true;
+      more.classList.add('on');
+      end.style.display='none';
+      fetchFeed(nextStart,12).then(function(data){
+        var entries=(data.feed&&data.feed.entry)||[];
+        if(!entries.length){
+          finished=true;loading=false;
+          more.classList.remove('on');
+          end.style.display='block';
           return;
         }
-        count.textContent=String(n);
-        if(!n){list.appendChild(el('div','yt-empty','표시할 글이 없습니다.'));}
-      }
-      addNext();
-    })['catch'](function(){
-      list.appendChild(el('div','yt-empty','글을 불러오지 못했습니다.'));
-    });
+        nextStart+=entries.length;
+        if(entries.length<12)finished=true;
+        batchStart=total;
+        pending=pending.concat(entries);
+        renderNext();
+      })['catch'](function(){
+        loading=false;
+        more.classList.remove('on');
+        end.textContent='글을 불러오지 못했습니다.';
+        end.style.display='block';
+      });
+    }
+
+    var scroller=root.closest('.sidebar-container')||root.parentElement;
+    function nearBottom(){
+      if(!scroller)return true;
+      return scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-220;
+    }
+    function onScroll(){if(nearBottom())loadMore();}
+    if(scroller)scroller.addEventListener('scroll',onScroll,{passive:true});
+    root.addEventListener('wheel',function(e){if(e.deltaY>0)setTimeout(onScroll,0);},{passive:true});
+    loadMore();
   });
 })();

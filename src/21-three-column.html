@@ -92,6 +92,24 @@ body.rd3-layout .post-body.entry-content{
   margin-right:0 !important;
   max-width:none !important;
 }
+/* 본문 텍스트 좌우 여백 (이미지 .separator는 전체 폭 유지) */
+body.rd3-layout .post-body.entry-content > p,
+body.rd3-layout .post-body.entry-content > h1,
+body.rd3-layout .post-body.entry-content > h2,
+body.rd3-layout .post-body.entry-content > h3,
+body.rd3-layout .post-body.entry-content > h4,
+body.rd3-layout .post-body.entry-content > h5,
+body.rd3-layout .post-body.entry-content > h6,
+body.rd3-layout .post-body.entry-content > ul,
+body.rd3-layout .post-body.entry-content > ol,
+body.rd3-layout .post-body.entry-content > blockquote,
+body.rd3-layout .post-body.entry-content > table,
+body.rd3-layout .post-body.entry-content > pre,
+body.rd3-layout .post-body.entry-content > div:not(.separator):not(.separator *){
+  padding-left:24px !important;
+  padding-right:24px !important;
+  box-sizing:border-box !important;
+}
 /* 제목 배경의 상·하 빈 여백 제거 */
 body.rd3-layout .post-title-container{
   padding-top:0 !important;
@@ -112,6 +130,8 @@ body.rd3-layout .post-title-container .post-title{
   font-size:18px !important;
   line-height:1.35 !important;
   max-height:2.7em;
+  padding-right:24px !important;
+  box-sizing:border-box !important;
 }
 @media screen and (max-width:600px){
   body.rd3-layout .post-title-container .post-title{
