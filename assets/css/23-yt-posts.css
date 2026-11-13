@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.37 */
+/* Reddit-style Blogger YouTube post list — v1.0.38 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -28,7 +28,7 @@
 }
 #ytPosts .yt-viewport{
   position:relative;
-  height:70px;
+  height:718px;
   overflow:hidden;
   perspective:700px;
   border-radius:8px;

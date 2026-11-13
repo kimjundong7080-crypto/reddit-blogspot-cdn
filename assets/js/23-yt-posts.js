@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.37 */
+/* Reddit-style Blogger YouTube post list — v1.0.38 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -126,7 +126,7 @@
     viewport.appendChild(list);
     root.appendChild(viewport);
 
-    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=72,timer=null;
+    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=72,visible=10;
 
     function makeItem(e){
       var links=e.link||[],href='';
@@ -225,7 +225,8 @@
       if(loading)return;
       var n=list.children.length;
       if(!n){loadMore(function(){setPos(0,false);});return;}
-      if(idx+1<n){
+      var max=Math.max(0,n-visible);
+      if(idx<max){
         outCurrent();
         idx++;
         setPos(idx,true);
@@ -244,21 +245,13 @@
       setPos(idx,true);
     }
 
-    function startTimer(){
-      if(timer)clearInterval(timer);
-      timer=setInterval(advance,4500);
-    }
-
     root.addEventListener('wheel',function(e){
       if(!e.deltaY)return;
       e.preventDefault();
       if(e.deltaY>0)advance();else retreat();
-      startTimer();
     },{passive:false});
-    root.addEventListener('mouseenter',function(){if(timer)clearInterval(timer);});
-    root.addEventListener('mouseleave',startTimer);
 
     measure();
-    loadMore(function(){setPos(0,false);measure();startTimer();});
+    loadMore(function(){setPos(0,false);measure();});
   });
 })();
