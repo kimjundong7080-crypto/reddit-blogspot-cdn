@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.1.1 */
+/* Reddit-style Blogger post infinite scroll — v1.1.2 */
 #jtInfiniteFeed{
   width:100%;
   max-width:100%;
@@ -106,6 +106,11 @@
 #jtInfiniteFeed .jt-inf-post .post-content.jt-expanded{
   max-height:none;
   overflow:visible;
+}
+#jtInfiniteFeed .jt-inf-post .post-content > .separator:not(:has(img)),
+#jtInfiniteFeed .jt-inf-post .post-content > div:empty,
+#jtInfiniteFeed .jt-inf-post .post-content > p:empty{
+  display:none !important;
 }
 @keyframes jtFoldPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(255,69,0,.38),0 6px 18px rgba(255,69,0,.22)}

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.1.1 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.1.2 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -132,9 +132,26 @@
     function addFold(wrap){
       var content=wrap.querySelector('.post-content');
       if(!content||content.classList.contains('jt-foldable'))return;
+      function contentBottom(el){
+        var rect=el.getBoundingClientRect();
+        var top=rect.top-(el.scrollTop||0);
+        var end=0,kids=el.children;
+        for(var i=0;i<kids.length;i++){
+          var kid=kids[i],cs=getComputedStyle(kid);
+          if(cs.display==='none'||cs.visibility==='hidden')continue;
+          var hasMedia=!!kid.querySelector('img,iframe,video,table,hr,pre,blockquote,svg');
+          var hasText=(kid.textContent||'').trim().length>0;
+          if(!hasMedia&&!hasText)continue;
+          var r=kid.getBoundingClientRect();
+          if(r.height<=0)continue;
+          var bottom=r.bottom-top;
+          if(bottom>end)end=bottom;
+        }
+        return end>0?end:el.scrollHeight;
+      }
       function check(){
         if(content.classList.contains('jt-foldable'))return;
-        if(content.scrollHeight<720)return;
+        if(contentBottom(content)<720)return;
         content.classList.add('jt-foldable');
         var btn=document.createElement('button');
         btn.type='button';

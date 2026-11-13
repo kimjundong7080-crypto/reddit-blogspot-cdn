@@ -116,6 +116,11 @@
   max-height:none;
   overflow:visible;
 }
+#jtInfiniteFeed .jt-inf-post .post-content > .separator:not(:has(img)),
+#jtInfiniteFeed .jt-inf-post .post-content > div:empty,
+#jtInfiniteFeed .jt-inf-post .post-content > p:empty{
+  display:none !important;
+}
 @keyframes jtFoldPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(255,69,0,.38),0 6px 18px rgba(255,69,0,.22)}
   50%{box-shadow:0 0 0 7px rgba(255,69,0,0),0 8px 24px rgba(255,69,0,.38)}
@@ -317,9 +322,26 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     function addFold(wrap){
       var content=wrap.querySelector('.post-content');
       if(!content||content.classList.contains('jt-foldable'))return;
+      function contentBottom(el){
+        var rect=el.getBoundingClientRect();
+        var top=rect.top-(el.scrollTop||0);
+        var end=0,kids=el.children;
+        for(var i=0;i<kids.length;i++){
+          var kid=kids[i],cs=getComputedStyle(kid);
+          if(cs.display==='none'||cs.visibility==='hidden')continue;
+          var hasMedia=!!kid.querySelector('img,iframe,video,table,hr,pre,blockquote,svg');
+          var hasText=(kid.textContent||'').trim().length>0;
+          if(!hasMedia&&!hasText)continue;
+          var r=kid.getBoundingClientRect();
+          if(r.height<=0)continue;
+          var bottom=r.bottom-top;
+          if(bottom>end)end=bottom;
+        }
+        return end>0?end:el.scrollHeight;
+      }
       function check(){
         if(content.classList.contains('jt-foldable'))return;
-        if(content.scrollHeight<720)return;
+        if(contentBottom(content)<720)return;
         content.classList.add('jt-foldable');
         var btn=document.createElement('button');
         btn.type='button';
