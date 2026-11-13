@@ -275,19 +275,28 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     function addFold(wrap){
       var content=wrap.querySelector('.post-content');
       if(!content||content.classList.contains('jt-foldable'))return;
-      if(content.scrollHeight<720)return;
-      content.classList.add('jt-foldable');
-      var btn=document.createElement('button');
-      btn.type='button';
-      btn.className='jt-inf-fold-btn';
-      btn.textContent='펼치기';
-      btn.setAttribute('aria-expanded','false');
-      btn.addEventListener('click',function(){
-        var expanded=content.classList.toggle('jt-expanded');
-        btn.textContent=expanded?'접기':'펼치기';
-        btn.setAttribute('aria-expanded',expanded?'true':'false');
-      });
-      content.parentNode.insertBefore(btn,content.nextSibling);
+      function check(){
+        if(content.classList.contains('jt-foldable'))return;
+        if(content.scrollHeight<720)return;
+        content.classList.add('jt-foldable');
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='jt-inf-fold-btn';
+        btn.textContent='펼치기';
+        btn.setAttribute('aria-expanded','false');
+        btn.addEventListener('click',function(){
+          var expanded=content.classList.toggle('jt-expanded');
+          btn.textContent=expanded?'접기':'펼치기';
+          btn.setAttribute('aria-expanded',expanded?'true':'false');
+        });
+        content.parentNode.insertBefore(btn,content.nextSibling);
+      }
+      check();
+      var imgs=content.querySelectorAll('img');
+      for(var i=0;i<imgs.length;i++){
+        if(!imgs[i].complete)imgs[i].addEventListener('load',check,{once:true});
+      }
+      setTimeout(check,900);
     }
 
     function build(item,url){
