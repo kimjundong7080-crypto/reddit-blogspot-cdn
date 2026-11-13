@@ -1,10 +1,10 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.3 (reddit-blogspot-edge Git auto deploy) */
+/* Reddit-style Blogger post infinite scroll — v1.0.4 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
     ahead: 3,        /* 미리 받아둘 다음 글 수 */
     gap:   1000,     /* 하단에서 이 px 이내면 로드 */
-    max:   0,        /* 0 = 무한 */
+    max:   0,        /* 0 = 피드 끝까지 */
     feedMax: 500,    /* 현재 글을 찾을 최근 피드 수 */
     edgeBase: 'https://reddit-blogspot-edge.pages.dev',
     useEdge: true    /* 실패하면 Blogger 직접 호출로 자동 폴백 */
@@ -38,10 +38,27 @@
 
     var loader=document.createElement('div');
     loader.className='jt-inf-loader';
+    loader.setAttribute('role','status');
+    loader.setAttribute('aria-live','polite');
     loader.innerHTML='<i></i>Loading more posts…';
     feed.appendChild(loader);
 
+    var end=document.createElement('div');
+    end.className='jt-inf-end';
+    end.setAttribute('role','status');
+    end.setAttribute('aria-live','polite');
+    feed.appendChild(end);
+
     var cand=[], cache={}, ptr=-1, appended=0, done=false, randomMode=false, booted=false, busy=false, fails=0;
+    var seen={}; seen[curPath]=1;
+
+    function showEnd(msg){
+      if(done)return;
+      done=true; busy=false;
+      loader.classList.remove('on');
+      end.textContent=msg||'모든 글을 불러왔습니다.';
+      end.style.display='block';
+    }
 
     function nearBottom(){
       return (window.pageYOffset+window.innerHeight)>=(document.documentElement.scrollHeight-CFG.gap);
@@ -118,13 +135,14 @@
       wrap.appendChild(item.node);
       loader.parentNode.insertBefore(wrap,loader);
       appended++;
+      seen[pathKey(url)]=1;
     }
 
     function preload(){
-      var end=Math.min(ptr+1+CFG.ahead,cand.length-1);
-      for(var k=ptr+1;k<=end;k++){
+      var endAt=Math.min(ptr+1+CFG.ahead,cand.length-1);
+      for(var k=ptr+1;k<=endAt;k++){
         var u=cand[k];
-        if(!u||pathKey(u)===curPath||u in cache)continue;
+        if(!u||pathKey(u)===curPath||seen[pathKey(u)]||u in cache)continue;
         cache[u]=null;
         (function(uu){fetchPage(uu).then(function(c){cache[uu]=c||'fail';}).catch(function(){cache[uu]='fail';});})(u);
       }
@@ -132,20 +150,17 @@
 
     function loadNext(){
       if(busy||done)return;
-      if(CFG.max&&appended>=CFG.max){done=true;loader.classList.remove('on');return;}
+      if(CFG.max&&appended>=CFG.max){showEnd();return;}
       busy=true;loader.classList.add('on');
 
       (function attempt(){
         if(done){busy=false;loader.classList.remove('on');return;}
-        if(fails>Math.max(4,cand.length+1)){done=true;busy=false;loader.classList.remove('on');return;}
+        if(fails>Math.max(4,cand.length+1)){showEnd('더 불러올 글을 찾지 못했습니다.');return;}
 
-        if(ptr+1>=cand.length){
-          if(cand.length){ptr=-1;shuffle(cand);preload();setTimeout(attempt,100);return;}
-          done=true;busy=false;loader.classList.remove('on');return;
-        }
+        if(ptr+1>=cand.length){showEnd();return;}
 
         var u=cand[ptr+1];
-        if(!u||pathKey(u)===curPath){ptr++;setTimeout(attempt,20);return;}
+        if(!u||pathKey(u)===curPath||seen[pathKey(u)]){ptr++;setTimeout(attempt,20);return;}
         var c=cache[u];
         if(c===undefined)preload();
         if(c===undefined||c===null){setTimeout(attempt,150);return;}
@@ -197,7 +212,7 @@
 
       ptr=-1;preload();booted=true;
       if(nearBottom())setTimeout(loadNext,80);
-    }).catch(function(){});
+    }).catch(function(){showEnd('피드를 불러오지 못했습니다.');});
 
     var armed=false;
     function onScroll(){

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.0 */
+/* Reddit-style Blogger 3-column layout — v1.0.4 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -190,6 +190,12 @@ body.rd3-layout .sidebar-container .widget + .widget{
   }
   .rd3-ico{width:22px;height:22px}
   .rd3-ico svg{width:22px;height:22px}
+
+  /* 1024~1239px: 테마의 음수 마진이 중앙 컬럼 밖으로 넘치지 않게 보정 */
+  body.rd3-layout .post-body-container{
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
 }
 
 /* ===== 1024px 미만: 1열 ===== */

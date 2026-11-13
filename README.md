@@ -16,19 +16,19 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 
 ```html
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.0/assets/css/21-three-column.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.4/assets/css/21-three-column.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.0/assets/js/21-three-column.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.4/assets/js/21-three-column.js"
   defer></script>
 
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.0/assets/css/11-infinite.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.4/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.3/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.4/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.0.0`처럼 버전을 고정하세요. 11번은 **v1.0.3**부터 `reddit-blogspot-edge` Git 자동 배포 Edge API를 사용합니다.
+> `@main` 대신 `@v1.0.4`처럼 버전을 고정하세요. 21·11 모두 **v1.0.4** 기준입니다.
 
 ## Blogger 설치
 
@@ -39,7 +39,9 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 ## 동작 메모
 
 - 21: `1240px` 이상 3열, `1024~1239px` 좌측 아이콘 레일 + 중앙, `1024px` 미만 1열.
+- 21 v1.0.4: `1024~1239px`에서 테마의 음수 마진으로 인한 가로 스크롤을 방지.
 - 11: 현재 글의 `.post-outer-container` 뒤에 다음 글을 복제 삽입. 댓글/스크립트/iframe/광고/중복 id 제거.
 - 11: 이미지 본문만 있는 글도 정상 글로 인정.
-- 11: 같은 카테고리 우선 → 없으면 랜덤 → 반복.
-- 11 v1.0.3: `https://reddit-blogspot-edge.pages.dev`의 `/api/blogger-feed`·`/api/blogger-post`를 먼저 사용하고, 실패하면 Blogger 직접 호출로 폴백합니다.
+- 11: 같은 카테고리 우선 → 없으면 랜덤 → 이미 본 글은 제외하고 피드 끝에서 종료.
+- 11 v1.0.4: 로더/종료 상태에 `role=status`·`aria-live` 적용, 추가 글 이미지 `loading=lazy`·`decoding=async`.
+- 11 v1.0.4: `https://reddit-blogspot-edge.pages.dev`의 `/api/blogger-feed`·`/api/blogger-post`를 먼저 사용하고, 실패하면 Blogger 직접 호출로 폴백합니다.
