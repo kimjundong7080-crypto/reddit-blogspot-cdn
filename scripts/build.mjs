@@ -36,6 +36,14 @@ const targets = [
     js: 'assets/js/23-yt-posts.js',
     cssTitle: 'Reddit-style Blogger YouTube post list',
     jsTitle: 'Reddit-style Blogger YouTube post list'
+  },
+  {
+    name: '24-home',
+    source: 'src/24-home.html',
+    css: 'assets/css/24-home.css',
+    js: 'assets/js/24-home.js',
+    cssTitle: 'Reddit-style Blogger home landing',
+    jsTitle: 'Reddit-style Blogger home landing'
   }
 ];
 
