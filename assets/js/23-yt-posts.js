@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.79 */
+/* Reddit-style Blogger YouTube post list — v1.0.80 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -115,6 +115,7 @@
     footer.innerHTML='<div class="jt-home-footer-inner">'
       +'<div><p class="jt-home-footer-brand">JUST TECH</p><p class="jt-home-footer-desc">산업 자동화·로봇·설비 기술 자료를 기록하는 블로그입니다.</p></div>'
       +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about-us.html">About</a><a href="/p/contact-us.html">Contact</a></nav>'
+      +'<div class="jt-home-footer-contact"><p>PROJECT INQUIRY</p><a href="mailto:qwe6973@proton.me">qwe6973@proton.me</a></div>'
       +'<p class="jt-home-footer-copy">© 2026 JUST TECH. All rights reserved.</p>'
       +'</div>';
     (document.querySelector('.all-container')||document.body).appendChild(footer);
@@ -162,12 +163,34 @@
       +hzSection
       +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
       +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+'</div></section>'
-      +'<section class="jt-landing-section" id="jt-about"><div class="jt-section-head"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는 자동화 파트너</h2></div><a href="/search">기술 자료 →</a></div>'
-      +'<p class="jt-lead" style="max-width:760px">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p></section>'
+      +'<section class="jt-landing-section jt-about" id="jt-about"><div class="jt-about-grid"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는<br>자동화 파트너</h2></div><div><p class="jt-about-copy">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p><a class="jt-about-link" href="/search">기술 자료 살펴보기 →</a></div></div></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
+    initLandingReveal();
     requestAnimationFrame(function(){initFeatureCarousel();});
     setTimeout(loadLandingProjects,500);
+  }
+  function initLandingReveal(){
+    var root=document.querySelector('.jt-landing');
+    if(!root||root.__jtReveal)return;
+    root.__jtReveal=1;
+    if(!('IntersectionObserver' in window))return;
+    var els=[].slice.call(root.querySelectorAll('.jt-landing-hero, .jt-landing-section, .jt-cta'));
+    if(!els.length)return;
+    root.classList.add('jt-reveal-ready');
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
+    els.forEach(function(el,i){
+      el.classList.add('jt-reveal');
+      el.style.transitionDelay=(i%4)*45+'ms';
+      io.observe(el);
+    });
   }
   function initTopHeroFrame(){
     var frame=document.querySelector('.jt-home-hero-frame');
