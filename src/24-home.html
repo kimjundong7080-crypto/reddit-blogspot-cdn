@@ -824,14 +824,37 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
   if(location.pathname!=='/p/home.html')return;
   document.documentElement.classList.add('jt-home-page');
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
+  var HOME_FEED_KEY='jt-home-feed-v1',HOME_FEED_TTL=21600000;
+  function readHomeCache(allowStale){
+    try{
+      var raw=localStorage.getItem(HOME_FEED_KEY);
+      if(!raw)return null;
+      var box=JSON.parse(raw);
+      if(!box||!box.data)return null;
+      if(!allowStale&&Date.now()-box.t>HOME_FEED_TTL)return null;
+      return box.data;
+    }catch(e){return null;}
+  }
+  function writeHomeCache(data){
+    try{localStorage.setItem(HOME_FEED_KEY,JSON.stringify({t:Date.now(),data:data}));}catch(e){}
+  }
   function fetchHomeFeed(start,max){
+    var useCache=(start===1&&max===6);
+    if(useCache){var cached=readHomeCache(false);if(cached)return Promise.resolve(cached);}
     var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
-    return fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
+    var load=fetch('/feeds/posts/default'+qs,{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       ['catch'](function(){
         return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max='+max)
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
+    return load.then(function(data){
+      if(useCache)writeHomeCache(data);
+      return data;
+    })['catch'](function(err){
+      if(useCache){var stale=readHomeCache(true);if(stale)return stale;}
+      throw err;
+    });
   }
   function https(u){return (typeof u==='string'&&u.indexOf('http://')===0)?('https://'+u.slice(7)):u;}
   function initHomeFooter(){
@@ -851,11 +874,11 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
     var body=document.querySelector('.post-body');
     if(!body)return;
     document.body.classList.add('jt-landing-page');
-    var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=80';
+    var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1000&q=75';
     var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
     var hzArrow='<svg class="jt-hz-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M15.707 8.707L8.707 15.707L7.293 14.293L12.586 9H0V7H12.586L7.293 1.707L8.707 0.292999L15.707 7.293C16.098 7.684 16.098 8.316 15.707 8.707Z"/></svg>';
     function hzCard(title,poster,src){
-      return '<article class="jt-hz-card"><div class="jt-hz-media"><video class="jt-hz-video" poster="'+poster+'" muted loop playsinline preload="none"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
+      return '<article class="jt-hz-card"><div class="jt-hz-media"><video class="jt-hz-video" data-poster="'+poster+'" muted loop playsinline preload="none"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
     }
     var hzCards=hzCard('3D Floor Plans','https://st.hzcdn.com/static/houzzPro/3DFloorPlans@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170880/rendition/1080p/file.mp4?loc=external&signature=60fcd3edb8f53160d63268a768fdd1af961af609c81f23a268ae880c8e64c6a5')
       +hzCard('Selections','https://st.hzcdn.com/static/houzzPro/Selections@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170961/rendition/1080p/file.mp4?loc=external&signature=458af37b5f31ad57df348862c3fd0e2dac5f0c86c18023a2e742c29ab9375d29')
@@ -894,7 +917,7 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
     body.insertBefore(landing,body.firstChild);
     initLandingReveal();
     requestAnimationFrame(function(){initFeatureCarousel();});
-    setTimeout(loadLandingProjects,500);
+    if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
   function initLandingReveal(){
     var root=document.querySelector('.jt-landing');
@@ -972,10 +995,27 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
       resizeTimer=setTimeout(render,100);
     });
     render();
+    function loadPoster(card){
+      var video=card.querySelector('.jt-hz-video');
+      if(!video||video.getAttribute('poster'))return;
+      var p=video.getAttribute('data-poster');
+      if(p)video.setAttribute('poster',p);
+    }
+    if('IntersectionObserver' in window){
+      var posterIO=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){loadPoster(entry.target);posterIO.unobserve(entry.target);}
+        });
+      },{rootMargin:'320px 0px'});
+      cards.forEach(function(card){posterIO.observe(card);});
+    }else{
+      cards.forEach(loadPoster);
+    }
     cards.forEach(function(card){
       var video=card.querySelector('.jt-hz-video');
       if(!video)return;
       function playVideo(){
+        loadPoster(card);
         video.muted=true;
         var p=video.play();
         if(p&&p.catch)p.catch(function(){});
