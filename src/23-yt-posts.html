@@ -49,7 +49,18 @@
   flex:0 0 94px;
   border-radius:8px;
   overflow:hidden;
-  background:#e5e7eb;
+  background:#f1f3f5;
+  isolation:isolate;
+}
+#ytPosts .yt-thumb:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 70%);
+  transform:translateX(-100%);
+  animation:ytThumbShimmer 1.4s infinite;
+  pointer-events:none;
 }
 #ytPosts .yt-thumb img{
   display:block;
@@ -57,10 +68,30 @@
   height:100%;
   object-fit:cover;
   border:0;
+  position:relative;
+  z-index:2;
+  background:transparent;
+  opacity:0;
+  transition:opacity .35s ease;
 }
-#ytPosts .yt-thumb-empty{
-  background:linear-gradient(135deg,#d1d5db,#f3f4f6);
+#ytPosts .yt-thumb.is-loaded img{opacity:1}
+#ytPosts .yt-thumb.is-loaded:before{display:none}
+#ytPosts .yt-thumb.is-loading:after{
+  content:"";
+  position:absolute;
+  z-index:3;
+  top:50%;
+  left:50%;
+  width:15px;
+  height:15px;
+  margin:-8px 0 0 -8px;
+  border:2px solid rgba(107,114,128,.25);
+  border-top-color:#FF4500;
+  border-radius:50%;
+  animation:ytThumbSpin .7s linear infinite;
 }
+#ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#e5e7eb,#f8fafc)}
+#ytPosts .yt-thumb-empty:before{display:none}
 #ytPosts .yt-thumb-empty:after{
   content:"IMAGE";
   position:absolute;
@@ -73,6 +104,8 @@
   letter-spacing:.08em;
   color:#6B7280;
 }
+@keyframes ytThumbShimmer{to{transform:translateX(100%)}}
+@keyframes ytThumbSpin{to{transform:rotate(360deg)}}
 #ytPosts .yt-info{
   min-width:0;
   flex:1 1 auto;
@@ -110,8 +143,11 @@
   #ytPosts .yt-meta,
   #ytPosts .yt-empty{color:#9CA3AF}
   #ytPosts .yt-item:hover{background:rgba(255,255,255,.06)}
-  #ytPosts .yt-thumb{background:#2a2a2a}
-  #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#2a2a2a,#3a3a3a)}
+  #ytPosts .yt-thumb{background:#252a31}
+  #ytPosts .yt-thumb:before{
+    background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,0) 70%);
+  }
+  #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#252a31,#343b45)}
 }
 </style>
 <script>
@@ -168,9 +204,23 @@
         var box=el('span','yt-thumb');
         if(thumb){
           var img=el('img');
-          img.src=thumb; img.alt=title; img.loading='lazy'; img.decoding='async';
-          img.onerror=function(){this.style.display='none';this.parentNode.classList.add('yt-thumb-empty');};
+          box.classList.add('is-loading');
+          function loaded(){
+            box.classList.remove('is-loading');
+            box.classList.add('is-loaded');
+          }
+          img.onload=loaded;
+          img.onerror=function(){
+            img.style.display='none';
+            box.classList.remove('is-loading');
+            box.classList.add('yt-thumb-empty');
+          };
+          img.alt=title;
+          img.loading='lazy';
+          img.decoding='async';
+          img.src=thumb;
           box.appendChild(img);
+          if(img.complete&&img.naturalWidth)loaded();
         }else{
           box.classList.add('yt-thumb-empty');
         }

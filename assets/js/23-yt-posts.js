@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.18 */
+/* Reddit-style Blogger YouTube post list — v1.0.19 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -51,9 +51,23 @@
         var box=el('span','yt-thumb');
         if(thumb){
           var img=el('img');
-          img.src=thumb; img.alt=title; img.loading='lazy'; img.decoding='async';
-          img.onerror=function(){this.style.display='none';this.parentNode.classList.add('yt-thumb-empty');};
+          box.classList.add('is-loading');
+          function loaded(){
+            box.classList.remove('is-loading');
+            box.classList.add('is-loaded');
+          }
+          img.onload=loaded;
+          img.onerror=function(){
+            img.style.display='none';
+            box.classList.remove('is-loading');
+            box.classList.add('yt-thumb-empty');
+          };
+          img.alt=title;
+          img.loading='lazy';
+          img.decoding='async';
+          img.src=thumb;
           box.appendChild(img);
+          if(img.complete&&img.naturalWidth)loaded();
         }else{
           box.classList.add('yt-thumb-empty');
         }
