@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.0.91 */
+/* Reddit-style Blogger home landing — v1.0.92 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -12,7 +12,9 @@
         return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max='+max)
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
-  }function initHomeFooter(){
+  }
+  function https(u){return (typeof u==='string'&&u.indexOf('http://')===0)?('https://'+u.slice(7)):u;}
+  function initHomeFooter(){
     if(document.querySelector('.jt-home-footer'))return;
     var footer=document.createElement('footer');
     footer.className='jt-home-footer';
