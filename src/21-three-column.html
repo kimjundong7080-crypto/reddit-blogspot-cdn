@@ -177,6 +177,22 @@ body.rd3-layout.sidebar-visible{overflow:auto !important}
   padding:4px 14px 14px 0;
   border-right:1px solid var(--rd3-border);
 }
+@media screen and (min-width:1024px){
+  body.rd3-layout .rd3-left-inner:before{
+    content:"JUST TECH";
+    display:flex;
+    justify-content:center;
+    width:100%;
+    margin:2px 0 12px;
+    font-size:9px;
+    font-weight:700;
+    line-height:1;
+    letter-spacing:.18em;
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    color:var(--rd3-muted);
+  }
+}
 .rd3-title{
   display:flex;
   align-items:center;
