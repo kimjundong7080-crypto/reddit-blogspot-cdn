@@ -529,6 +529,12 @@ html[data-theme="dark"] #jtLeftToggle{
   border-color:rgba(255,255,255,.16);
 }
 body.jt-left-hidden .rd3-left{display:none !important}
+body.jt-left-hidden.rd3-layout .main_content_container > .page{
+  grid-column:1 !important;
+}
+body.jt-left-hidden.rd3-layout .main_content_container > .sidebar-container{
+  grid-column:2 !important;
+}
 @media screen and (min-width:1240px){
   body.jt-left-hidden.rd3-layout .main_content_container{
     grid-template-columns:minmax(0,1fr) 280px !important;
