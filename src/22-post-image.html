@@ -12,6 +12,10 @@ body.item-view .post-body-container > .post-body.entry-content > .separator > a{
 
 body.item-view .post-body-container > .post-body.entry-content > .separator{
   text-align:center !important;
+  width:calc(100% - 48px) !important;
+  max-width:calc(100% - 48px) !important;
+  margin-left:24px !important;
+  margin-right:24px !important;
 }
 
 body.item-view .post-body-container > .post-body.entry-content img{
@@ -24,13 +28,22 @@ body.item-view .post-body-container > .post-body.entry-content img{
   box-sizing:border-box !important;
   border:1px solid rgba(0,0,0,.14) !important;
   border-radius:10px;
-  background:#fff;
+  background:transparent !important;
 }
 
 @media (prefers-color-scheme:dark){
   body.item-view .post-body-container > .post-body.entry-content img{
     border-color:rgba(255,255,255,.22) !important;
-    background:#111;
+    background:transparent !important;
+  }
+}
+
+@media screen and (max-width:600px){
+  body.item-view .post-body-container > .post-body.entry-content > .separator{
+    width:calc(100% - 32px) !important;
+    max-width:calc(100% - 32px) !important;
+    margin-left:16px !important;
+    margin-right:16px !important;
   }
 }
 

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.35 */
+/* Reddit-style Blogger YouTube post list — v1.0.36 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -43,7 +43,7 @@
   animation:ytItemIn .25s ease both;
 }
 @keyframes ytItemIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-#ytPosts .yt-item:hover{background:rgba(0,0,0,.05)}
+#ytPosts .yt-item:hover{background:transparent !important}
 #ytPosts .yt-more{
   display:none;
   align-items:center;
@@ -264,7 +264,7 @@ html[data-theme="dark"] #jtThemeToggle{
 html[data-theme="dark"] #ytPosts .yt-count,
 html[data-theme="dark"] #ytPosts .yt-meta,
 html[data-theme="dark"] #ytPosts .yt-empty{color:#9CA3AF}
-html[data-theme="dark"] #ytPosts .yt-item:hover{background:rgba(255,255,255,.06)}
+html[data-theme="dark"] #ytPosts .yt-item:hover{background:transparent !important}
 html[data-theme="dark"] #ytPosts .yt-thumb{background:#252a31}
 html[data-theme="dark"] #ytPosts .yt-thumb:before{
   background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,0) 70%);
