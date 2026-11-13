@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.64 */
+/* Reddit-style Blogger YouTube post list — v1.0.65 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -126,9 +126,16 @@
     document.body.classList.add('jt-landing-page');
     var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=80';
     var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
-    var feature='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">3D 설비 설계 <span>→</span></span></a>';
-    var feature2='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">자동화 라인 <span>→</span></span></a>';
-    var feature3='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">검사 시스템 <span>→</span></span></a>';
+    var hzArrow='<svg class="jt-hz-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M15.707 8.707L8.707 15.707L7.293 14.293L12.586 9H0V7H12.586L7.293 1.707L8.707 0.292999L15.707 7.293C16.098 7.684 16.098 8.316 15.707 8.707Z"/></svg>';
+    function hzCard(title,poster,src){
+      return '<article class="jt-hz-card"><div class="jt-hz-media"><video class="jt-hz-video" poster="'+poster+'" muted loop playsinline preload="none"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
+    }
+    var hzCards=hzCard('3D Floor Plans','https://st.hzcdn.com/static/houzzPro/3DFloorPlans@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170880/rendition/1080p/file.mp4?loc=external&signature=60fcd3edb8f53160d63268a768fdd1af961af609c81f23a268ae880c8e64c6a5')
+      +hzCard('Selections','https://st.hzcdn.com/static/houzzPro/Selections@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170961/rendition/1080p/file.mp4?loc=external&signature=458af37b5f31ad57df348862c3fd0e2dac5f0c86c18023a2e742c29ab9375d29')
+      +hzCard('Estimates','https://st.hzcdn.com/static/houzzPro/Estimates@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170929/rendition/1080p/file.mp4?loc=external&signature=b3684723c0202f1100e7db205116bdf33d3dc8956d44d31ea8a1e1c92aef42d0')
+      +hzCard('Takeoffs','https://st.hzcdn.com/static/houzzPro/Takeoffs@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089171015/rendition/1080p/file.mp4?loc=external&signature=03ceb885d0499ce03faeda35a326a20aa3fa14da4da960c61241c73715f8d5df')
+      +hzCard('Schedule','https://st.hzcdn.com/static/houzzPro/Schedule@4x.webp','https://player.vimeo.com/progressive_redirect/playback/1089170948/rendition/1080p/file.mp4?loc=external&signature=9acafbd835f7fd1dc4a54b5a9ee499f30985a1b545dd58b64e15edbcefe44548');
+    var hzSection='<section class="jt-hz-features" id="jt-features"><div class="jt-hz-container"><h2 class="jt-hz-header">Smarter Software, <span class="jt-hz-accent">Stronger Business.</span></h2><div class="jt-hz-carousel"><div class="jt-hz-viewport"><div class="jt-hz-track" id="jtHzTrack">'+hzCards+'</div></div></div><div class="jt-hz-controls"><button class="jt-hz-nav" id="jtHzPrev" type="button" aria-label="Previous"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12.756 18.495l1.989-1.99L8.239 10l6.505-6.506-1.989-1.989-7.499 7.5a1.409 1.409 0 000 1.99l7.5 7.5z"/></svg></button><button class="jt-hz-nav" id="jtHzNext" type="button" aria-label="Next"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M7.244 18.495l-1.989-1.99L11.761 10 5.256 3.494l1.989-1.989 7.5 7.5c.549.549.549 1.44 0 1.99l-7.5 7.5h-.001z"/></svg></button></div></div></section>';
     var landing=document.createElement('div');
     landing.className='jt-landing';
     landing.innerHTML=
@@ -152,14 +159,68 @@
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 3.5-3.5"/></svg></span><h3>검사 장비</h3><p>비전·치수·외관 검사 자동화.</p></div>'
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 8 8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8M12 12v8"/></svg></span><h3>포장 자동화</h3><p>포장·라벨링·이송 시스템.</p></div>'
       +'</div></section>'
-      +'<section class="jt-landing-section jt-features" id="jt-features"><p class="jt-eyebrow">FEATURES</p><h2>Smarter Automation, <em>Stronger Business.</em></h2><div class="jt-feature-row">'+feature+feature2+feature3+'</div></section>'
+      +hzSection
       +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
       +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+'</div></section>'
       +'<section class="jt-landing-section" id="jt-about"><div class="jt-section-head"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는 자동화 파트너</h2></div><a href="/search">기술 자료 →</a></div>'
       +'<p class="jt-lead" style="max-width:760px">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
+    requestAnimationFrame(function(){initFeatureCarousel();});
     setTimeout(loadLandingProjects,500);
+  }
+  function initFeatureCarousel(){
+    var track=document.getElementById('jtHzTrack');
+    if(!track||track.__jtHzReady)return;
+    track.__jtHzReady=1;
+    var viewport=track.parentElement;
+    var cards=Array.prototype.slice.call(track.children);
+    var prev=document.getElementById('jtHzPrev');
+    var next=document.getElementById('jtHzNext');
+    if(!cards.length||!prev||!next)return;
+    var index=0;
+    function gapSize(){
+      var cs=getComputedStyle(track);
+      return parseFloat(cs.columnGap||cs.gap)||0;
+    }
+    function stepSize(){
+      return cards[0].getBoundingClientRect().width+gapSize();
+    }
+    function visibleCount(){
+      var vw=viewport.getBoundingClientRect().width;
+      return Math.max(1,Math.round((vw+gapSize())/stepSize()));
+    }
+    function maxIndex(){
+      return Math.max(0,cards.length-visibleCount());
+    }
+    function render(){
+      index=Math.min(Math.max(index,0),maxIndex());
+      track.style.transform='translateX('+(-index*stepSize())+'px)';
+      prev.disabled=index===0;
+      next.disabled=index>=maxIndex();
+    }
+    prev.addEventListener('click',function(){index--;render();});
+    next.addEventListener('click',function(){index++;render();});
+    var resizeTimer;
+    window.addEventListener('resize',function(){
+      clearTimeout(resizeTimer);
+      resizeTimer=setTimeout(render,100);
+    });
+    render();
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          var video=entry.target;
+          if(entry.isIntersecting){
+            var p=video.play();
+            if(p&&p.catch)p.catch(function(){});
+          }else{
+            video.pause();
+          }
+        });
+      },{threshold:0.5});
+      document.querySelectorAll('.jt-hz-video').forEach(function(v){v.muted=true;io.observe(v);});
+    }
   }
   function loadLandingProjects(){
     var grid=document.getElementById('jtLandingProjects');
