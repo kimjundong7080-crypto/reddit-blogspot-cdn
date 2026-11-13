@@ -463,6 +463,21 @@ html.jt-home-page .jt-landing{
   background:var(--jt-soft);
   margin:0 calc(-1 * var(--jt-landing-pad));
   padding:0 var(--jt-landing-pad);
+  position:relative;
+}
+html.jt-home-page .jt-landing:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:20;
+  padding:2px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#5eead4,#818cf8,#e879f9,#5eead4);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  pointer-events:none;
 }
 html.jt-home-page .jt-landing *{box-sizing:border-box}
 html.jt-home-page .jt-landing a{text-decoration:none !important}
