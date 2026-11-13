@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.12 */
+/* Reddit-style Blogger post infinite scroll — v1.0.13 */
 #jtInfiniteFeed{
   width:100%;
   max-width:100%;
@@ -61,4 +61,22 @@
   #jtInfiniteFeed .jt-inf-post{border-top-color:rgba(255,255,255,.14)}
   .jt-inf-loader,.jt-inf-end{color:#9CA3AF}
   .jt-inf-loader i{border-color:rgba(255,255,255,.18);border-top-color:#FF4500}
+}
+
+/* 추가 글: 하단 빈 공간 제거 + 데스크톱에서 좌우로 조금 더 넓게 */
+#jtInfiniteFeed .jt-inf-post{padding-bottom:0 !important}
+#jtInfiniteFeed .jt-inf-post .post-body-container{margin-bottom:0 !important}
+#jtInfiniteFeed .jt-inf-post .post-bottom{
+  margin:0 !important;
+  padding:0 !important;
+  height:0 !important;
+  min-height:0 !important;
+}
+@media screen and (min-width:1240px){
+  #jtInfiniteFeed .jt-inf-post .post-content.container{
+    width:calc(100% + 32px) !important;
+    max-width:none !important;
+    margin-left:-16px !important;
+    margin-right:-16px !important;
+  }
 }
