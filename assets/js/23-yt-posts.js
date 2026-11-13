@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.22 */
+/* Reddit-style Blogger YouTube post list — v1.0.23 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}

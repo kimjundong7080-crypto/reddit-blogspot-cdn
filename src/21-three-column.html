@@ -225,6 +225,92 @@ body.rd3-layout #Attribution1{
   display:none !important;
 }
 
+/* 검색 결과: 썸네일 4열 반응형 그리드 */
+body.search-view .blog-posts.hfeed{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:22px 16px !important;
+  align-items:start !important;
+}
+body.search-view .post-outer-container{
+  display:block !important;
+  width:auto !important;
+  margin:0 !important;
+  min-width:0 !important;
+}
+body.search-view .post-outer{
+  display:flex !important;
+  flex-direction:column !important;
+  width:100% !important;
+  margin:0 !important;
+  min-width:0 !important;
+}
+body.search-view .snippet-thumbnail{
+  order:0 !important;
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16/9;
+  margin:0 0 8px !important;
+  border-radius:10px;
+  overflow:hidden;
+  background:#f1f3f5;
+}
+body.search-view .snippet-thumbnail-img{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  background-size:cover !important;
+  background-position:center !important;
+  transition:transform .25s ease;
+}
+body.search-view .post-outer-container:hover .snippet-thumbnail-img{
+  transform:scale(1.04);
+}
+body.search-view .post-content{
+  order:1 !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+body.search-view .post-title-container{
+  height:auto !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+}
+body.search-view .post-title{
+  display:block !important;
+  margin:0 !important;
+  max-height:none !important;
+  overflow:visible !important;
+  font-size:14px !important;
+  line-height:1.35 !important;
+  font-weight:600 !important;
+  color:inherit !important;
+  -webkit-line-clamp:2 !important;
+  line-clamp:2 !important;
+  display:-webkit-box !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+body.search-view .post-title a{color:inherit !important;text-decoration:none !important}
+body.search-view .post-header-container,
+body.search-view .post-body,
+body.search-view .post-bottom{display:none !important}
+html[data-theme="dark"] body.search-view .snippet-thumbnail{background:#252a31}
+@media screen and (max-width:1023px){
+  body.search-view .blog-posts.hfeed{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+}
+@media screen and (max-width:768px){
+  body.search-view .blog-posts.hfeed{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
+@media screen and (max-width:480px){
+  body.search-view .blog-posts.hfeed{grid-template-columns:1fr !important}
+}
+
 /* ===== 1240px 미만: 좌측 아이콘 레일 + 중앙 ===== */
 @media screen and (max-width:1239px) and (min-width:1024px){
   body.rd3-layout .main_content_container{
