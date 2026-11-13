@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.42 */
+/* Reddit-style Blogger 3-column layout — v1.0.43 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0L.woff2') format('woff2');
@@ -124,7 +124,7 @@ body.rd3-layout .post-title-container .post-title{
   overflow:hidden !important;
   text-overflow:ellipsis;
   text-align:left !important;
-  font-size:18px !important;
+  font-size:16px !important;
   line-height:1.35 !important;
   max-height:2.7em;
   padding-left:24px !important;
