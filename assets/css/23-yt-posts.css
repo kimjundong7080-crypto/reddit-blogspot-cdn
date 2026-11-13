@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.24 */
+/* Reddit-style Blogger YouTube post list — v1.0.25 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -40,7 +40,9 @@
   color:inherit !important;
   text-decoration:none !important;
   transition:background-color .12s ease;
+  animation:ytItemIn .25s ease both;
 }
+@keyframes ytItemIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 #ytPosts .yt-item:hover{background:rgba(0,0,0,.05)}
 #ytPosts .yt-thumb{
   position:relative;
