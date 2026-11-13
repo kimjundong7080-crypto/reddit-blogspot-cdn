@@ -33,6 +33,32 @@
   perspective:700px;
   border-radius:8px;
 }
+#ytPosts .yt-viewport:before,
+#ytPosts .yt-viewport:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:22px;
+  z-index:4;
+  pointer-events:none;
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+}
+#ytPosts .yt-viewport:before{
+  top:0;
+  background:linear-gradient(to bottom,rgba(255,255,255,.94),rgba(255,255,255,0));
+}
+#ytPosts .yt-viewport:after{
+  bottom:0;
+  background:linear-gradient(to top,rgba(255,255,255,.94),rgba(255,255,255,0));
+}
+html[data-theme="dark"] #ytPosts .yt-viewport:before{
+  background:linear-gradient(to bottom,rgba(15,17,19,.94),rgba(15,17,19,0));
+}
+html[data-theme="dark"] #ytPosts .yt-viewport:after{
+  background:linear-gradient(to top,rgba(15,17,19,.94),rgba(15,17,19,0));
+}
 #ytPosts .yt-list{
   display:flex;
   flex-direction:column;
@@ -591,14 +617,21 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       list.style.transform='translateY('+(-i*step)+'px)';
     }
 
-    function addEntries(entries){
-      var added=0;
-      for(var i=0;i<entries.length;i++){
-        var a=makeItem(entries[i]);
-        if(a){list.appendChild(a);added++;}
+    function addEntries(entries,cb){
+      var i=0,added=0;
+      function step(){
+        while(i<entries.length){
+          var a=makeItem(entries[i++]);
+          if(!a)continue;
+          list.appendChild(a);added++;
+          measure();
+          setTimeout(step,40);
+          return;
+        }
+        measure();
+        if(cb)cb(added);
       }
-      measure();
-      return added;
+      step();
     }
 
     function loadMore(cb){
@@ -612,10 +645,11 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
           return;
         }
         nextStart+=entries.length;
-        var added=addEntries(entries);
-        if(!added)exhausted=true;
-        loading=false;
-        if(cb)cb();
+        addEntries(entries,function(added){
+          if(!added)exhausted=true;
+          loading=false;
+          if(cb)cb();
+        });
       })['catch'](function(){
         loading=false;
         if(cb)cb();

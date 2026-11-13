@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.43 */
+/* Reddit-style Blogger YouTube post list — v1.0.44 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -182,14 +182,21 @@
       list.style.transform='translateY('+(-i*step)+'px)';
     }
 
-    function addEntries(entries){
-      var added=0;
-      for(var i=0;i<entries.length;i++){
-        var a=makeItem(entries[i]);
-        if(a){list.appendChild(a);added++;}
+    function addEntries(entries,cb){
+      var i=0,added=0;
+      function step(){
+        while(i<entries.length){
+          var a=makeItem(entries[i++]);
+          if(!a)continue;
+          list.appendChild(a);added++;
+          measure();
+          setTimeout(step,40);
+          return;
+        }
+        measure();
+        if(cb)cb(added);
       }
-      measure();
-      return added;
+      step();
     }
 
     function loadMore(cb){
@@ -203,10 +210,11 @@
           return;
         }
         nextStart+=entries.length;
-        var added=addEntries(entries);
-        if(!added)exhausted=true;
-        loading=false;
-        if(cb)cb();
+        addEntries(entries,function(added){
+          if(!added)exhausted=true;
+          loading=false;
+          if(cb)cb();
+        });
       })['catch'](function(){
         loading=false;
         if(cb)cb();
