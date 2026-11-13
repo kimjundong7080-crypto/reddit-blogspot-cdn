@@ -80,6 +80,21 @@ body.rd3-layout .post-title-container{
 body.rd3-layout .post-title-container .post-title{
   margin-top:0 !important;
   margin-bottom:0 !important;
+  display:-webkit-box !important;
+  -webkit-box-orient:vertical !important;
+  -webkit-line-clamp:2 !important;
+  line-clamp:2 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis;
+  text-align:left !important;
+  font-size:20px !important;
+  line-height:1.35 !important;
+  max-height:2.7em;
+}
+@media screen and (max-width:600px){
+  body.rd3-layout .post-title-container .post-title{
+    font-size:18px !important;
+  }
 }
 
 /* 테마의 사이드바 오버레이/햄버거는 3열에서는 사용하지 않음 */
