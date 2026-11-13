@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.47 */
+/* Reddit-style Blogger 3-column layout — v1.0.48 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -57,6 +57,20 @@ body.rd3-layout main#main{
   margin:0 !important;
 }
 body.rd3-layout .Blog{padding-left:0 !important}
+
+/* 상단 헤더 반투명 + 블러 */
+body.rd3-layout .centered-top-container,
+body.rd3-layout .centered-top-container.sticky,
+body.rd3-layout .centered-top-container.animating{
+  background:rgba(255,255,255,.76) !important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);
+  backdrop-filter:blur(12px) saturate(1.1);
+}
+html[data-theme="dark"] body.rd3-layout .centered-top-container,
+html[data-theme="dark"] body.rd3-layout .centered-top-container.sticky,
+html[data-theme="dark"] body.rd3-layout .centered-top-container.animating{
+  background:rgba(15,17,19,.76) !important;
+}
 
 /* 테마의 넓은 화면용 본문 축소 여백 제거 */
 body.rd3-layout .post-body-container{
