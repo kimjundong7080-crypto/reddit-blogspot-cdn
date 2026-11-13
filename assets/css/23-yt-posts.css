@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.78 */
+/* Reddit-style Blogger YouTube post list — v1.0.79 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -704,26 +704,29 @@ html.jt-home-page .jt-hz-viewport{overflow:hidden}
 html.jt-home-page .jt-hz-track{
   --jt-hz-gap:24px;
   display:flex;
-  align-items:flex-start;
+  align-items:stretch;
   gap:var(--jt-hz-gap);
   transition:transform .45s cubic-bezier(.4,0,.2,1);
   will-change:transform;
 }
 html.jt-home-page .jt-hz-card{
-  flex:0 0 calc((100% - 3 * var(--jt-hz-gap)) / 4);
+  flex:1 1 0;
+  min-width:0;
   display:flex;
   flex-direction:column;
   background:var(--jt-card);
   border:1px solid var(--jt-line);
   border-radius:14px;
   overflow:hidden;
-  transition:border-color .2s ease;
+  transition:flex-grow .45s cubic-bezier(.4,0,.2,1),border-color .2s ease;
 }
-html.jt-home-page .jt-hz-card:hover{border-color:var(--jt-accent);transform:translateY(-3px)}
+html.jt-home-page .jt-hz-card:hover{
+  flex-grow:2.4;
+  border-color:var(--jt-accent);
+}
 html.jt-home-page .jt-hz-media{
   position:relative;
-  height:auto;
-  aspect-ratio:3/2;
+  height:300px;
   background:#f4f4f4;
   overflow:hidden;
 }
@@ -740,9 +743,7 @@ html.jt-home-page .jt-hz-title{
 }
 html.jt-home-page .jt-hz-arrow{flex:none;color:currentColor;transition:transform .2s ease}
 html.jt-home-page .jt-hz-card:hover .jt-hz-arrow{transform:translateX(3px)}
-html.jt-home-page .jt-hz-controls{
-  display:flex;justify-content:flex-end;gap:12px;margin-top:28px;
-}
+html.jt-home-page .jt-hz-controls{display:none}
 html.jt-home-page .jt-hz-nav{
   width:44px;height:44px;display:grid;place-items:center;padding:0;
   border:1px solid var(--jt-line);border-radius:50%;
@@ -754,17 +755,23 @@ html.jt-home-page .jt-hz-nav:hover:not(:disabled){
 }
 html.jt-home-page .jt-hz-nav:disabled{opacity:.3;cursor:default}
 html.jt-home-page .jt-hz-nav:focus-visible{outline:2px solid var(--jt-accent);outline-offset:2px}
-@media screen and (max-width:1024px){
-  html.jt-home-page .jt-hz-card{flex-basis:calc((100% - 2 * var(--jt-hz-gap)) / 3)}
+@media screen and (max-width:1100px){
+  html.jt-home-page .jt-hz-track{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  html.jt-home-page .jt-hz-card{flex:none;width:100%}
+  html.jt-home-page .jt-hz-card:hover{flex-grow:0}
+  html.jt-home-page .jt-hz-media{height:220px}
 }
 @media screen and (max-width:768px){
   html.jt-home-page .jt-hz-header{font-size:30px}
-  html.jt-home-page .jt-hz-card{flex-basis:calc((100% - var(--jt-hz-gap)) / 2)}
 }
 @media screen and (max-width:560px){
   html.jt-home-page .jt-hz-features{padding:40px 0 52px}
   html.jt-home-page .jt-hz-header{font-size:26px}
-  html.jt-home-page .jt-hz-card{flex-basis:100%}
+  html.jt-home-page .jt-hz-track{grid-template-columns:1fr}
+  html.jt-home-page .jt-hz-media{height:200px}
 }
 html.jt-home-page .jt-projects{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
