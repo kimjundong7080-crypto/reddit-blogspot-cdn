@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.8 */
+/* Reddit-style Blogger 3-column layout — v1.0.9 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -48,6 +48,15 @@ body.rd3-layout main#main{
   margin:0 !important;
 }
 body.rd3-layout .Blog{padding-left:0 !important}
+
+/* 테마의 넓은 화면용 본문 축소 여백 제거 */
+body.rd3-layout .post-body-container{
+  margin-left:0 !important;
+  margin-right:0 !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+  max-width:none !important;
+}
 
 /* 테마의 사이드바 오버레이/햄버거는 3열에서는 사용하지 않음 */
 body.rd3-layout .hamburger-section,
