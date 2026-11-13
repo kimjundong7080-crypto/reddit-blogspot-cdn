@@ -416,7 +416,7 @@ html.jt-home-page body.rd3-layout .post-title-container{
 /* ===== 1240px 미만: 좌측 아이콘 레일 + 중앙 ===== */
 @media screen and (max-width:1239px) and (min-width:1024px){
   body.rd3-layout .main_content_container{
-    grid-template-columns:160px minmax(0,1fr);
+    grid-template-columns:220px minmax(0,1fr);
     gap:12px;
     max-width:960px !important;
     padding:0 12px !important;
@@ -425,17 +425,17 @@ html.jt-home-page body.rd3-layout .post-title-container{
   body.rd3-layout .main_content_container > .rd3-left{grid-column:1}
   body.rd3-layout .main_content_container > .sidebar-container{display:none !important}
 
-  .rd3-left-inner{padding:2px 8px 10px 0}
+  .rd3-left-inner{padding:8px 10px 14px 0}
   .rd3-title,
   .rd3-left-slot{display:none !important}
   .rd3-nav{gap:3px}
   .rd3-link{
     justify-content:flex-start;
     min-height:40px;
-    padding:0 10px;
-    gap:10px;
-    font-size:13px;
-    border-radius:12px;
+    padding:0 12px;
+    gap:12px;
+    font-size:14px;
+    border-radius:999px;
   }
   .rd3-ico{width:20px;height:20px}
   .rd3-ico svg{width:20px;height:20px}
@@ -450,20 +450,20 @@ html.jt-home-page body.rd3-layout .post-title-container{
 /* ===== 1240px 이상: 글보기 좌측 메뉴를 아이콘 1열로 최소화 ===== */
 @media screen and (min-width:1240px){
   body.rd3-layout .main_content_container{
-    grid-template-columns:160px minmax(0,1fr) 280px !important;
+    grid-template-columns:220px minmax(0,1fr) 280px !important;
     gap:16px !important;
   }
-  .rd3-left-inner{padding:2px 8px 10px 0}
+  .rd3-left-inner{padding:8px 10px 14px 0}
   .rd3-title,
   .rd3-left-slot{display:none !important}
   .rd3-nav{gap:3px}
   .rd3-link{
     justify-content:flex-start;
     min-height:40px;
-    padding:0 10px;
-    gap:10px;
-    font-size:13px;
-    border-radius:12px;
+    padding:0 12px;
+    gap:12px;
+    font-size:14px;
+    border-radius:999px;
   }
   .rd3-ico{width:20px;height:20px}
   .rd3-ico svg{width:20px;height:20px}
@@ -489,11 +489,11 @@ html.jt-home-page body.rd3-layout .post-title-container{
 @media (prefers-reduced-motion:reduce){
   .rd3-link{transition:none}
 }
-/* ===== 좌측 레일 숨김/표시 ===== */
+/* ===== Reddit형 좌측 레일 접기/펼치기 ===== */
 #jtLeftToggle{
   position:fixed;
   top:50%;
-  left:160px;
+  left:220px;
   transform:translateY(-50%);
   z-index:99997;
   width:24px;
@@ -515,34 +515,30 @@ html.jt-home-page body.rd3-layout .post-title-container{
 }
 #jtLeftToggle:hover{background:#fff}
 #jtLeftToggle svg{width:14px;height:14px;transition:transform .25s ease}
-body.jt-left-hidden #jtLeftToggle{left:0}
-body.jt-left-hidden #jtLeftToggle svg{transform:rotate(180deg)}
+body.jt-left-collapsed #jtLeftToggle{left:64px}
+body.jt-left-collapsed #jtLeftToggle svg{transform:rotate(180deg)}
 html[data-theme="dark"] #jtLeftToggle{
   background:rgba(25,29,33,.72);
   color:#f2f3f5;
   border-color:rgba(255,255,255,.16);
 }
-body.jt-left-hidden .rd3-left{display:none !important}
-body.jt-left-hidden.rd3-layout .main_content_container > .page,
-body.jt-left-hidden.rd3-layout .main_content_container > .page #page_body,
-body.jt-left-hidden.rd3-layout .blog-posts.hfeed.container{
-  width:100% !important;
-  max-width:100% !important;
-  min-width:0 !important;
-  box-sizing:border-box !important;
-  grid-column:1 !important;
-}
-body.jt-left-hidden.rd3-layout .main_content_container > .sidebar-container{
-  grid-column:2 !important;
-}
-@media screen and (min-width:1240px){
-  body.jt-left-hidden.rd3-layout .main_content_container{
-    grid-template-columns:minmax(0,1fr) 280px !important;
+@media screen and (min-width:1024px){
+  body.jt-left-collapsed.rd3-layout .main_content_container{
+    grid-template-columns:64px minmax(0,1fr) 280px !important;
+  }
+  body.jt-left-collapsed .rd3-label{display:none !important}
+  body.jt-left-collapsed .rd3-link{
+    justify-content:center;
+    padding:0;
+    gap:0;
+  }
+  body.jt-left-collapsed .rd3-left-inner{
+    padding:2px 6px 10px 0;
   }
 }
 @media screen and (min-width:1024px) and (max-width:1239px){
-  body.jt-left-hidden.rd3-layout .main_content_container{
-    grid-template-columns:minmax(0,1fr) !important;
+  body.jt-left-collapsed.rd3-layout .main_content_container{
+    grid-template-columns:64px minmax(0,1fr) !important;
   }
 }
 @media screen and (max-width:1023px){
@@ -633,19 +629,19 @@ html.jt-home-page #jtLeftToggle{display:none !important}
     leftToggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
     document.body.appendChild(leftToggle);
 
-    var leftKey='jt-left-hidden';
-    function setLeftHidden(hide){
-      document.body.classList.toggle('jt-left-hidden',hide);
-      leftToggle.setAttribute('aria-label',hide?'왼쪽 메뉴 표시':'왼쪽 메뉴 숨기기');
-      leftToggle.title=hide?'왼쪽 메뉴 표시':'왼쪽 메뉴 숨기기';
+    var leftKey='jt-left-collapsed';
+    function setLeftCollapsed(collapsed){
+      document.body.classList.toggle('jt-left-collapsed',collapsed);
+      leftToggle.setAttribute('aria-label',collapsed?'왼쪽 메뉴 펼치기':'왼쪽 메뉴 접기');
+      leftToggle.title=collapsed?'왼쪽 메뉴 펼치기':'왼쪽 메뉴 접기';
     }
-    var leftHidden=false;
-    try{leftHidden=localStorage.getItem(leftKey)==='1';}catch(e){}
-    setLeftHidden(leftHidden);
+    var leftCollapsed=false;
+    try{leftCollapsed=localStorage.getItem(leftKey)==='1';}catch(e){}
+    setLeftCollapsed(leftCollapsed);
     leftToggle.onclick=function(){
-      var hide=!document.body.classList.contains('jt-left-hidden');
-      setLeftHidden(hide);
-      try{localStorage.setItem(leftKey,hide?'1':'0');}catch(e){}
+      var collapsed=!document.body.classList.contains('jt-left-collapsed');
+      setLeftCollapsed(collapsed);
+      try{localStorage.setItem(leftKey,collapsed?'1':'0');}catch(e){}
     };
 
     var right=box.querySelector(':scope > .sidebar-container');
