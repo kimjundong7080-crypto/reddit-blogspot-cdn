@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const version = process.argv[2];
-const git = process.env.GIT_BIN || 'git';
+const git = process.env.GIT_BIN
+  || (fs.existsSync('C:\\Program Files\\Git\\cmd\\git.exe') ? 'C:\\Program Files\\Git\\cmd\\git.exe' : 'git');
 
 if (!version || !/^\d+\.\d+\.\d+$/.test(version)) {
   console.error('Usage: npm run release -- 1.0.5');

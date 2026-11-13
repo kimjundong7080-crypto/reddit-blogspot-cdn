@@ -152,13 +152,13 @@
       var ids=clone.querySelectorAll('[id]');
       for(var k=0;k<ids.length;k++)ids[k].removeAttribute('id');
 
-      /* 이미지 지연 로딩 */
+      /* 이미지 지연 로딩 + 원본 비율 유지 (레이아웃 시프트 방지) */
       var imgs=clone.querySelectorAll('img');
       for(var m=0;m<imgs.length;m++){
-        imgs[m].removeAttribute('width');
-        imgs[m].removeAttribute('height');
         imgs[m].setAttribute('loading','lazy');
         imgs[m].setAttribute('decoding','async');
+        imgs[m].style.maxWidth='100%';
+        imgs[m].style.height='auto';
       }
       return clone;
     }
