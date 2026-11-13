@@ -1,11 +1,13 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.0 */
+/* Reddit-style Blogger post infinite scroll — v1.0.1 (edge API + direct fallback) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
     ahead: 3,        /* 미리 받아둘 다음 글 수 */
     gap:   1000,     /* 하단에서 이 px 이내면 로드 */
     max:   0,        /* 0 = 무한 */
-    feedMax: 500     /* 현재 글을 찾을 최근 피드 수 */
+    feedMax: 500,    /* 현재 글을 찾을 최근 피드 수 */
+    edgeBase: 'https://reddit-blogspot-edge.pages.dev',
+    useEdge: true    /* 실패하면 Blogger 직접 호출로 자동 폴백 */
   };
   /* ============================================================= */
 
@@ -69,8 +71,31 @@
       return clone;
     }
 
+    function edgePath(path){
+      return CFG.edgeBase.replace(/\/$/, '') + path;
+    }
+    function directFeed(){
+      return fetch('/feeds/posts/default?alt=json&max-results='+CFG.feedMax)
+        .then(function(r){if(!r.ok)throw 0;return r.json();});
+    }
+    function fetchFeed(){
+      if(!CFG.useEdge||!CFG.edgeBase)return directFeed();
+      return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
+        .then(function(r){if(!r.ok)throw 0;return r.json();})
+        ['catch'](function(){return directFeed();});
+    }
+    function directPost(u){
+      return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});
+    }
+    function fetchPostText(u){
+      if(!CFG.useEdge||!CFG.edgeBase)return directPost(u);
+      return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
+        .then(function(r){if(!r.ok)throw 0;return r.text();})
+        ['catch'](function(){return directPost(u);});
+    }
+
     function fetchPage(u){
-      return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(html){
+      return fetchPostText(u).then(function(html){
         var doc=new DOMParser().parseFromString(html,'text/html');
         var he=doc.querySelector('.post-outer-container')||doc.querySelector('.post-outer');
         if(!he)return null;
@@ -130,7 +155,7 @@
       })();
     }
 
-    fetch('/feeds/posts/default?alt=json&max-results='+CFG.feedMax).then(function(r){return r.json();}).then(function(d){
+    fetchFeed().then(function(d){
       var en=(d.feed&&d.feed.entry)||[],i;
       var urls=[];
       for(i=0;i<en.length;i++){

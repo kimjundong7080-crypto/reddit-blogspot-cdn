@@ -24,11 +24,11 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 <link rel="stylesheet"
   href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.0/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.0/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.1/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.0.0`처럼 버전을 고정하세요. 수정 시 새 태그(`v1.0.1`)를 발행합니다.
+> `@main` 대신 `@v1.0.0`처럼 버전을 고정하세요. 11번은 **v1.0.1**부터 Cloudflare Edge API를 사용합니다.
 
 ## Blogger 설치
 
@@ -42,3 +42,4 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 - 11: 현재 글의 `.post-outer-container` 뒤에 다음 글을 복제 삽입. 댓글/스크립트/iframe/광고/중복 id 제거.
 - 11: 이미지 본문만 있는 글도 정상 글로 인정.
 - 11: 같은 카테고리 우선 → 없으면 랜덤 → 반복.
+- 11 v1.0.1: `https://reddit-blogspot-edge.pages.dev`의 `/api/blogger-feed`·`/api/blogger-post`를 먼저 사용하고, 실패하면 Blogger 직접 호출로 폴백합니다.
