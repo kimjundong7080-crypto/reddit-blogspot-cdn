@@ -378,6 +378,17 @@ html.jt-home-page .jt-hero-sub{
   font-size:clamp(12px,1.3vw,16px);
   color:rgba(255,255,255,.86);
 }
+
+/* 추천 글 사이드바 스크롤바 숨김 */
+body.rd3-layout .sidebar-container{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+body.rd3-layout .sidebar-container::-webkit-scrollbar{
+  width:0;
+  height:0;
+  display:none;
+}
 </style>
 <script>
 //<![CDATA[
@@ -557,7 +568,7 @@ html.jt-home-page .jt-hero-sub{
     }
 
     function renderNext(){
-      while(pending.length){
+      while(pending.length&&total<12){
         var a=makeItem(pending.shift());
         if(!a)continue;
         list.appendChild(a);
@@ -566,10 +577,10 @@ html.jt-home-page .jt-hero-sub{
         setTimeout(renderNext,35);
         return;
       }
+      if(total>=12){pending=[];finished=true;}
       loading=false;
       more.classList.remove('on');
-      if(total===batchStart&&!total)finished=true;
-      if(finished)end.style.display='block';
+      end.style.display='none';
     }
 
     function loadMore(){
@@ -577,16 +588,14 @@ html.jt-home-page .jt-hero-sub{
       loading=true;
       more.classList.add('on');
       end.style.display='none';
-      fetchFeed(nextStart,12).then(function(data){
+      fetchFeed(nextStart,20).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           finished=true;loading=false;
           more.classList.remove('on');
-          end.style.display='block';
           return;
         }
         nextStart+=entries.length;
-        if(entries.length<12)finished=true;
         batchStart=total;
         pending=pending.concat(entries);
         renderNext();
@@ -598,14 +607,6 @@ html.jt-home-page .jt-hero-sub{
       });
     }
 
-    var scroller=root.closest('.sidebar-container')||root.parentElement;
-    function nearBottom(){
-      if(!scroller)return true;
-      return scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-220;
-    }
-    function onScroll(){if(nearBottom())loadMore();}
-    if(scroller)scroller.addEventListener('scroll',onScroll,{passive:true});
-    root.addEventListener('wheel',function(e){if(e.deltaY>0)setTimeout(onScroll,0);},{passive:true});
     loadMore();
   });
 })();

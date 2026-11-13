@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.34 */
+/* Reddit-style Blogger YouTube post list — v1.0.35 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -377,4 +377,15 @@ html.jt-home-page .jt-hero-sub{
   margin:8px 0 0;
   font-size:clamp(12px,1.3vw,16px);
   color:rgba(255,255,255,.86);
+}
+
+/* 추천 글 사이드바 스크롤바 숨김 */
+body.rd3-layout .sidebar-container{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+body.rd3-layout .sidebar-container::-webkit-scrollbar{
+  width:0;
+  height:0;
+  display:none;
 }

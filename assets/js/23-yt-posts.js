@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.34 */
+/* Reddit-style Blogger YouTube post list — v1.0.35 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -175,7 +175,7 @@
     }
 
     function renderNext(){
-      while(pending.length){
+      while(pending.length&&total<12){
         var a=makeItem(pending.shift());
         if(!a)continue;
         list.appendChild(a);
@@ -184,10 +184,10 @@
         setTimeout(renderNext,35);
         return;
       }
+      if(total>=12){pending=[];finished=true;}
       loading=false;
       more.classList.remove('on');
-      if(total===batchStart&&!total)finished=true;
-      if(finished)end.style.display='block';
+      end.style.display='none';
     }
 
     function loadMore(){
@@ -195,16 +195,14 @@
       loading=true;
       more.classList.add('on');
       end.style.display='none';
-      fetchFeed(nextStart,12).then(function(data){
+      fetchFeed(nextStart,20).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           finished=true;loading=false;
           more.classList.remove('on');
-          end.style.display='block';
           return;
         }
         nextStart+=entries.length;
-        if(entries.length<12)finished=true;
         batchStart=total;
         pending=pending.concat(entries);
         renderNext();
@@ -216,14 +214,6 @@
       });
     }
 
-    var scroller=root.closest('.sidebar-container')||root.parentElement;
-    function nearBottom(){
-      if(!scroller)return true;
-      return scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-220;
-    }
-    function onScroll(){if(nearBottom())loadMore();}
-    if(scroller)scroller.addEventListener('scroll',onScroll,{passive:true});
-    root.addEventListener('wheel',function(e){if(e.deltaY>0)setTimeout(onScroll,0);},{passive:true});
     loadMore();
   });
 })();
