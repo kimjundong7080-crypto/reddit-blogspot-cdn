@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.49 */
+/* Reddit-style Blogger 3-column layout — v1.0.50 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -486,3 +486,51 @@ html.jt-home-page body.rd3-layout .post-title-container{
 @media (prefers-reduced-motion:reduce){
   .rd3-link{transition:none}
 }
+/* ===== 좌측 레일 숨김/표시 ===== */
+#jtLeftToggle{
+  position:fixed;
+  top:50%;
+  left:64px;
+  transform:translateY(-50%);
+  z-index:99997;
+  width:24px;
+  height:48px;
+  padding:0;
+  border:1px solid rgba(0,0,0,.12);
+  border-left:0;
+  border-radius:0 10px 10px 0;
+  background:rgba(255,255,255,.74);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  color:#292929;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:left .25s ease,background-color .15s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#jtLeftToggle:hover{background:#fff}
+#jtLeftToggle svg{width:14px;height:14px;transition:transform .25s ease}
+body.jt-left-hidden #jtLeftToggle{left:0}
+body.jt-left-hidden #jtLeftToggle svg{transform:rotate(180deg)}
+html[data-theme="dark"] #jtLeftToggle{
+  background:rgba(25,29,33,.72);
+  color:#f2f3f5;
+  border-color:rgba(255,255,255,.16);
+}
+body.jt-left-hidden .rd3-left{display:none !important}
+@media screen and (min-width:1240px){
+  body.jt-left-hidden.rd3-layout .main_content_container{
+    grid-template-columns:minmax(0,1fr) 280px !important;
+  }
+}
+@media screen and (min-width:1024px) and (max-width:1239px){
+  body.jt-left-hidden.rd3-layout .main_content_container{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+@media screen and (max-width:1023px){
+  #jtLeftToggle{display:none !important}
+}
+html.jt-home-page #jtLeftToggle{display:none !important}

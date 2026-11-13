@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.49 */
+/* Reddit-style Blogger 3-column layout — v1.0.50 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -73,6 +73,27 @@
       +'<div class="rd3-left-slot" id="rd3-left-slot"></div>'
       +'</div>';
     box.insertBefore(left,box.firstChild);
+
+    var leftToggle=document.createElement('button');
+    leftToggle.type='button';
+    leftToggle.id='jtLeftToggle';
+    leftToggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+    document.body.appendChild(leftToggle);
+
+    var leftKey='jt-left-hidden';
+    function setLeftHidden(hide){
+      document.body.classList.toggle('jt-left-hidden',hide);
+      leftToggle.setAttribute('aria-label',hide?'왼쪽 메뉴 표시':'왼쪽 메뉴 숨기기');
+      leftToggle.title=hide?'왼쪽 메뉴 표시':'왼쪽 메뉴 숨기기';
+    }
+    var leftHidden=false;
+    try{leftHidden=localStorage.getItem(leftKey)==='1';}catch(e){}
+    setLeftHidden(leftHidden);
+    leftToggle.onclick=function(){
+      var hide=!document.body.classList.contains('jt-left-hidden');
+      setLeftHidden(hide);
+      try{localStorage.setItem(leftKey,hide?'1':'0');}catch(e){}
+    };
 
     var right=box.querySelector(':scope > .sidebar-container');
     if(right){
