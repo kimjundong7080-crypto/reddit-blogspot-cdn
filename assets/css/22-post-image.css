@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post image — v1.0.13 */
+/* Reddit-style Blogger post image — v1.0.14 */
 /* 22 post image: center, full width, border (all images inside post body) */
 body.item-view .post-body-container > .post-body.entry-content > .separator,
 body.item-view .post-body-container > .post-body.entry-content > .separator > a{
@@ -32,4 +32,13 @@ body.item-view .post-body-container > .post-body.entry-content img{
     border-color:rgba(255,255,255,.22) !important;
     background:#111;
   }
+}
+
+/* 이미지 클릭 시 원본 확대/이동 비활성화 */
+body.item-view .post-body-container > .post-body.entry-content a[href*="blogger.googleusercontent.com"]{
+  pointer-events:none !important;
+  cursor:default !important;
+}
+body.item-view .post-body-container > .post-body.entry-content img{
+  cursor:default !important;
 }

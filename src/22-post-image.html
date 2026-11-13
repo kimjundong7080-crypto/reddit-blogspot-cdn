@@ -33,4 +33,13 @@ body.item-view .post-body-container > .post-body.entry-content img{
     background:#111;
   }
 }
+
+/* 이미지 클릭 시 원본 확대/이동 비활성화 */
+body.item-view .post-body-container > .post-body.entry-content a[href*="blogger.googleusercontent.com"]{
+  pointer-events:none !important;
+  cursor:default !important;
+}
+body.item-view .post-body-container > .post-body.entry-content img{
+  cursor:default !important;
+}
 </style>
