@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.62 */
+/* Reddit-style Blogger YouTube post list — v1.0.63 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -126,6 +126,9 @@
     document.body.classList.add('jt-landing-page');
     var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=80';
     var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
+    var feature='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">3D 설비 설계 <span>→</span></span></a>';
+    var feature2='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">자동화 라인 <span>→</span></span></a>';
+    var feature3='<a class="jt-feature-card" href="/search"><img alt="" loading="lazy" decoding="async"><span class="jt-feature-play">▶</span><span class="jt-feature-label">검사 시스템 <span>→</span></span></a>';
     var landing=document.createElement('div');
     landing.className='jt-landing';
     landing.innerHTML=
@@ -149,6 +152,7 @@
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 3.5-3.5"/></svg></span><h3>검사 장비</h3><p>비전·치수·외관 검사 자동화.</p></div>'
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 8 8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8M12 12v8"/></svg></span><h3>포장 자동화</h3><p>포장·라벨링·이송 시스템.</p></div>'
       +'</div></section>'
+      +'<section class="jt-landing-section jt-features" id="jt-features"><p class="jt-eyebrow">FEATURES</p><h2>Smarter Automation, <em>Stronger Business.</em></h2><div class="jt-feature-row">'+feature+feature2+feature3+'</div></section>'
       +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
       +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+'</div></section>'
       +'<section class="jt-landing-section" id="jt-about"><div class="jt-section-head"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는 자동화 파트너</h2></div><a href="/search">기술 자료 →</a></div>'
@@ -181,6 +185,20 @@
             img.style.display='block';
             img.onerror=function(){this.style.display='none';};
             img.src=thumb;
+          }
+        }
+      }
+      var fcards=document.querySelectorAll('.jt-feature-card');
+      for(var j=0;j<fcards.length&&entries.length;j++){
+        var fe=entries[(j+3)%entries.length];
+        var fthumb=fe.media$thumbnail&&fe.media$thumbnail.url||'';
+        if(fthumb){
+          fthumb=fthumb.replace(/\/s\d+(-c)?\//,'/w600-h400-c/');
+          var fimg=fcards[j].querySelector('img');
+          if(fimg){
+            fimg.style.display='block';
+            fimg.onerror=function(){this.style.display='none';};
+            fimg.src=fthumb;
           }
         }
       }
