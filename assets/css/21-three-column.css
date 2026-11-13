@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.9 */
+/* Reddit-style Blogger 3-column layout — v1.0.10 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -55,6 +55,11 @@ body.rd3-layout .post-body-container{
   margin-right:0 !important;
   padding-left:0 !important;
   padding-right:0 !important;
+  max-width:none !important;
+}
+body.rd3-layout .post-body.entry-content{
+  margin-left:0 !important;
+  margin-right:0 !important;
   max-width:none !important;
 }
 
