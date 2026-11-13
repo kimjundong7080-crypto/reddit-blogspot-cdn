@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.82 */
+/* Reddit-style Blogger YouTube post list — v1.0.83 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -1157,6 +1157,7 @@ html.jt-home-page .jt-about-link{
 html.jt-home-page .jt-cta{
   position:relative;
   overflow:hidden;
+  margin:18px auto clamp(48px,6vw,80px);
   border-radius:22px;
   background:linear-gradient(135deg,#1f7a5c,#155c47 62%,#103f32);
   box-shadow:0 24px 54px rgba(20,32,27,.18);
@@ -1249,7 +1250,7 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
 @media screen and (max-width:600px){
   html.jt-home-page .jt-home-footer-inner{grid-template-columns:1fr;gap:18px}
   html.jt-home-page .jt-trust span{font-size:10px}
-  html.jt-home-page .jt-cta{padding:24px 20px}
+  html.jt-home-page .jt-cta{padding:24px 20px;margin-bottom:36px}
 }
 
 /* 추천 글 사이드바 스크롤바 숨김 */
