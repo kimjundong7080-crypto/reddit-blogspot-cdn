@@ -91,6 +91,10 @@
 }
 
 /* 세로로 긴 추가 글 접기/펼치기 */
+#jtInfiniteFeed .jt-inf-post .post-outer{
+  display:block !important;
+  flex-direction:column !important;
+}
 #jtInfiniteFeed .jt-inf-post .post-content.jt-foldable{
   position:relative;
   max-height:720px;
@@ -112,7 +116,10 @@
 }
 #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn{
   display:block;
-  margin:14px auto 4px;
+  width:max-content;
+  position:relative;
+  z-index:2;
+  margin:16px auto 4px;
   padding:0 20px;
   height:38px;
   border:1px solid rgba(0,0,0,.18);
