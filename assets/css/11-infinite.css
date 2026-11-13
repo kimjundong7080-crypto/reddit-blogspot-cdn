@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.59 */
+/* Reddit-style Blogger post infinite scroll — v1.0.60 */
 #jtInfiniteFeed{
   width:100%;
   max-width:100%;
@@ -79,4 +79,54 @@
     margin-left:-16px !important;
     margin-right:-16px !important;
   }
+}
+
+/* 세로로 긴 추가 글 접기/펼치기 */
+#jtInfiniteFeed .jt-inf-post .post-content.jt-foldable{
+  position:relative;
+  max-height:720px;
+  overflow:hidden;
+}
+#jtInfiniteFeed .jt-inf-post .post-content.jt-foldable:not(.jt-expanded):after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:110px;
+  pointer-events:none;
+  background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 85%);
+}
+#jtInfiniteFeed .jt-inf-post .post-content.jt-expanded{
+  max-height:none;
+  overflow:visible;
+}
+#jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn{
+  display:block;
+  margin:14px auto 4px;
+  padding:0 20px;
+  height:38px;
+  border:1px solid rgba(0,0,0,.18);
+  border-radius:999px;
+  background:transparent;
+  color:#292929;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+#jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
+  border-color:#FF4500;
+  color:#FF4500;
+}
+html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .post-content.jt-foldable:not(.jt-expanded):after{
+  background:linear-gradient(to bottom,rgba(15,17,19,0),#0f1113 85%);
+}
+html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn{
+  border-color:rgba(255,255,255,.22);
+  color:#e6e8eb;
+}
+html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
+  border-color:#FF4500;
+  color:#FF4500;
 }
