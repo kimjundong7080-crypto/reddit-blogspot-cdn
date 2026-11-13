@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.21 */
+/* Reddit-style Blogger YouTube post list — v1.0.22 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -243,3 +243,52 @@ html[data-theme="dark"] #ytPosts .yt-thumb:before{
   background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,0) 70%);
 }
 html[data-theme="dark"] #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#252a31,#343b45)}
+
+/* ===== Bottom-center quick nav ===== */
+#jtQuickNav{
+  position:fixed;
+  left:50%;
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  z-index:99998;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:5px;
+  border:1px solid rgba(255,255,255,.45);
+  border-radius:999px;
+  background:rgba(255,255,255,.58);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  backdrop-filter:blur(14px) saturate(1.2);
+  box-shadow:0 8px 26px rgba(0,0,0,.18);
+}
+#jtQuickNav .jt-qn-btn{
+  width:36px;
+  height:36px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#292929;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  text-decoration:none !important;
+  transition:background-color .15s ease,opacity .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#jtQuickNav .jt-qn-btn:hover{background:rgba(0,0,0,.08)}
+#jtQuickNav .jt-qn-btn svg{width:19px;height:19px;display:block}
+#jtQuickNav .jt-qn-btn.is-dim{opacity:.45}
+html[data-theme="dark"] #jtQuickNav{
+  background:rgba(25,29,33,.62);
+  border-color:rgba(255,255,255,.16);
+  box-shadow:0 8px 26px rgba(0,0,0,.4);
+}
+html[data-theme="dark"] #jtQuickNav .jt-qn-btn{color:#f2f3f5}
+html[data-theme="dark"] #jtQuickNav .jt-qn-btn:hover{background:rgba(255,255,255,.12)}
+@media screen and (max-width:600px){
+  #jtQuickNav{bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:4px}
+  #jtQuickNav .jt-qn-btn{width:34px;height:34px}
+}

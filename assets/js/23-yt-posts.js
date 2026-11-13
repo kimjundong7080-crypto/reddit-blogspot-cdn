@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.21 */
+/* Reddit-style Blogger YouTube post list — v1.0.22 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -39,6 +39,35 @@
     };
     apply(mode);
   }
+  function initQuickNav(){
+    if(document.getElementById('jtQuickNav'))return;
+    var nav=document.createElement('nav');
+    nav.id='jtQuickNav';
+    nav.setAttribute('aria-label','빠른 이동');
+    var home=document.createElement('a');
+    home.className='jt-qn-btn';
+    home.href='/';
+    home.title='홈';
+    home.setAttribute('aria-label','홈');
+    home.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>';
+    var top=document.createElement('button');
+    top.type='button';
+    top.className='jt-qn-btn';
+    top.title='맨 위로';
+    top.setAttribute('aria-label','맨 위로');
+    top.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
+    function sync(){
+      if(window.scrollY<180){top.classList.add('is-dim');}else{top.classList.remove('is-dim');}
+    }
+    top.onclick=function(){
+      var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    };
+    nav.appendChild(home);nav.appendChild(top);
+    document.body.appendChild(nav);
+    window.addEventListener('scroll',sync,{passive:true});
+    sync();
+  }
   function fetchFeed(){
     return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
@@ -49,6 +78,7 @@
   }
   ready(function(){
     initTheme();
+    initQuickNav();
     var root=document.getElementById('ytPosts');
     if(!root)return;
     var head=el('div','yt-head');
