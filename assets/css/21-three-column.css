@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.28 */
+/* Reddit-style Blogger 3-column layout — v1.0.29 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -327,6 +327,12 @@ html.jt-home-page body.rd3-layout .post-body-container{
   padding-left:0 !important;
   padding-right:0 !important;
   max-width:none !important;
+}
+html.jt-home-page body.rd3-layout .centered-top-container .centered-top{
+  display:none !important;
+}
+html.jt-home-page body.rd3-layout .post-title-container{
+  display:none !important;
 }
 
 /* ===== 1240px 미만: 좌측 아이콘 레일 + 중앙 ===== */
