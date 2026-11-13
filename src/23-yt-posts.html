@@ -28,7 +28,7 @@
 }
 #ytPosts .yt-viewport{
   position:relative;
-  height:718px;
+  height:922px;
   overflow:hidden;
   perspective:700px;
   border-radius:8px;
@@ -39,25 +39,23 @@
   position:absolute;
   left:0;
   right:0;
-  height:22px;
+  height:38px;
   z-index:4;
   pointer-events:none;
-  -webkit-backdrop-filter:blur(5px);
-  backdrop-filter:blur(5px);
 }
 #ytPosts .yt-viewport:before{
   top:0;
-  background:linear-gradient(to bottom,rgba(255,255,255,.94),rgba(255,255,255,0));
+  background:linear-gradient(to bottom,rgba(255,255,255,1),rgba(255,255,255,0));
 }
 #ytPosts .yt-viewport:after{
   bottom:0;
-  background:linear-gradient(to top,rgba(255,255,255,.94),rgba(255,255,255,0));
+  background:linear-gradient(to top,rgba(255,255,255,1),rgba(255,255,255,0));
 }
 html[data-theme="dark"] #ytPosts .yt-viewport:before{
-  background:linear-gradient(to bottom,rgba(15,17,19,.94),rgba(15,17,19,0));
+  background:linear-gradient(to bottom,rgba(15,17,19,1),rgba(15,17,19,0));
 }
 html[data-theme="dark"] #ytPosts .yt-viewport:after{
-  background:linear-gradient(to top,rgba(15,17,19,.94),rgba(15,17,19,0));
+  background:linear-gradient(to top,rgba(15,17,19,1),rgba(15,17,19,0));
 }
 #ytPosts .yt-list{
   display:flex;
@@ -71,10 +69,10 @@ html[data-theme="dark"] #ytPosts .yt-viewport:after{
   display:flex;
   align-items:flex-start;
   gap:9px;
-  height:70px;
-  flex:0 0 70px;
+  height:64px;
+  flex:0 0 64px;
   box-sizing:border-box;
-  padding:7px 6px;
+  padding:5px 6px;
   border-radius:8px;
   color:inherit !important;
   text-decoration:none !important;
@@ -600,7 +598,7 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     viewport.appendChild(list);
     root.appendChild(viewport);
 
-    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=72,visible=10;
+    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=14;
 
     function makeItem(e){
       var links=e.link||[],href='';
@@ -676,7 +674,7 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     function loadMore(cb){
       if(loading||exhausted){if(cb)cb();return;}
       loading=true;
-      fetchFeed(nextStart,12).then(function(data){
+      fetchFeed(nextStart,20).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           exhausted=true;loading=false;
