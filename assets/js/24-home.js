@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.0.95 */
+/* Reddit-style Blogger home landing — v1.0.96 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -91,7 +91,7 @@
       +'</div></section>'
       +hzSection
       +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
-      +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+'</div></section>'
+      +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+card+'</div></section>'
       +'<section class="jt-landing-section jt-about" id="jt-about"><div class="jt-about-grid"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는<br>자동화 파트너</h2></div><div><p class="jt-about-copy">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p><a class="jt-about-link" href="/search">기술 자료 살펴보기 →</a></div></div></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
@@ -212,7 +212,7 @@
     if(!grid)return;
     fetchHomeFeed(1,6).then(function(data){
       var entries=(data.feed&&data.feed.entry)||[];
-      for(var i=0;i<entries.length&&i<3;i++){
+      for(var i=0;i<entries.length&&i<4;i++){
         var e=entries[i],card=grid.children[i];
         if(!card)continue;
         var links=e.link||[],href='';
