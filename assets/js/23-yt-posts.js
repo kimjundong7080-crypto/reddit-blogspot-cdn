@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.77 */
+/* Reddit-style Blogger YouTube post list — v1.0.78 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -139,8 +139,7 @@
     var landing=document.createElement('div');
     landing.className='jt-landing';
     landing.innerHTML=
-      '<iframe class="jt-home-hero-frame" data-hero-src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.0.67/assets/html/home-hero.html" title="Your shortcut to everything" loading="eager" scrolling="no"></iframe>'
-      +'<nav class="jt-landing-nav">'
+      '<nav class="jt-landing-nav">'
       +'<a class="jt-landing-brand" href="/p/home.html"><span class="jt-brand-mark">JT</span><span>JUST TECH<small>INDUSTRIAL AUTOMATION</small></span></a>'
       +'<div class="jt-landing-navlinks"><a href="#jt-services">서비스</a><a href="#jt-projects">프로젝트</a><a href="#jt-about">소개</a></div>'
       +'<a class="jt-landing-cta" href="mailto:qwe6973@proton.me">프로젝트 문의</a>'
@@ -167,7 +166,6 @@
       +'<p class="jt-lead" style="max-width:760px">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
-    initTopHeroFrame();
     requestAnimationFrame(function(){initFeatureCarousel();});
     setTimeout(loadLandingProjects,500);
   }
