@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.1.4 */
+/* Reddit-style Blogger 3-column layout — v1.1.5 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -550,4 +550,44 @@ html.jt-home-page #jtLeftToggle{display:none !important}
   clip:rect(0,0,0,0) !important;
   white-space:nowrap !important;
   border:0 !important;
+}
+/* 헤더 마퀴 */
+.jt-header-marquee{
+  flex:0 0 100%;
+  order:99;
+  width:100%;
+  height:26px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border-top:1px solid rgba(20,32,27,.08);
+  background:rgba(31,122,92,.04);
+  color:#4b5a53;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.12em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.jt-header-marquee-track{
+  display:flex;
+  flex-shrink:0;
+  min-width:max-content;
+  animation:jtHeaderMarquee 28s linear infinite;
+}
+.jt-header-marquee-track span{
+  display:block;
+  padding-right:64px;
+}
+@keyframes jtHeaderMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+html[data-theme="dark"] .jt-header-marquee{
+  border-top-color:rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.62);
+}
+@media (prefers-reduced-motion:reduce){
+  .jt-header-marquee-track{animation:none}
 }

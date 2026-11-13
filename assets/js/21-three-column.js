@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.1.4 */
+/* Reddit-style Blogger 3-column layout — v1.1.5 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -37,7 +37,20 @@
     return out;
   }
 
+  function initHeaderMarquee(){
+    if(location.pathname==='/p/home.html')return;
+    var header=document.querySelector('.centered-top-container');
+    if(!header||header.querySelector('.jt-header-marquee'))return;
+    var text='JUST TECH — 산업 자동화 · 로봇 · 조립 · 검사 · 포장 · 설비 기술 자료';
+    var marquee=document.createElement('div');
+    marquee.className='jt-header-marquee';
+    marquee.setAttribute('aria-hidden','true');
+    marquee.innerHTML='<div class="jt-header-marquee-track"><span>'+text+'</span><span>'+text+'</span></div>';
+    header.appendChild(marquee);
+  }
+
   ready(function(){
+    initHeaderMarquee();
     var box=document.querySelector('.main_content_container');
     if(!box||document.getElementById('rd3Left'))return;
     document.body.classList.add('rd3-layout');

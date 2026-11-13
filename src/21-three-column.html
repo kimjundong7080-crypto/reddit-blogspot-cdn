@@ -560,6 +560,46 @@ html.jt-home-page #jtLeftToggle{display:none !important}
   white-space:nowrap !important;
   border:0 !important;
 }
+/* 헤더 마퀴 */
+.jt-header-marquee{
+  flex:0 0 100%;
+  order:99;
+  width:100%;
+  height:26px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border-top:1px solid rgba(20,32,27,.08);
+  background:rgba(31,122,92,.04);
+  color:#4b5a53;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.12em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.jt-header-marquee-track{
+  display:flex;
+  flex-shrink:0;
+  min-width:max-content;
+  animation:jtHeaderMarquee 28s linear infinite;
+}
+.jt-header-marquee-track span{
+  display:block;
+  padding-right:64px;
+}
+@keyframes jtHeaderMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+html[data-theme="dark"] .jt-header-marquee{
+  border-top-color:rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.62);
+}
+@media (prefers-reduced-motion:reduce){
+  .jt-header-marquee-track{animation:none}
+}
 </style>
 <script>
 //<![CDATA[
@@ -601,7 +641,20 @@ html.jt-home-page #jtLeftToggle{display:none !important}
     return out;
   }
 
+  function initHeaderMarquee(){
+    if(location.pathname==='/p/home.html')return;
+    var header=document.querySelector('.centered-top-container');
+    if(!header||header.querySelector('.jt-header-marquee'))return;
+    var text='JUST TECH — 산업 자동화 · 로봇 · 조립 · 검사 · 포장 · 설비 기술 자료';
+    var marquee=document.createElement('div');
+    marquee.className='jt-header-marquee';
+    marquee.setAttribute('aria-hidden','true');
+    marquee.innerHTML='<div class="jt-header-marquee-track"><span>'+text+'</span><span>'+text+'</span></div>';
+    header.appendChild(marquee);
+  }
+
   ready(function(){
+    initHeaderMarquee();
     var box=document.querySelector('.main_content_container');
     if(!box||document.getElementById('rd3Left'))return;
     document.body.classList.add('rd3-layout');
