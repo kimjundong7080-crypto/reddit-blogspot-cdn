@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.1.6 */
+/* Reddit-style Blogger home landing — v1.1.7 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
