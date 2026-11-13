@@ -12,6 +12,23 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 | `assets/css/11-infinite.css` | 글보기 무한 스크롤 로더/구분선 |
 | `assets/js/11-infinite.js` | 다음 글 자동 로드 (휠/스크롤/IntersectionObserver) |
 
+## 소스와 빌드
+
+`assets/`는 직접 수정하지 않습니다. 아래 위젯 HTML에서 `<style>`·`<script>`를 추출해 생성합니다.
+
+| Source | Generated |
+|---|---|
+| `src/21-three-column.html` | `assets/css/21-three-column.css`, `assets/js/21-three-column.js` |
+| `src/11-infinite.html` | `assets/css/11-infinite.css`, `assets/js/11-infinite.js` |
+
+```bash
+npm run build                  # package.json 버전으로 생성
+npm run check                  # 생성물이 최신인지 검사
+npm run release -- 1.0.5       # 빌드 + 커밋 + 태그 + push
+```
+
+릴리스 태그는 `v1.0.5` 형식입니다. GitHub Actions(`.github/workflows/verify.yml`)가 push/PR마다 생성물이 소스와 일치하는지 검사합니다.
+
 ## jsDelivr (version pin)
 
 ```html

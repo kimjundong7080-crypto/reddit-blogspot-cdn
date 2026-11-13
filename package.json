@@ -1,0 +1,12 @@
+{
+  "name": "reddit-blogspot-cdn",
+  "version": "1.0.4",
+  "private": true,
+  "type": "module",
+  "description": "Version-pinned CSS/JS assets for the Reddit-style Blogger theme",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "release": "node scripts/release.mjs"
+  }
+}
