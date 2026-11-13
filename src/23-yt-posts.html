@@ -647,9 +647,9 @@ html.jt-home-page .jt-home-hero-frame{
   display:block;
   width:100vw;
   max-width:100vw;
-  height:100svh;
-  min-height:620px;
-  max-height:1100px;
+  height:clamp(160px,20vh,220px);
+  min-height:0;
+  max-height:220px;
   margin-left:calc(50% - 50vw);
   margin-right:0;
   border:0;
@@ -1061,7 +1061,10 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       if(!r.ok)throw 0;
       return r.text();
     }).then(function(html){
-      if(html&&html.indexOf('<style')>=0)frame.srcdoc=html;
+      if(html&&html.indexOf('<style')>=0){
+        html=html.replace('</head>','<style>html,body{height:100%;overflow:hidden}.hero{min-height:100%!important;padding:18px 24px!important}.hero__title{font-size:clamp(1.6rem,3vw,2.4rem)!important;margin-bottom:6px!important}.hero__subtitle{font-size:clamp(.8rem,1.1vw,1rem)!important;line-height:1.45!important}</style></head>');
+        frame.srcdoc=html;
+      }
     })['catch'](function(){});
   }
   function initFeatureCarousel(){

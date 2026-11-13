@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.71 */
+/* Reddit-style Blogger YouTube post list — v1.0.72 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -181,7 +181,10 @@
       if(!r.ok)throw 0;
       return r.text();
     }).then(function(html){
-      if(html&&html.indexOf('<style')>=0)frame.srcdoc=html;
+      if(html&&html.indexOf('<style')>=0){
+        html=html.replace('</head>','<style>html,body{height:100%;overflow:hidden}.hero{min-height:100%!important;padding:18px 24px!important}.hero__title{font-size:clamp(1.6rem,3vw,2.4rem)!important;margin-bottom:6px!important}.hero__subtitle{font-size:clamp(.8rem,1.1vw,1rem)!important;line-height:1.45!important}</style></head>');
+        frame.srcdoc=html;
+      }
     })['catch'](function(){});
   }
   function initFeatureCarousel(){
