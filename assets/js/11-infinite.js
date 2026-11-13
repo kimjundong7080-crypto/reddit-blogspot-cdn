@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.1 (edge API + direct fallback) */
+/* Reddit-style Blogger post infinite scroll — v1.0.2 (Git-connected edge API + direct fallback) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -6,7 +6,7 @@
     gap:   1000,     /* 하단에서 이 px 이내면 로드 */
     max:   0,        /* 0 = 무한 */
     feedMax: 500,    /* 현재 글을 찾을 최근 피드 수 */
-    edgeBase: 'https://reddit-blogspot-edge.pages.dev',
+    edgeBase: 'https://reddit-blogspot-edge-git.pages.dev',
     useEdge: true    /* 실패하면 Blogger 직접 호출로 자동 폴백 */
   };
   /* ============================================================= */
