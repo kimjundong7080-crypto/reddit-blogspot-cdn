@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.74 */
+/* Reddit-style Blogger YouTube post list — v1.0.75 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -719,16 +719,13 @@ html.jt-home-page .jt-hz-card{
   overflow:hidden;
   transition:border-color .2s ease;
 }
-html.jt-home-page .jt-hz-card:hover{border-color:var(--jt-accent)}
+html.jt-home-page .jt-hz-card:hover{border-color:var(--jt-accent);transform:translateY(-3px)}
 html.jt-home-page .jt-hz-media{
   position:relative;
-  height:clamp(118px,12vw,145px);
+  height:auto;
+  aspect-ratio:3/2;
   background:#f4f4f4;
   overflow:hidden;
-  transition:height .32s cubic-bezier(.4,0,.2,1);
-}
-html.jt-home-page .jt-hz-card:hover .jt-hz-media{
-  height:clamp(170px,18vw,205px);
 }
 html.jt-home-page .jt-hz-video{
   display:block;width:100%;height:100%;object-fit:cover;
