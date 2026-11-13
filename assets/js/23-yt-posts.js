@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.32 */
+/* Reddit-style Blogger YouTube post list — v1.0.33 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -89,6 +89,17 @@
     feed.__jtLazyObs=1;
     new MutationObserver(function(){lazyPostImages(feed);}).observe(feed,{childList:true,subtree:true});
   }
+  function initHomeHero(){
+    if(document.querySelector('.jt-hero'))return;
+    var body=document.querySelector('.post-body');
+    if(!body)return;
+    var id='lyFcrrULyN0';
+    var hero=document.createElement('div');
+    hero.className='jt-hero';
+    hero.innerHTML='<div class="jt-hero-media"><iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&controls=0&modestbranding=1&playsinline=1&rel=0" title="JUST TECH 히어로 영상" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+      +'<div class="jt-hero-copy"><p class="jt-hero-kicker">JUST TECH</p><h2 class="jt-hero-title">산업 자동화 기술 아카이브</h2><p class="jt-hero-sub">로봇·설비·자동화 현장을 기록합니다.</p></div>';
+    body.insertBefore(hero,body.firstChild);
+  }
   function fetchFeed(){
     return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
@@ -100,6 +111,7 @@
   ready(function(){
     initTheme();
     initQuickNav();
+    if(location.pathname==='/p/home.html')initHomeHero();
     setTimeout(watchPostImages,800);
     var root=document.getElementById('ytPosts');
     if(!root)return;

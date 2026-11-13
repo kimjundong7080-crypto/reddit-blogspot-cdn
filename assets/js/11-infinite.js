@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.32 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.0.33 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={

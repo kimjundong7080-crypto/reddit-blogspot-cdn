@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.32 */
+/* Reddit-style Blogger YouTube post list — v1.0.33 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -293,4 +293,63 @@ html[data-theme="dark"] #jtQuickNav .jt-qn-btn:hover{background:rgba(255,255,255
 @media screen and (max-width:600px){
   #jtQuickNav{bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:4px}
   #jtQuickNav .jt-qn-btn{width:34px;height:34px}
+}
+
+/* ===== Home hero video ===== */
+html.jt-home-page .jt-hero{
+  position:relative;
+  width:100%;
+  height:clamp(260px,38vw,520px);
+  margin:0 0 28px;
+  border-radius:14px;
+  overflow:hidden;
+  background:#0f1113;
+  isolation:isolate;
+}
+html.jt-home-page .jt-hero-media,
+html.jt-home-page .jt-hero-media iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+html.jt-home-page .jt-hero-media iframe{
+  border:0;
+  pointer-events:none;
+  transform:scale(1.18);
+}
+html.jt-home-page .jt-hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.18) 60%,rgba(0,0,0,.35));
+  pointer-events:none;
+}
+html.jt-home-page .jt-hero-copy{
+  position:absolute;
+  z-index:2;
+  left:clamp(18px,4vw,48px);
+  bottom:clamp(20px,4vw,44px);
+  right:clamp(18px,4vw,48px);
+  color:#fff;
+}
+html.jt-home-page .jt-hero-kicker{
+  margin:0 0 8px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.14em;
+  color:#ffb199;
+}
+html.jt-home-page .jt-hero-title{
+  margin:0;
+  font-size:clamp(26px,3.4vw,46px);
+  line-height:1.2;
+  font-weight:700;
+  color:#fff;
+}
+html.jt-home-page .jt-hero-sub{
+  margin:8px 0 0;
+  font-size:clamp(12px,1.3vw,16px);
+  color:rgba(255,255,255,.86);
 }
