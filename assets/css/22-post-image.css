@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post image — v1.0.99 */
+/* Reddit-style Blogger post image — v1.1.0 */
 /* 22 post image: center, full width, border (all images inside post body) */
 body.item-view .post-body-container > .post-body.entry-content > .separator,
 body.item-view .post-body-container > .post-body.entry-content > .separator > a{
@@ -39,7 +39,7 @@ body.item-view .post-body-container > .post-body.entry-content img{
 }
 
 /* 라이트 모드: 이미지 컨테이너에 테두리 + 라운드 */
-html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-content > .separator{
+html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-content > .separator:has(img){
   border:1px solid rgba(20,32,27,.16) !important;
   border-radius:12px !important;
   overflow:hidden !important;
@@ -49,6 +49,10 @@ html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-
 html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-content > .separator img{
   border:0 !important;
   border-radius:12px !important;
+}
+/* 이미지 없는 빈 separator(블로그 편집기 잔여물) 숨김 */
+body.item-view .post-body-container > .post-body.entry-content > .separator:not(:has(img)){
+  display:none !important;
 }
 
 @media screen and (max-width:600px){
