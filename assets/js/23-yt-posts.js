@@ -1,6 +1,11 @@
-/* Reddit-style Blogger YouTube post list — v1.0.23 */
+/* Reddit-style Blogger YouTube post list — v1.0.24 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
+  if(location.pathname==='/'&&!window.__jtHomeRedirect){
+    window.__jtHomeRedirect=1;
+    location.replace('/p/home.html');
+    return;
+  }
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
   function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
   function https(u){return (typeof u==='string'&&u.indexOf('http://')===0)?('https://'+u.slice(7)):u;}
