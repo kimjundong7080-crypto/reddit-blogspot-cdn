@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.65 */
+/* Reddit-style Blogger YouTube post list — v1.0.66 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -207,20 +207,20 @@
       resizeTimer=setTimeout(render,100);
     });
     render();
-    if('IntersectionObserver' in window){
-      var io=new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          var video=entry.target;
-          if(entry.isIntersecting){
-            var p=video.play();
-            if(p&&p.catch)p.catch(function(){});
-          }else{
-            video.pause();
-          }
-        });
-      },{threshold:0.5});
-      document.querySelectorAll('.jt-hz-video').forEach(function(v){v.muted=true;io.observe(v);});
-    }
+    cards.forEach(function(card){
+      var video=card.querySelector('.jt-hz-video');
+      if(!video)return;
+      function playVideo(){
+        video.muted=true;
+        var p=video.play();
+        if(p&&p.catch)p.catch(function(){});
+      }
+      function pauseVideo(){video.pause();}
+      card.addEventListener('mouseenter',playVideo);
+      card.addEventListener('mouseleave',pauseVideo);
+      card.addEventListener('focusin',playVideo);
+      card.addEventListener('focusout',pauseVideo);
+    });
   }
   function loadLandingProjects(){
     var grid=document.getElementById('jtLandingProjects');
