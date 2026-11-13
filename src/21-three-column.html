@@ -311,6 +311,33 @@ html[data-theme="dark"] body.search-view .snippet-thumbnail{background:#252a31}
   body.search-view .blog-posts.hfeed{grid-template-columns:1fr !important}
 }
 
+/* 홈(정적 페이지)은 3열 대신 전체 폭 1열 */
+html.jt-home-page body.rd3-layout .main_content_container{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  padding:0 16px !important;
+}
+html.jt-home-page body.rd3-layout #rd3Left,
+html.jt-home-page body.rd3-layout .sidebar-container{
+  display:none !important;
+}
+html.jt-home-page body.rd3-layout .post-content.container{
+  width:100% !important;
+  max-width:none !important;
+}
+html.jt-home-page body.rd3-layout .post-outer{
+  display:block !important;
+  width:100% !important;
+}
+html.jt-home-page body.rd3-layout .post-body-container{
+  margin-left:0 !important;
+  margin-right:0 !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+  max-width:none !important;
+}
+
 /* ===== 1240px 미만: 좌측 아이콘 레일 + 중앙 ===== */
 @media screen and (max-width:1239px) and (min-width:1024px){
   body.rd3-layout .main_content_container{
