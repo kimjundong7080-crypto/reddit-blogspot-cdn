@@ -99,6 +99,7 @@
   position:relative;
   max-height:720px;
   overflow:hidden;
+  isolation:isolate;
 }
 #jtInfiniteFeed .jt-inf-post .post-content.jt-foldable:not(.jt-expanded):after{
   content:"";
@@ -106,9 +107,10 @@
   left:0;
   right:0;
   bottom:0;
-  height:110px;
+  z-index:5;
+  height:180px;
   pointer-events:none;
-  background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 85%);
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 48%,#fff 100%);
 }
 #jtInfiniteFeed .jt-inf-post .post-content.jt-expanded{
   max-height:none;
@@ -136,7 +138,7 @@
   color:#FF4500;
 }
 html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .post-content.jt-foldable:not(.jt-expanded):after{
-  background:linear-gradient(to bottom,rgba(15,17,19,0),#0f1113 85%);
+  background:linear-gradient(180deg,rgba(15,17,19,0) 0%,rgba(15,17,19,.55) 48%,#0f1113 100%);
 }
 html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn{
   border-color:rgba(255,255,255,.22);
