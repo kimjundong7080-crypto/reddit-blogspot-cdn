@@ -290,13 +290,19 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
         if(content.classList.contains('jt-foldable'))return;
         if(content.scrollHeight<720)return;
         content.classList.add('jt-foldable');
+        content.style.setProperty('max-height','720px','important');
+        content.style.setProperty('overflow','hidden','important');
+        var expanded=false;
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='jt-inf-fold-btn';
         btn.textContent='펼치기';
         btn.setAttribute('aria-expanded','false');
         btn.addEventListener('click',function(){
-          var expanded=content.classList.toggle('jt-expanded');
+          expanded=!expanded;
+          content.classList.toggle('jt-expanded',expanded);
+          content.style.setProperty('max-height',expanded?'none':'720px','important');
+          content.style.setProperty('overflow',expanded?'visible':'hidden','important');
           btn.textContent=expanded?'접기':'펼치기';
           btn.setAttribute('aria-expanded',expanded?'true':'false');
         });
