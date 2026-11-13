@@ -373,7 +373,15 @@ body.search-view .post-title{
   -webkit-box-orient:vertical !important;
   overflow:hidden !important;
 }
-body.search-view .post-title a{color:inherit !important;text-decoration:none !important}
+body.search-view .post-title a{
+  color:inherit !important;
+  text-decoration:none !important;
+  font-size:12px !important;
+  line-height:1.3 !important;
+}
+@media screen and (max-width:480px){
+  body.search-view .post-title a{font-size:11px !important}
+}
 body.search-view .post-header-container,
 body.search-view .post-body,
 body.search-view .post-bottom{display:none !important}
