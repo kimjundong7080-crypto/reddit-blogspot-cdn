@@ -22,6 +22,12 @@ const targets = [
     cssTitle: 'Reddit-style Blogger post infinite scroll',
     jsTitle: 'Reddit-style Blogger post infinite scroll',
     jsSuffix: ' (stable end + dedupe + lazy)'
+  },
+  {
+    name: '22-post-image',
+    source: 'src/22-post-image.html',
+    css: 'assets/css/22-post-image.css',
+    cssTitle: 'Reddit-style Blogger post image'
   }
 ];
 
@@ -71,11 +77,11 @@ const files = new Map();
 for (const t of targets) {
   const source = fs.readFileSync(path.join(root, t.source), 'utf8');
   const css = cleanStyle(extract(source, 'style'));
-  const js = cleanScript(extract(source, 'script'));
-  if (!css) throw new Error(`${t.name}: no <style> block`);
-  if (!js) throw new Error(`${t.name}: no inline <script> block`);
-  files.set(t.css, output(`/* ${t.cssTitle} — v${version} */`, css));
-  files.set(t.js, output(`/* ${t.jsTitle} — v${version}${t.jsSuffix || ''} */`, js));
+  const js = t.js ? cleanScript(extract(source, 'script')) : '';
+  if (t.css && !css) throw new Error(`${t.name}: no <style> block`);
+  if (t.js && !js) throw new Error(`${t.name}: no inline <script> block`);
+  if (t.css) files.set(t.css, output(`/* ${t.cssTitle} — v${version} */`, css));
+  if (t.js) files.set(t.js, output(`/* ${t.jsTitle} — v${version}${t.jsSuffix || ''} */`, js));
 }
 
 if (checkOnly) {

@@ -1,0 +1,28 @@
+/* Reddit-style Blogger post image — v1.0.6 */
+/* 22 post image: center, full width, border */
+body.item-view .post-body-container > .post-body.entry-content > .separator > a,
+body.item-view .post-body-container > .post-body.entry-content > .separator > a > img,
+body.item-view .post-body-container > .post-body.entry-content > .separator > img{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  box-sizing:border-box !important;
+}
+
+body.item-view .post-body-container > .post-body.entry-content > .separator > a > img,
+body.item-view .post-body-container > .post-body.entry-content > .separator > img{
+  border:1px solid rgba(0,0,0,.14) !important;
+  border-radius:10px;
+  background:#fff;
+}
+
+@media (prefers-color-scheme:dark){
+  body.item-view .post-body-container > .post-body.entry-content > .separator > a > img,
+  body.item-view .post-body-container > .post-body.entry-content > .separator > img{
+    border-color:rgba(255,255,255,.22) !important;
+    background:#111;
+  }
+}
