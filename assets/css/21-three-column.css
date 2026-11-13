@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.30 */
+/* Reddit-style Blogger 3-column layout — v1.0.31 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -79,13 +79,13 @@ body.rd3-layout .post-title-container .post-title{
   overflow:hidden !important;
   text-overflow:ellipsis;
   text-align:left !important;
-  font-size:20px !important;
+  font-size:18px !important;
   line-height:1.35 !important;
   max-height:2.7em;
 }
 @media screen and (max-width:600px){
   body.rd3-layout .post-title-container .post-title{
-    font-size:18px !important;
+    font-size:16px !important;
   }
 }
 
