@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.44 */
+/* Reddit-style Blogger YouTube post list — v1.0.45 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -94,11 +94,19 @@
     var body=document.querySelector('.post-body');
     if(!body)return;
     var id='lyFcrrULyN0';
+    var poster='https://i.ytimg.com/vi/'+id+'/maxresdefault.jpg';
     var hero=document.createElement('div');
     hero.className='jt-hero';
-    hero.innerHTML='<div class="jt-hero-media"><iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&controls=0&modestbranding=1&playsinline=1&rel=0" title="JUST TECH 히어로 영상" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+    hero.innerHTML='<div class="jt-hero-media"><img class="jt-hero-poster" src="'+poster+'" alt="" loading="eager" fetchpriority="high" decoding="async"><button type="button" class="jt-hero-play" aria-label="히어로 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button></div>'
       +'<div class="jt-hero-copy"><p class="jt-hero-kicker">JUST TECH</p><h2 class="jt-hero-title">산업 자동화 기술 아카이브</h2><p class="jt-hero-sub">로봇·설비·자동화 현장을 기록합니다.</p></div>';
     body.insertBefore(hero,body.firstChild);
+    var media=hero.querySelector('.jt-hero-media');
+    var play=hero.querySelector('.jt-hero-play');
+    if(play){
+      play.onclick=function(){
+        media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=0&loop=1&playlist='+id+'&controls=0&modestbranding=1&playsinline=1&rel=0" title="JUST TECH 히어로 영상" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+      };
+    }
   }
   function fetchFeed(start,max){
     var qs='?alt=json&max-results='+max+(start>1?'&start-index='+start:'');
@@ -112,7 +120,7 @@
   ready(function(){
     initTheme();
     initQuickNav();
-    if(location.pathname==='/p/home.html')initHomeHero();
+    if(location.pathname==='/p/home.html'){initHomeHero();return;}
     setTimeout(watchPostImages,800);
     var root=document.getElementById('ytPosts');
     if(!root)return;
@@ -202,7 +210,7 @@
     function loadMore(cb){
       if(loading||exhausted){if(cb)cb();return;}
       loading=true;
-      fetchFeed(nextStart,20).then(function(data){
+      fetchFeed(nextStart,12).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           exhausted=true;loading=false;
