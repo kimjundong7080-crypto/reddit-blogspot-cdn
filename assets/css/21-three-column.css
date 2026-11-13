@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.40 */
+/* Reddit-style Blogger 3-column layout — v1.0.41 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0L.woff2') format('woff2');
@@ -132,11 +132,19 @@ body.rd3-layout .post-title-container .post-title{
   box-sizing:border-box !important;
   color:#111111 !important;
 }
+body.item-view.rd3-layout .post-title-container .post-title > a{
+  font-size:16px !important;
+  line-height:1.35 !important;
+  color:inherit !important;
+}
 @media screen and (max-width:600px){
   body.rd3-layout .post-title-container .post-title{
     font-size:16px !important;
     padding-left:16px !important;
     padding-right:16px !important;
+  }
+  body.item-view.rd3-layout .post-title-container .post-title > a{
+    font-size:14px !important;
   }
 }
 
