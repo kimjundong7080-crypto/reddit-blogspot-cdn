@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.45 */
+/* Reddit-style Blogger YouTube post list — v1.0.46 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -94,7 +94,7 @@
     var body=document.querySelector('.post-body');
     if(!body)return;
     var id='lyFcrrULyN0';
-    var poster='https://i.ytimg.com/vi/'+id+'/maxresdefault.jpg';
+    var poster='https://i.ytimg.com/vi/'+id+'/sddefault.jpg';
     var hero=document.createElement('div');
     hero.className='jt-hero';
     hero.innerHTML='<div class="jt-hero-media"><img class="jt-hero-poster" src="'+poster+'" alt="" loading="eager" fetchpriority="high" decoding="async"><button type="button" class="jt-hero-play" aria-label="히어로 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button></div>'
