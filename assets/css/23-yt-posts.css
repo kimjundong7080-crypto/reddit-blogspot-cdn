@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.36 */
+/* Reddit-style Blogger YouTube post list — v1.0.37 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -26,23 +26,39 @@
   font-weight:500;
   color:#6B7280;
 }
+#ytPosts .yt-viewport{
+  position:relative;
+  height:70px;
+  overflow:hidden;
+  perspective:700px;
+  border-radius:8px;
+}
 #ytPosts .yt-list{
   display:flex;
   flex-direction:column;
   gap:2px;
+  will-change:transform;
+  transform:translateY(0);
+  transition:transform .55s cubic-bezier(.22,.9,.3,1);
 }
 #ytPosts .yt-item{
   display:flex;
   align-items:flex-start;
   gap:9px;
+  height:70px;
+  flex:0 0 70px;
+  box-sizing:border-box;
   padding:7px 6px;
   border-radius:8px;
   color:inherit !important;
   text-decoration:none !important;
-  transition:background-color .12s ease;
-  animation:ytItemIn .25s ease both;
+  transition:transform .55s cubic-bezier(.22,.9,.3,1),opacity .45s ease,background-color .12s ease;
+  transform-origin:center top;
 }
-@keyframes ytItemIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#ytPosts .yt-item.is-out{
+  opacity:0;
+  transform:rotateX(-78deg) translateY(-8px);
+}
 #ytPosts .yt-item:hover{background:transparent !important}
 #ytPosts .yt-more{
   display:none;

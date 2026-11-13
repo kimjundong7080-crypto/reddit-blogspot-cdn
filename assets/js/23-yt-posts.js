@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.36 */
+/* Reddit-style Blogger YouTube post list — v1.0.37 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -118,18 +118,15 @@
     if(!root)return;
     var head=el('div','yt-head');
     head.appendChild(document.createTextNode('추천·인기 글'));
-    var count=el('span','yt-count','');
+    var count=el('span','yt-count','LIVE');
     head.appendChild(count);
     root.appendChild(head);
+    var viewport=el('div','yt-viewport');
     var list=el('div','yt-list');
-    root.appendChild(list);
-    var more=el('div','yt-more');
-    more.innerHTML='<i></i><span>더 불러오는 중…</span>';
-    root.appendChild(more);
-    var end=el('div','yt-end','모든 글을 불러왔습니다.');
-    root.appendChild(end);
+    viewport.appendChild(list);
+    root.appendChild(viewport);
 
-    var seen={},total=0,nextStart=1,pending=[],loading=false,finished=false,batchStart=0;
+    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=72,timer=null;
 
     function makeItem(e){
       var links=e.link||[],href='';
@@ -174,46 +171,94 @@
       return a;
     }
 
-    function renderNext(){
-      while(pending.length&&total<12){
-        var a=makeItem(pending.shift());
-        if(!a)continue;
-        list.appendChild(a);
-        total++;
-        count.textContent=String(total);
-        setTimeout(renderNext,35);
-        return;
-      }
-      if(total>=12){pending=[];finished=true;}
-      loading=false;
-      more.classList.remove('on');
-      end.style.display='none';
+    function measure(){
+      var first=list.firstElementChild;
+      var h=first?first.getBoundingClientRect().height:70;
+      step=(h||70)+2;
     }
 
-    function loadMore(){
-      if(loading||finished)return;
+    function setPos(i,animate){
+      list.style.transition=animate?'transform .55s cubic-bezier(.22,.9,.3,1)':'none';
+      list.style.transform='translateY('+(-i*step)+'px)';
+    }
+
+    function addEntries(entries){
+      var added=0;
+      for(var i=0;i<entries.length;i++){
+        var a=makeItem(entries[i]);
+        if(a){list.appendChild(a);added++;}
+      }
+      measure();
+      return added;
+    }
+
+    function loadMore(cb){
+      if(loading||exhausted){if(cb)cb();return;}
       loading=true;
-      more.classList.add('on');
-      end.style.display='none';
       fetchFeed(nextStart,20).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
-          finished=true;loading=false;
-          more.classList.remove('on');
+          exhausted=true;loading=false;
+          if(cb)cb();
           return;
         }
         nextStart+=entries.length;
-        batchStart=total;
-        pending=pending.concat(entries);
-        renderNext();
+        var added=addEntries(entries);
+        if(!added)exhausted=true;
+        loading=false;
+        if(cb)cb();
       })['catch'](function(){
         loading=false;
-        more.classList.remove('on');
-        end.textContent='글을 불러오지 못했습니다.';
-        end.style.display='block';
+        if(cb)cb();
       });
     }
 
-    loadMore();
+    function outCurrent(){
+      var cur=list.children[idx];
+      if(cur){
+        cur.classList.add('is-out');
+        setTimeout(function(){cur.classList.remove('is-out');},700);
+      }
+    }
+
+    function advance(){
+      if(loading)return;
+      var n=list.children.length;
+      if(!n){loadMore(function(){setPos(0,false);});return;}
+      if(idx+1<n){
+        outCurrent();
+        idx++;
+        setPos(idx,true);
+      }else if(!exhausted){
+        loadMore(function(){advance();});
+      }else{
+        outCurrent();
+        idx=0;
+        setPos(0,false);
+      }
+    }
+
+    function retreat(){
+      if(loading||idx<=0)return;
+      idx--;
+      setPos(idx,true);
+    }
+
+    function startTimer(){
+      if(timer)clearInterval(timer);
+      timer=setInterval(advance,4500);
+    }
+
+    root.addEventListener('wheel',function(e){
+      if(!e.deltaY)return;
+      e.preventDefault();
+      if(e.deltaY>0)advance();else retreat();
+      startTimer();
+    },{passive:false});
+    root.addEventListener('mouseenter',function(){if(timer)clearInterval(timer);});
+    root.addEventListener('mouseleave',startTimer);
+
+    measure();
+    loadMore(function(){setPos(0,false);measure();startTimer();});
   });
 })();
