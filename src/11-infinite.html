@@ -1,4 +1,4 @@
-<!-- ============================================================================
+﻿<!-- ============================================================================
   REDDIT LAYOUT — 11. 글보기 무한 스크롤
   ▸ 기초테마 1.xml의 단일 글 구조(.post-outer-container) 기준
   ▸ 현재 글 + 댓글을 지나 하단에 가까워지면 다음 글을 자동 로드
@@ -111,8 +111,6 @@
   height:180px;
   pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 48%,#fff 100%);
-  -webkit-backdrop-filter:blur(6px) saturate(1.05);
-  backdrop-filter:blur(6px) saturate(1.05);
 }
 #jtInfiniteFeed .jt-inf-post .post-content.jt-expanded{
   max-height:none;
@@ -290,19 +288,13 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
         if(content.classList.contains('jt-foldable'))return;
         if(content.scrollHeight<720)return;
         content.classList.add('jt-foldable');
-        content.style.setProperty('max-height','720px','important');
-        content.style.setProperty('overflow','hidden','important');
-        var expanded=false;
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='jt-inf-fold-btn';
         btn.textContent='펼치기';
         btn.setAttribute('aria-expanded','false');
         btn.addEventListener('click',function(){
-          expanded=!expanded;
-          content.classList.toggle('jt-expanded',expanded);
-          content.style.setProperty('max-height',expanded?'none':'720px','important');
-          content.style.setProperty('overflow',expanded?'visible':'hidden','important');
+          var expanded=content.classList.toggle('jt-expanded');
           btn.textContent=expanded?'접기':'펼치기';
           btn.setAttribute('aria-expanded',expanded?'true':'false');
         });

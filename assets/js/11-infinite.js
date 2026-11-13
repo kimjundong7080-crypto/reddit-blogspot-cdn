@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.0.98 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.0.99 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -136,19 +136,13 @@
         if(content.classList.contains('jt-foldable'))return;
         if(content.scrollHeight<720)return;
         content.classList.add('jt-foldable');
-        content.style.setProperty('max-height','720px','important');
-        content.style.setProperty('overflow','hidden','important');
-        var expanded=false;
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='jt-inf-fold-btn';
         btn.textContent='펼치기';
         btn.setAttribute('aria-expanded','false');
         btn.addEventListener('click',function(){
-          expanded=!expanded;
-          content.classList.toggle('jt-expanded',expanded);
-          content.style.setProperty('max-height',expanded?'none':'720px','important');
-          content.style.setProperty('overflow',expanded?'visible':'hidden','important');
+          var expanded=content.classList.toggle('jt-expanded');
           btn.textContent=expanded?'접기':'펼치기';
           btn.setAttribute('aria-expanded',expanded?'true':'false');
         });
