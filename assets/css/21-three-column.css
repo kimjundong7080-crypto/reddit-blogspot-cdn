@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.1.5 */
+/* Reddit-style Blogger 3-column layout — v1.1.6 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -552,6 +552,10 @@ html.jt-home-page #jtLeftToggle{display:none !important}
   border:0 !important;
 }
 /* 헤더 마퀴 */
+.centered-top-container:has(.jt-header-marquee){
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
 .jt-header-marquee{
   flex:0 0 100%;
   order:99;

@@ -561,6 +561,10 @@ html.jt-home-page #jtLeftToggle{display:none !important}
   border:0 !important;
 }
 /* 헤더 마퀴 */
+.centered-top-container:has(.jt-header-marquee){
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
 .jt-header-marquee{
   flex:0 0 100%;
   order:99;
@@ -645,6 +649,8 @@ html[data-theme="dark"] .jt-header-marquee{
     if(location.pathname==='/p/home.html')return;
     var header=document.querySelector('.centered-top-container');
     if(!header||header.querySelector('.jt-header-marquee'))return;
+    var top=header.querySelector(':scope > .centered-top');
+    if(top&&top.getBoundingClientRect().height===0)top.parentNode.removeChild(top);
     var text='JUST TECH — 산업 자동화 · 로봇 · 조립 · 검사 · 포장 · 설비 기술 자료';
     var marquee=document.createElement('div');
     marquee.className='jt-header-marquee';
