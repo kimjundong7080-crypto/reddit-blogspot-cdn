@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.80 */
+/* Reddit-style Blogger YouTube post list — v1.0.81 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -461,7 +461,7 @@ html.jt-home-page .jt-landing{
   --jt-landing-pad:clamp(16px,4vw,40px);
   color:var(--jt-ink);
   background:var(--jt-soft);
-  margin:0 calc(-1 * var(--jt-landing-pad));
+  margin:0;
   padding:0 var(--jt-landing-pad);
   position:relative;
 }
