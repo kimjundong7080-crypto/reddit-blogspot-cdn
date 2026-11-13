@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.0.15 */
+/* Reddit-style Blogger 3-column layout — v1.0.16 */
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     250px;
@@ -203,6 +203,12 @@ body.rd3-layout .sidebar-container .widget{
 }
 body.rd3-layout .sidebar-container .widget + .widget{
   border-top:1px solid var(--rd3-border) !important;
+}
+/* 사이드바 가젯 구분선(밑줄) 제거 */
+body.rd3-layout .sidebar-container .widget,
+body.rd3-layout .sidebar-container .widget + .widget{
+  border-top:0 !important;
+  border-bottom:0 !important;
 }
 
 /* ===== 1240px 미만: 좌측 아이콘 레일 + 중앙 ===== */
