@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.96 */
+/* Reddit-style Blogger YouTube post list — v1.0.97 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');

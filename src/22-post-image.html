@@ -38,6 +38,19 @@ body.item-view .post-body-container > .post-body.entry-content img{
   }
 }
 
+/* 라이트 모드: 이미지 컨테이너에 테두리 + 라운드 */
+html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-content > .separator{
+  border:1px solid rgba(20,32,27,.16) !important;
+  border-radius:12px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+  box-shadow:0 4px 14px rgba(20,32,27,.06);
+}
+html[data-theme="light"] body.item-view .post-body-container > .post-body.entry-content > .separator img{
+  border:0 !important;
+  border-radius:12px !important;
+}
+
 @media screen and (max-width:600px){
   body.item-view .post-body-container > .post-body.entry-content > .separator{
     width:calc(100% - 32px) !important;
