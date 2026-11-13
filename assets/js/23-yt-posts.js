@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.0.17 */
+/* Reddit-style Blogger YouTube post list — v1.0.18 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -14,10 +14,10 @@
     return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
   }
   function fetchFeed(){
-    return fetch('/feeds/posts/default?alt=json&max-results=12',{credentials:'same-origin'})
+    return fetch('/feeds/posts/default?alt=json&max-results=20',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       ['catch'](function(){
-        return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=12')
+        return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=20')
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
   }
