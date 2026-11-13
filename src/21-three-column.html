@@ -548,6 +548,18 @@ html[data-theme="dark"] #jtLeftToggle{
   #jtLeftToggle{display:none !important}
 }
 html.jt-home-page #jtLeftToggle{display:none !important}
+/* 헤더 검색 버튼 텍스트 시각적 숨김(스크린리더용 라벨 유지) */
+.centered-top-firstline .main_header_elements .search .search-expand-text{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
 </style>
 <script>
 //<![CDATA[
