@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.1.8 */
+/* Reddit-style Blogger 3-column layout — v1.1.9 */
 @font-face{
   font-family:'BusanDandiMyeongjo';
   src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2610132210@l-2/l/%EB%B6%80%EC%82%B0%EB%8B%A8%EB%94%94%EB%AA%85%EC%A1%B0M.woff2') format('woff2');
@@ -556,7 +556,74 @@ header.centered-top-container,
 .centered-top-placeholder{
   display:none !important;
 }
-/* 헤더 제거 후 본문 상단 여백 */
 body.item-view .main_content_container{
   padding-top:14px !important;
+}
+/* ===== 반응형 컬럼 우선순위 ===== */
+/* 1024~1239: 3열 유지, 우측은 아이콘(썸네일)만 */
+@media screen and (min-width:1024px) and (max-width:1239px){
+  body.rd3-layout .main_content_container{
+    display:grid !important;
+    grid-template-columns:220px minmax(0,1fr) 144px !important;
+    gap:12px !important;
+    max-width:1120px !important;
+    padding:0 12px !important;
+  }
+  body.rd3-layout .main_content_container > .page{grid-column:2}
+  body.rd3-layout .main_content_container > .rd3-left{grid-column:1}
+  body.rd3-layout .main_content_container > .sidebar-container{
+    grid-column:3;
+    display:block !important;
+  }
+}
+/* 900~1023: 좌측 1열 숨김, 중앙 + 우측 아이콘 */
+@media screen and (min-width:900px) and (max-width:1023px){
+  body.rd3-layout .main_content_container{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 144px !important;
+    gap:12px !important;
+    max-width:1024px !important;
+    padding:0 12px !important;
+  }
+  body.rd3-layout .main_content_container > .rd3-left{display:none !important}
+  body.rd3-layout .main_content_container > .page{grid-column:1}
+  body.rd3-layout .main_content_container > .sidebar-container{
+    grid-column:2;
+    display:block !important;
+  }
+}
+/* 899 이하: 우측 3열도 숨김 */
+@media screen and (max-width:899px){
+  body.rd3-layout .main_content_container{
+    display:block !important;
+    max-width:100% !important;
+    padding:0 12px !important;
+  }
+  body.rd3-layout .sidebar-container{display:none !important}
+  body.rd3-layout .main_content_container > .page{
+    grid-column:auto;
+    width:100% !important;
+    max-width:none !important;
+    margin:0 auto !important;
+  }
+}
+/* 우측 열 아이콘 전용 모드 */
+@media screen and (max-width:1239px){
+  body.rd3-layout .sidebar-container .widget-title,
+  #ytPosts .yt-head,
+  #ytPosts .yt-count,
+  #ytPosts .yt-info{display:none !important}
+  #ytPosts .yt-item{
+    justify-content:center;
+    height:82px;
+    flex:0 0 82px;
+    padding:4px;
+  }
+  #ytPosts .yt-thumb{
+    width:100%;
+    flex:1 1 auto;
+    max-width:122px;
+    aspect-ratio:1/1;
+  }
+  #ytPosts .yt-viewport{height:1176px}
 }
