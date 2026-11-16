@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.0 */
+/* Reddit-style Blogger home landing — v1.2.1 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -816,3 +816,11 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
   html.jt-home-page .jt-trust span{font-size:10px}
   html.jt-home-page .jt-cta{padding:24px 20px;margin-bottom:36px}
 }
+
+/* 404 fallback: render the home landing even when the Blogger page is missing */
+html.jt-home-page .status-msg-body,
+html.jt-home-page .status-msg-wrap{display:none!important}
+html.jt-home-page .main_header_elements,
+html.jt-home-page .sidebar-container,
+html.jt-home-page .footer,
+html.jt-home-page #footer{display:none!important}

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.0 */
+/* Reddit-style Blogger home landing — v1.2.1 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -52,6 +52,12 @@
   function initHomeLanding(){
     if(document.querySelector('.jt-landing'))return;
     var body=document.querySelector('.post-body');
+    if(!body&&location.pathname==='/p/home.html'){
+      body=document.createElement('div');
+      body.className='post-body entry-content';
+      var host=document.querySelector('#page_body')||document.querySelector('.main_content_container')||document.body;
+      host.insertBefore(body,host.firstChild);
+    }
     if(!body)return;
     document.body.classList.add('jt-landing-page');
     var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1000&q=75';
