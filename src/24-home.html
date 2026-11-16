@@ -878,7 +878,7 @@ html.jt-home-page #footer{display:none!important}
   }
   function initHomeLanding(){
     if(document.querySelector('.jt-landing'))return;
-    var body=document.querySelector('.post-body');
+    var body=document.querySelector('#jt-home-root')||document.querySelector('.post-body');
     if(!body&&location.pathname==='/p/home.html'){
       body=document.createElement('div');
       body.className='post-body entry-content';

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.1 */
+/* Reddit-style Blogger home landing — v1.2.2 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -51,7 +51,7 @@
   }
   function initHomeLanding(){
     if(document.querySelector('.jt-landing'))return;
-    var body=document.querySelector('.post-body');
+    var body=document.querySelector('#jt-home-root')||document.querySelector('.post-body');
     if(!body&&location.pathname==='/p/home.html'){
       body=document.createElement('div');
       body.className='post-body entry-content';
