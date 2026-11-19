@@ -1,7 +1,7 @@
 # AGENTS.md — JUST TECH Blogger 운영 작업 지침 (인수인계 문서)
 
 이 문서는 **다른 AI/작업자가 이어서 작업할 때** 반드시 따라야 하는 규칙과 현재 상태를 정리한 문서입니다.
-최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.45**
+최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.46**
 
 ---
 
@@ -69,7 +69,7 @@ PowerShell 프로필 로딩 차단 경고(`running scripts is disabled`)는 매 
 | CDN 저장소 | https://github.com/kimjundong7080-crypto/reddit-blogspot-cdn |
 | CDN 방식 | jsDelivr + GitHub (`@v1` major alias) |
 | 엣지 API | https://reddit-blogspot-edge.pages.dev (`/api/blogger-feed`) |
-| 최신 태그 | **v1.2.45** |
+| 최신 태그 | **v1.2.46** |
 
 테마의 9개 URL은 모두 `@v1`이다. 새 `v1.x.y` 태그를 발행하면 테마 수정 없이 반영된다.
 
@@ -148,7 +148,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 
 ---
 
-## 6. 현재 구현 상태 (v1.2.45)
+## 6. 현재 구현 상태 (v1.2.46)
 
 ### 6-1. 홈 랜딩 (`src/24-home.html`)
 - 타이핑 애니메이션 2곳: 히어로(`자동화의 모든 순간을 한 곳에서`), 서비스 제목(`자동화의 전 과정을 다룹니다`) — `IntersectionObserver`, 1회 실행, `prefers-reduced-motion` 대응.
@@ -217,6 +217,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 | v1.2.43 | 인수인계 문서 최신화 |
 | v1.2.44 | About 링크를 `/p/about.html`로 통일 |
 | v1.2.45 | 이력서 인쇄 여백·정보 난독화·전용 레이아웃 |
+| v1.2.46 | 인쇄 좌우 여백 축소 및 우클릭 블러 보호 강화 |
 
 ---
 
