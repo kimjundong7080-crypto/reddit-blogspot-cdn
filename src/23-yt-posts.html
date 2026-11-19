@@ -1238,8 +1238,8 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     if(window.__jtStaticPage)return; window.__jtStaticPage=1;
     var PAGES={
       '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서'},
-      '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지'},
-      '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지'}
+      '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
+      '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
     };
     var page=PAGES[location.pathname];
     if(!page||!window.fetch)return;
@@ -1259,6 +1259,7 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     }
     function mount(html){
       var box=staticHost();
+      if(page.css)html=html.indexOf('</head>')>=0?html.replace('</head>','<style>'+page.css+'</style></head>'):('<style>'+page.css+'</style>'+html);
       var frame=document.createElement('iframe');
       frame.setAttribute('title',page.frame);
       frame.setAttribute('scrolling','no');
@@ -1268,8 +1269,10 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
         function fit(){
           try{
             var doc=frame.contentDocument;
-            if(!doc||!doc.documentElement)return;
-            var h=Math.max(doc.documentElement.scrollHeight,doc.body?doc.body.scrollHeight:0);
+            if(!doc)return;
+            var body=doc.body;
+            var h=body?body.getBoundingClientRect().height:0;
+            if(!h||h<200)h=doc.documentElement.scrollHeight;
             if(h>200)frame.style.height=(h+8)+'px';
           }catch(e){}
         }
