@@ -934,20 +934,64 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       match=value.match(/^([A-Za-z0-9_-]{11})$/);
       return match?match[1]:'';
     }
+    function startPlayback(box,id,observer){
+      if(box.getAttribute('data-loaded')||!document.documentElement.contains(box))return;
+      box.setAttribute('data-loaded','1');
+      if(observer)observer.disconnect();
+      box.__jtYtObserver=null;
+      if(box.__jtYtFallback){
+        window.removeEventListener('scroll',box.__jtYtFallback);
+        window.removeEventListener('resize',box.__jtYtFallback);
+        box.__jtYtFallback=null;
+      }
+      var frame=document.createElement('iframe');
+      frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
+      frame.title='YouTube video';
+      frame.setAttribute('frameborder','0');
+      frame.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      frame.setAttribute('allowfullscreen','');
+      frame.setAttribute('loading','lazy');
+      box.appendChild(frame);box.classList.add('ready');
+    }
     function mount(box){
       var id=box.getAttribute('data-yt');
-      if(!id||box.getAttribute('data-loaded'))return;
-      box.setAttribute('data-loaded','1');
-      setTimeout(function(){
-        var frame=document.createElement('iframe');
-        frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
-        frame.title='YouTube video';
-        frame.setAttribute('frameborder','0');
-        frame.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-        frame.setAttribute('allowfullscreen','');
-        frame.setAttribute('loading','lazy');
-        box.appendChild(frame);box.classList.add('ready');
-      },2000);
+      if(!id||box.getAttribute('data-loaded')||box.__jtYtObserver||box.__jtYtTimer)return;
+      function cancelTimer(){
+        if(box.__jtYtTimer){clearTimeout(box.__jtYtTimer);box.__jtYtTimer=null;}
+      }
+      function schedule(observer){
+        if(box.__jtYtTimer||box.getAttribute('data-loaded'))return;
+        box.__jtYtTimer=setTimeout(function(){
+          box.__jtYtTimer=null;
+          var rect=box.getBoundingClientRect();
+          var height=window.innerHeight||document.documentElement.clientHeight;
+          var visible=rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth;
+          if(visible)startPlayback(box,id,observer);
+        },500);
+      }
+      if('IntersectionObserver' in window){
+        var observer=new IntersectionObserver(function(entries){
+          for(var i=0;i<entries.length;i++){
+            var entry=entries[i];
+            if(entry.target!==box)continue;
+            if(entry.isIntersecting&&entry.intersectionRatio>=0.25)schedule(observer);
+            else cancelTimer();
+          }
+        },{threshold:0.25});
+        box.__jtYtObserver=observer;
+        observer.observe(box);
+      }else{
+        var check=function(){
+          var rect=box.getBoundingClientRect();
+          var height=window.innerHeight||document.documentElement.clientHeight;
+          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)schedule(null);
+          else cancelTimer();
+        };
+        box.__jtYtFallback=check;
+        window.addEventListener('scroll',check,{passive:true});
+        window.addEventListener('resize',check);
+        check();
+      }
     }
     function run(){
       var bodies=document.querySelectorAll('.post-body');
