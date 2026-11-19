@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.23 */
+/* Reddit-style Blogger home landing — v1.2.24 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -106,6 +106,10 @@
       +'<section class="jt-landing-section jt-about" id="jt-about"><div class="jt-about-grid"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는<br>자동화 파트너</h2></div><div><p class="jt-about-copy">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p><a class="jt-about-link" href="/search">기술 자료 살펴보기 →</a></div></div></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
+    for(var n=body.children.length-1;n>=0;n--){
+      var leftover=body.children[n];
+      if(leftover!==landing&&!leftover.contains(landing))body.removeChild(leftover);
+    }
     initLandingReveal();
     initHeroTyping();
     initServiceCeremony();
