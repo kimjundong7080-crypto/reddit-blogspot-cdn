@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.2.39 */
+/* Reddit-style Blogger 3-column layout — v1.2.40 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
