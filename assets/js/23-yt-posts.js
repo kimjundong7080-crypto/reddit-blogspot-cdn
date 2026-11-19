@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.41 */
+/* Reddit-style Blogger YouTube post list — v1.2.42 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -962,7 +962,7 @@
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
         (document.head||document.getElementsByTagName('head')[0]).appendChild(rb);
       }
-      fetch(FILE_URL,{cache:'force-cache'})
+      fetch(FILE_URL,{cache:'no-cache'})
         .then(function(r){if(!r.ok)throw 0;return r.text();})
         ['catch'](function(){return fetch(RAW+page.file).then(function(r){if(!r.ok)throw 0;return r.text();});})
         .then(mount)

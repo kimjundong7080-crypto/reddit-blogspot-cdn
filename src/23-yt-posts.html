@@ -310,6 +310,7 @@ html.jt-static-page .status-msg-body,
 html.jt-static-page .status-msg-wrap{display:none !important}
 html.jt-static-page .sidebar-container,
 html.jt-static-page .post-outer-container{display:none !important}
+html.jt-static-page body{background:#ffffff !important}
 html.jt-static-page #jtStaticHost{
   max-width:1100px;
   margin:0 auto;
@@ -1595,7 +1596,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
         (document.head||document.getElementsByTagName('head')[0]).appendChild(rb);
       }
-      fetch(FILE_URL,{cache:'force-cache'})
+      fetch(FILE_URL,{cache:'no-cache'})
         .then(function(r){if(!r.ok)throw 0;return r.text();})
         ['catch'](function(){return fetch(RAW+page.file).then(function(r){if(!r.ok)throw 0;return r.text();});})
         .then(mount)
