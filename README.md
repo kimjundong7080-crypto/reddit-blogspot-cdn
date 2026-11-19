@@ -10,7 +10,13 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 | `assets/css/21-three-column.css` | 반응형 3열 레이아웃 (좌측 레일 + 중앙 + 우측) |
 | `assets/js/21-three-column.js` | 좌측 레일 생성, 기존 우측 사이드바를 3열 컬럼으로 전환 |
 | `assets/css/11-infinite.css` | 글보기 무한 스크롤 로더/구분선 |
-| `assets/js/11-infinite.js` | 다음 글 자동 로드 (휠/스크롤/IntersectionObserver) |
+| `assets/js/11-infinite.js` | 다음 글 자동 로드 (휠/스크롤/IntersectionObserver) + Turnstile 게이트 |
+| `assets/css/22-post-image.css`, `assets/js/22-post-image.js` | 본문 이미지 지연 로딩 / R2 이미지 치환 |
+| `assets/css/23-yt-posts.css`, `assets/js/23-yt-posts.js` | 공용 위젯: SEO·추천글·숏코드(`[md]`/`[youtube]`/`[rede]`)·정적 페이지 렌더·`/search` 라벨 필터/페이지네이션 |
+| `assets/css/24-home.css`, `assets/js/24-home.js` | 홈 랜딩(`/p/home.html`) 전체 |
+| `pages/resume.html`, `pages/contact.html` | 정적 페이지 원본 (iframe srcdoc로 렌더) |
+
+> 상세한 인수인계 규칙·환경·배포 절차는 **[AGENTS.md](./AGENTS.md)** 를 참고하세요.
 
 ## 소스와 빌드
 
@@ -33,19 +39,19 @@ npm run release -- 1.0.5       # 빌드 + 커밋 + 태그 + push
 
 ```html
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.42/assets/css/21-three-column.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.43/assets/css/21-three-column.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.42/assets/js/21-three-column.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.43/assets/js/21-three-column.js"
   defer></script>
 
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.42/assets/css/11-infinite.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.43/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.42/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.43/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.2.42`처럼 버전을 고정하세요. 21·11 모두 **v1.2.42** 기준입니다.
+> `@main` 대신 `@v1.2.43`처럼 버전을 고정하세요. 21·11 모두 **v1.2.43** 기준입니다.
 
 ## Blogger 설치
 
