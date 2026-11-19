@@ -1,505 +1,272 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olivia Sanchez - Graphics Designer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이력서 | JUST TECH</title>
+<style>
+    :root{ --line:#333; --soft:#f4f5f6; --ink:#111; }
+    *{
+        margin:0; padding:0; box-sizing:border-box;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+    }
+    html,body{ background:#ffffff; color:var(--ink); }
+    body{
+        font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+        font-size:13px;
+        line-height:1.5;
+        padding:24px 12px 64px;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9ecef;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            color: #333;
-        }
+    /* ===== A4 규격 ===== */
+    .resume{
+        width:100%;
+        max-width:210mm;
+        min-height:297mm;
+        margin:0 auto;
+        padding:18mm 16mm;
+        background:#ffffff;
+        border:1px solid #e3e3e3;
+    }
 
-        /* ================= A4 규격 컨테이너 (2페이지 자동 넘김) ================= */
-        .resume-container {
-            display: flex;
-            width: 210mm;
-            min-height: 297mm; 
-            height: auto; 
-            background-color: #ffffff;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 5px 15px rgba(0,0,0,0.08);
-            position: relative;
-            
-            transform: scale(0.85);
-            transform-origin: top center;
-            margin-bottom: -50px;
-        }
+    .resume > h1{
+        font-size:26px;
+        font-weight:700;
+        letter-spacing:.5em;
+        text-indent:.5em;
+        text-align:center;
+        margin:0 0 26px;
+    }
 
-        /* ===== 왼쪽 컬럼 ===== */
-        .left-column {
-            width: 35%;
-            background-color: #dbe4ea;
-            padding: 0 30px 40px 30px;
-            position: relative;
-            z-index: 1;
-        }
+    section{ margin-bottom:20px; }
+    section > h2{
+        font-size:14px;
+        font-weight:700;
+        margin:0 0 8px;
+        padding-bottom:5px;
+        border-bottom:2px solid var(--line);
+    }
 
-        .profile-section {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            margin-bottom: 30px;
-        }
+    table{ width:100%; border-collapse:collapse; table-layout:fixed; }
+    th,td{
+        border:1px solid var(--line);
+        padding:7px 9px;
+        font-size:12.5px;
+        vertical-align:middle;
+        word-break:keep-all;
+        overflow-wrap:anywhere;
+    }
+    th{ background:var(--soft); font-weight:700; text-align:center; color:#222; }
+    td{ text-align:left; }
+    td.c{ text-align:center; }
 
-        .profile-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 150px;
-            background-color: #3a3a3a;
-            z-index: -1;
-        }
+    /* 인적사항 + 사진 */
+    .top{ display:flex; gap:14px; align-items:stretch; }
+    .top .info{ flex:1 1 auto; min-width:0; }
+    .photo{
+        flex:0 0 78px; width:78px;
+        border:1px solid var(--line);
+        background:#fafafa;
+        display:flex; align-items:center; justify-content:center;
+        text-align:center;
+        font-size:11px; color:#888;
+    }
 
-        .profile-arch-bg {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            height: 230px;
-            background-color: #dbe4ea;
-            border-radius: 0 0 150px 150px;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            padding-bottom: 10px;
-        }
+    ul{ list-style:none; }
+    li{ position:relative; padding-left:11px; font-size:12.5px; }
+    li:before{ content:"·"; position:absolute; left:0; }
 
-        .profile-pic {
-            width: 190px;
-            height: 190px;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: center top;
-            border: 4px solid #dbe4ea;
-            z-index: 2;
-            transition: opacity 0.3s;
-        }
+    .sign{
+        margin-top:34px;
+        text-align:center;
+        font-size:13px;
+    }
+    .sign .date{ margin-bottom:14px; color:#444; }
+    .sign .name{ margin-top:10px; font-size:15px; font-weight:700; }
+    .sign .name span{ font-weight:400; font-size:12px; color:#666; }
 
-        .contact-info {
-            margin-bottom: 40px;
-            position: relative;
-            z-index: 2;
-            transition: opacity 0.3s;
-        }
+    .btn{
+        position:fixed; right:20px; bottom:20px; z-index:9;
+        border:0; border-radius:999px;
+        background:#1f7a5c; color:#fff;
+        font-family:inherit; font-size:14px; font-weight:700;
+        padding:12px 22px; cursor:pointer;
+        box-shadow:0 8px 20px rgba(0,0,0,.18);
+    }
+    .btn:hover{ background:#17634a; }
 
-        .contact-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 12px;
-            color: #555;
-        }
+    @media (max-width:640px){
+        body{ padding:12px 8px 56px; }
+        .resume{ min-height:auto; padding:20px 14px; border:0; }
+        .resume > h1{ font-size:22px; }
+        .photo{ flex:0 0 64px; width:64px; }
+        th,td{ padding:6px; font-size:12px; }
+        .btn{ right:14px; bottom:14px; font-size:13px; padding:11px 18px; }
+    }
 
-        .contact-item i { width: 25px; font-size: 14px; color: #333; }
-
-        .left-column h3 {
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            color: #222;
+    @media print{
+        @page{ size:A4; margin:12mm; }
+        body{ padding:0; background:#fff; }
+        .resume{
+            max-width:none;
+            min-height:0;
+            padding:0;
+            border:0;
         }
-
-        .education-item { margin-bottom: 20px; }
-        .education-item h4 { font-size: 14px; margin-bottom: 3px; color: #222; }
-        .education-item p { font-size: 12px; color: #555; margin-bottom: 2px; }
-        .education-item .date { font-size: 12px; color: #777; }
-
-        .left-column ul { list-style-type: none; margin-bottom: 40px; }
-        .left-column ul li {
-            font-size: 13px;
-            color: #444;
-            margin-bottom: 8px;
-            position: relative;
-            padding-left: 15px;
-        }
-        .left-column ul li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #444;
-            font-size: 16px;
-            line-height: 1;
-        }
-
-        /* ===== 오른쪽 컬럼 ===== */
-        .right-column {
-            width: 65%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-section {
-            background-color: #3a3a3a;
-            color: #ffffff;
-            padding: 60px 40px 40px 40px;
-        }
-
-        .header-section h1 {
-            font-size: 32px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            position: relative; /* 블라인드 텍스트 겹치기 위함 */
-            transition: color 0.3s;
-        }
-        
-        /* 블라인드 모드일 때 이름을 대체할 가상 요소 */
-        .header-section h1::after {
-            content: "지원자";
-            position: absolute;
-            left: 0;
-            top: 0;
-            color: #fff;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .header-section h2 { font-size: 18px; font-weight: 400; letter-spacing: 1px; color: #e0e0e0; }
-
-        .content-section {
-            padding: 40px;
-            background-color: #ffffff;
-            flex-grow: 1;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            color: #222;
-        }
-
-        .section-title i { margin-right: 15px; font-size: 18px; color: #333; }
-
-        .about-me p {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 40px;
-            text-align: justify;
-        }
-
-        .work-experience { margin-bottom: 40px; }
-        .job-item { 
-            display: flex; 
-            margin-bottom: 25px; 
-            page-break-inside: avoid; /* 인쇄 시 페이지 중간에서 잘리지 않도록 설정 */
-            break-inside: avoid;
-        }
-        .job-dates {
-            width: 80px;
-            flex-shrink: 0;
-            font-size: 12px;
-            font-weight: bold;
-            color: #444;
-            line-height: 1.4;
-        }
-        .job-details {
-            padding-left: 20px;
-            border-left: 1px solid #ccc;
-            flex-grow: 1;
-            padding-bottom: 10px;
-        }
-        .job-details h4 { font-size: 15px; color: #222; margin-bottom: 3px; }
-        .job-details h5 { font-size: 12px; font-weight: normal; color: #666; margin-bottom: 10px; }
-        .job-details ul { list-style-type: disc; padding-left: 15px; }
-        .job-details ul li { font-size: 12px; color: #555; margin-bottom: 4px; line-height: 1.5; }
-
-        .references-container { display: flex; justify-content: space-between; gap: 20px; }
-        .reference-item { flex: 1; page-break-inside: avoid; break-inside: avoid; }
-        .reference-item h4 { font-size: 15px; color: #333; margin-bottom: 3px; }
-        .reference-item p { font-size: 13px; color: #777; margin-bottom: 10px; }
-        .reference-contact { font-size: 11px; color: #555; line-height: 1.6; }
-        .reference-contact span { font-weight: bold; color: #333; }
-
-        /* ================= 버튼 영역 ================= */
-        .button-group {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 9999;
-        }
-
-        .btn-blind { 
-            background-color: #d9534f; 
-            color: #fff;
-            border: none;
-            padding: 15px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-blind:hover { 
-            background-color: #c9302c; 
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        /* ================= 블라인드 모드 (인쇄용) ================= */
-        /* 자바스크립트로 body에 .blind-mode 클래스가 추가되면 작동 */
-        body.blind-mode .profile-pic {
-            opacity: 0; /* 사진 숨김 */
-        }
-        body.blind-mode .header-section h1 {
-            color: transparent; /* 이름 글자색 투명하게 */
-        }
-        body.blind-mode .header-section h1::after {
-            opacity: 1; /* "지원자" 텍스트 보이게 */
-        }
-        body.blind-mode .contact-info {
-            opacity: 0; /* 연락처 정보 숨김 */
-        }
-
-        /* ================= 반응형 (모바일 화면) ================= */
-        @media (max-width: 850px) {
-            body { padding: 10px; }
-            .resume-container {
-                transform: scale(1);
-                width: 100%;
-                flex-direction: column;
-                margin-bottom: 0;
-            }
-            .left-column, .right-column { width: 100%; }
-            .profile-section::before { height: 100px; }
-            .profile-arch-bg { height: 180px; border-radius: 0 0 100px 100px; }
-            .profile-pic { width: 140px; height: 140px; }
-            .references-container { flex-direction: column; gap: 20px; }
-        }
-
-        /* ================= 실제 인쇄(Print) 전용 설정 ================= */
-        @media print {
-            @page {
-                size: A4;
-                margin: 0; /* 브라우저 여백 제거 */
-            }
-            body {
-                background-color: #fff;
-                padding: 0;
-                margin: 0;
-            }
-            .resume-container {
-                transform: scale(1); /* 인쇄 시 원래 크기로 복원 */
-                box-shadow: none;
-                margin: 0;
-                width: 210mm;
-                min-height: 297mm;
-                height: auto;
-            }
-            .button-group {
-                display: none; /* 인쇄 시 버튼 숨김 */
-            }
-        }
-    </style>
+        .btn{ display:none !important; }
+        section{ break-inside:avoid; }
+    }
+</style>
 </head>
 <body>
 
-    <!-- 블라인드 PDF 저장 버튼만 남김 -->
-    <div class="button-group">
-        <button class="btn-blind" onclick="printBlind()">
-            <i class="fas fa-user-secret"></i> 블라인드 PDF 저장
-        </button>
-    </div>
+<main class="resume">
+    <h1>이력서</h1>
 
-    <div class="resume-container">
-        
-        <!-- 왼쪽 영역 -->
-        <div class="left-column">
-            <div class="profile-section">
-                <div class="profile-arch-bg">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Olivia Sanchez" class="profile-pic">
-                </div>
+    <!-- 인적사항 -->
+    <section>
+        <h2>인적사항</h2>
+        <div class="top">
+            <div class="info">
+                <table>
+                    <colgroup>
+                        <col style="width:22%"><col style="width:28%">
+                        <col style="width:22%"><col style="width:28%">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>성명</th><td>김준동</td>
+                            <th>생년월일</th><td>1985. 03. 12</td>
+                        </tr>
+                        <tr>
+                            <th>연락처</th><td>010-1234-5678</td>
+                            <th>이메일</th><td>ssii@naver.com</td>
+                        </tr>
+                        <tr>
+                            <th>주소</th>
+                            <td colspan="3">경기도 화성시 동탄대로 123</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <!-- 연락처 정보 (블라인드 시 숨김) -->
-            <div class="contact-info">
-                <div class="contact-item"><i class="fas fa-phone-alt"></i><span>+123-456-7890</span></div>
-                <div class="contact-item"><i class="fas fa-envelope"></i><span>hello@reallygreatsite.com</span></div>
-                <div class="contact-item"><i class="fas fa-laptop"></i><span>www.reallygreatsite.com</span></div>
-                <div class="contact-item"><i class="fas fa-map-marker-alt"></i><span>123 Anywhere St., Any City</span></div>
-            </div>
-
-            <div>
-                <h3>Education</h3>
-                <div class="education-item">
-                    <h4>Bachelor of Design</h4>
-                    <p>Wardiere University</p>
-                    <p class="date">2006 - 2008</p>
-                </div>
-                <div class="education-item">
-                    <h4>Bachelor of Design</h4>
-                    <p>Wardiere University</p>
-                    <p class="date">2006 - 2008</p>
-                </div>
-            </div>
-
-            <div>
-                <h3>Expertise</h3>
-                <ul>
-                    <li>Digital Marketing</li>
-                    <li>Branding</li>
-                    <li>SEO</li>
-                    <li>Digital Marketing</li>
-                    <li>Copywriting</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3>Language</h3>
-                <ul>
-                    <li>English (Fluent)</li>
-                    <li>Malay (Fluent)</li>
-                    <li>Mandarin (Proficient)</li>
-                </ul>
-            </div>
+            <div class="photo">사진<br>(3 × 4)</div>
         </div>
+    </section>
 
-        <!-- 오른쪽 영역 -->
-        <div class="right-column">
-            <div class="header-section">
-                <h1>Olivia Sanchez</h1>
-                <h2>Graphics Designer</h2>
-            </div>
+    <!-- 학력사항 -->
+    <section>
+        <h2>학력사항</h2>
+        <table>
+            <colgroup>
+                <col style="width:26%"><col style="width:32%">
+                <col style="width:26%"><col style="width:16%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>기간</th><th>학교명</th><th>전공</th><th>졸업구분</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="c">2006. 03 ~ 2010. 02</td>
+                    <td>한국산업기술대학교</td>
+                    <td>기계공학과</td>
+                    <td class="c">졸업</td>
+                </tr>
+                <tr>
+                    <td class="c">2003. 03 ~ 2006. 02</td>
+                    <td>○○고등학교</td>
+                    <td>인문계</td>
+                    <td class="c">졸업</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-            <div class="content-section">
-                <div class="about-me">
-                    <div class="section-title"><i class="fas fa-user"></i><span>About Me</span></div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                </div>
+    <!-- 경력사항 -->
+    <section>
+        <h2>경력사항</h2>
+        <table>
+            <colgroup>
+                <col style="width:26%"><col style="width:26%">
+                <col style="width:20%"><col style="width:28%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>기간</th><th>회사명</th><th>부서 / 직위</th><th>담당업무</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="c">2015. 03 ~ 현재</td>
+                    <td>(주)저스트테크</td>
+                    <td class="c">자동화설비팀 / 팀장</td>
+                    <td>로봇·조립·검사 설비 설계 및 구축</td>
+                </tr>
+                <tr>
+                    <td class="c">2010. 03 ~ 2015. 02</td>
+                    <td>○○정밀(주)</td>
+                    <td class="c">설비기술팀 / 대리</td>
+                    <td>자동화 설비 유지보수 및 개선</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-                <div class="work-experience">
-                    <div class="section-title"><i class="fas fa-briefcase"></i><span>Work Experience</span></div>
-                    
-                    <div class="job-item">
-                        <div class="job-dates">2020<br>-<br>2023</div>
-                        <div class="job-details">
-                            <h4>Ginyard International Co.</h4>
-                            <h5>Product Design Manager</h5>
-                            <ul>
-                                <li>Working with the wider development team.</li>
-                                <li>Manage website design, content, and SEO Marketing. Branding and Logo Design</li>
-                            </ul>
-                        </div>
-                    </div>
+    <!-- 자격 및 면허 -->
+    <section>
+        <h2>자격 및 면허</h2>
+        <table>
+            <colgroup>
+                <col style="width:26%"><col style="width:40%"><col style="width:34%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>취득일</th><th>자격명</th><th>발급기관</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="c">2009. 05</td>
+                    <td>일반기계기사</td>
+                    <td class="c">한국산업인력공단</td>
+                </tr>
+                <tr>
+                    <td class="c">2012. 11</td>
+                    <td>설비보전기사</td>
+                    <td class="c">한국산업인력공단</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-                    <div class="job-item">
-                        <div class="job-dates">2019<br>-<br>2020</div>
-                        <div class="job-details">
-                            <h4>Arowwai Industries</h4>
-                            <h5>Product Design Manager</h5>
-                            <ul>
-                                <li>Working with the wider development team.</li>
-                                <li>Manage website design, content, and SEO Marketing. Branding and Logo Design</li>
-                            </ul>
-                        </div>
-                    </div>
+    <!-- 자기소개 -->
+    <section>
+        <h2>자기소개</h2>
+        <ul>
+            <li>산업 자동화 설비의 설계·제작·현장 적용을 10년 이상 수행해 왔습니다.</li>
+            <li>로봇 조립, 검사, 포장 공정 자동화를 중심으로 생산성과 품질 안정성을 함께 개선해 왔습니다.</li>
+            <li>현장 문제를 우선 진단하고, 유지보수가 쉬운 구조로 설비를 표준화하는 것을 강점으로 합니다.</li>
+        </ul>
+    </section>
 
-                    <div class="job-item">
-                        <div class="job-dates">2017<br>-<br>2019</div>
-                        <div class="job-details">
-                            <h4>Ginyard International Co.</h4>
-                            <h5>Product Design Manager</h5>
-                            <ul>
-                                <li>Working with the wider development team.</li>
-                                <li>Manage website design, content, and SEO Marketing. Branding and Logo Design</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="job-item">
-                        <div class="job-dates">2017<br>-<br>2019</div>
-                        <div class="job-details">
-                            <h4>Arowwai Industries</h4>
-                            <h5>Product Design Manager</h5>
-                            <ul>
-                                <li>Working with the wider development team.</li>
-                                <li>Manage website design, content, and SEO Marketing. Branding and Logo Design</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- 2페이지 넘김 테스트를 위한 추가 내용 -->
-                    <div class="job-item">
-                        <div class="job-dates">2015<br>-<br>2017</div>
-                        <div class="job-details">
-                            <h4>Previous Company</h4>
-                            <h5>Junior Designer</h5>
-                            <ul>
-                                <li>Assisted senior designers with daily tasks.</li>
-                                <li>Created wireframes and prototypes.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="references">
-                    <div class="section-title"><i class="fas fa-book-open"></i><span>References</span></div>
-                    <div class="references-container">
-                        <div class="reference-item">
-                            <h4>Harumi Kobayashi</h4>
-                            <p>Wardiere Inc. / CEO</p>
-                            <div class="reference-contact">
-                                <span>Phone:</span> 123-456-7890<br>
-                                <span>Email:</span> hello@reallygreatsite.com
-                            </div>
-                        </div>
-                        <div class="reference-item">
-                            <h4>Bailey Dupont</h4>
-                            <p>Wardiere Inc. / CEO</p>
-                            <div class="reference-contact">
-                                <span>Phone:</span> 123-456-7890<br>
-                                <span>Email:</span> hello@reallygreatsite.com
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+    <div class="sign">
+        <p class="date" id="today"></p>
+        <p>위의 기재 사항은 사실과 틀림없습니다.</p>
+        <p class="name">김준동 <span>(서명)</span></p>
     </div>
+</main>
 
-    <!-- 블라인드 인쇄를 위한 자바스크립트 -->
-    <script>
-        function printBlind() {
-            // body에 blind-mode 클래스 추가 (이름, 연락처, 사진 숨김)
-            document.body.classList.add('blind-mode');
-            
-            // 인쇄 창 띄우기
-            window.print();
-            
-            // 인쇄 창이 닫힌 후 원래 상태로 복구 (약간의 딜레이를 줌)
-            setTimeout(function() {
-                document.body.classList.remove('blind-mode');
-            }, 1000);
-        }
-    </script>
+<button class="btn" type="button" onclick="window.print()">인쇄 · PDF 저장</button>
+
+<script>
+    (function(){
+        var d=new Date();
+        var s=d.getFullYear()+'년 '+String(d.getMonth()+1).padStart(2,'0')+'월 '+String(d.getDate()).padStart(2,'0')+'일';
+        var el=document.getElementById('today');
+        if(el)el.textContent=s;
+    })();
+</script>
 </body>
 </html>
