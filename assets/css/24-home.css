@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.33 */
+/* Reddit-style Blogger home landing — v1.2.34 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -859,8 +859,8 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
 }
 
 /* 제목 자간 확대 */
-html.jt-home-page .jt-landing h1,
-html.jt-home-page .jt-landing h2{letter-spacing:.02em}
+html.jt-home-page body .jt-landing h1,
+html.jt-home-page body .jt-landing h2{letter-spacing:.02em}
 html.jt-home-page .jt-landing .jt-hz-title,
 html.jt-home-page .jt-landing .jt-project-title{letter-spacing:.01em}
 
