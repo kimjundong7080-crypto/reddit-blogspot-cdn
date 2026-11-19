@@ -1030,6 +1030,17 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     var HOME_TITLE='JUST TECH | 산업 자동화·로봇·설비 기술 아카이브';
     var HOME_DESC='로봇·조립·검사·포장 설비까지 산업 자동화 현장의 설계·제작·적용 사례와 기술 자료를 정리한 JUST TECH 블로그입니다.';
     var FALLBACK_DESC='산업 자동화·로봇·설비 기술 자료를 기록하는 JUST TECH 블로그입니다.';
+    if(/\.blogspot\.com$/i.test(location.hostname)){
+      var bsTarget=ORIGIN+location.pathname+location.search;
+      var bsCanonical=document.querySelector('link[rel="canonical"]');
+      if(bsCanonical)bsCanonical.setAttribute('href',bsTarget);
+      else{var bsLink=document.createElement('link');bsLink.rel='canonical';bsLink.href=bsTarget;(document.head||document.getElementsByTagName('head')[0]).appendChild(bsLink);}
+      var bsRobots=document.querySelector('meta[name="robots"]');
+      if(!bsRobots){bsRobots=document.createElement('meta');bsRobots.setAttribute('name','robots');(document.head||document.getElementsByTagName('head')[0]).appendChild(bsRobots);}
+      bsRobots.setAttribute('content','noindex, nofollow');
+      location.replace(bsTarget);
+      return;
+    }
     function head(){return document.head||document.getElementsByTagName('head')[0];}
     function fillMeta(attr,key,value){
       if(!value)return;
@@ -1092,6 +1103,11 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       document.title=HOME_TITLE;
     }else if(isItem&&rawTitle&&rawTitle.indexOf(SITE)<0){
       document.title=rawTitle+' | '+SITE;
+    }
+    if(!head().querySelector('meta[name="robots"]')){
+      var isSearchPage=location.pathname==='/search';
+      var isArchivePage=/^\/\d{4}\/\d{2}\/?$/.test(location.pathname);
+      if(isSearchPage||isArchivePage)fillMeta('name','robots','noindex, follow');
     }
     if(!head().querySelector('meta[name="robots"]')&&(isItem||isHome)){
       fillMeta('name','robots','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
