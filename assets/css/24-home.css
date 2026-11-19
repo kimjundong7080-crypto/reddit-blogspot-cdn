@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.37 */
+/* Reddit-style Blogger home landing — v1.2.38 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -437,25 +437,25 @@ html.jt-home-page .jt-home-footer-inner{
 }
 html.jt-home-page .jt-home-footer-brand{
   margin:0 0 6px;
-  font-size:18px;
+  font-size:20px;
   font-weight:700;
   color:#fff;
 }
 html.jt-home-page .jt-home-footer-desc{
   margin:0;
-  font-size:12px;
-  line-height:1.6;
+  font-size:14px;
+  line-height:1.7;
   color:rgba(255,255,255,.62);
 }
 html.jt-home-page .jt-home-footer-nav{
   display:flex;
   flex-wrap:wrap;
-  gap:8px 18px;
+  gap:10px 20px;
   padding-top:2px;
 }
 html.jt-home-page .jt-home-footer-nav a{
   color:rgba(255,255,255,.82) !important;
-  font-size:12px;
+  font-size:14px;
   text-decoration:none !important;
 }
 html.jt-home-page .jt-home-footer-nav a:hover{color:#fff !important}
@@ -464,7 +464,7 @@ html.jt-home-page .jt-home-footer-copy{
   margin:8px 0 0;
   padding-top:16px;
   border-top:1px solid rgba(255,255,255,.1);
-  font-size:11px;
+  font-size:13px;
   color:rgba(255,255,255,.45);
 }
 @media screen and (max-width:600px){
@@ -819,14 +819,14 @@ html.jt-home-page .jt-home-footer-inner{
 }
 html.jt-home-page .jt-home-footer-contact p{
   margin:0 0 6px;
-  font-size:10px;
+  font-size:11px;
   font-weight:700;
   letter-spacing:.14em;
   color:rgba(255,255,255,.45);
 }
 html.jt-home-page .jt-home-footer-contact a{
   color:#dff5ea !important;
-  font-size:12px;
+  font-size:14px;
   text-decoration:none !important;
 }
 html.jt-home-page .jt-home-footer-contact a:hover{color:#fff !important}
