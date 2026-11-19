@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.30 */
+/* Reddit-style Blogger YouTube post list — v1.2.31 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -692,22 +692,32 @@
   })();
 
   (function(){
-    if(window.__jtResumePage)return; window.__jtResumePage=1;
-    if(location.pathname!=='/p/resume.html')return;
-    if(!window.fetch)return;
-    var RESUME_URL='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/pages/resume.html';
-    var RESUME_FALLBACK='https://raw.githubusercontent.com/kimjundong7080-crypto/reddit-blogspot-cdn/main/pages/resume.html';
+    if(window.__jtStaticPage)return; window.__jtStaticPage=1;
+    var PAGES={
+      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서'},
+      '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지'},
+      '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지'}
+    };
+    var page=PAGES[location.pathname];
+    if(!page||!window.fetch)return;
+    var BASE='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/';
+    var RAW='https://raw.githubusercontent.com/kimjundong7080-crypto/reddit-blogspot-cdn/main/';
+    var FILE_URL=BASE+page.file;
     function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
-    function mount(html){
-      var host=document.getElementById('jtResumeHost');
-      if(!host){
-        host=document.createElement('div');
-        host.id='jtResumeHost';
+    function staticHost(){
+      var el=document.getElementById('jtStaticHost');
+      if(!el){
+        el=document.createElement('div');
+        el.id='jtStaticHost';
         var area=document.getElementById('page_body')||document.querySelector('.main_content_container')||document.body;
-        area.insertBefore(host,area.firstChild);
+        area.insertBefore(el,area.firstChild);
       }
+      return el;
+    }
+    function mount(html){
+      var box=staticHost();
       var frame=document.createElement('iframe');
-      frame.setAttribute('title','이력서');
+      frame.setAttribute('title',page.frame);
       frame.setAttribute('scrolling','no');
       frame.style.height='1200px';
       frame.srcdoc=html;
@@ -723,29 +733,23 @@
         fit();setTimeout(fit,400);setTimeout(fit,1400);
         try{frame.contentWindow.addEventListener('resize',fit);}catch(e){}
       });
-      host.appendChild(frame);
+      box.appendChild(frame);
     }
     ready(function(){
       if(document.querySelector('.post-body.entry-content'))return;
       if(!document.querySelector('.status-msg-body'))return;
-      document.documentElement.classList.add('jt-resume-page');
-      document.title='이력서 | JUST TECH';
+      document.documentElement.classList.add('jt-static-page');
+      document.title=page.title;
       if(!document.querySelector('meta[name="robots"]')){
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
         (document.head||document.getElementsByTagName('head')[0]).appendChild(rb);
       }
-      fetch(RESUME_URL,{cache:'force-cache'})
+      fetch(FILE_URL,{cache:'force-cache'})
         .then(function(r){if(!r.ok)throw 0;return r.text();})
-        ['catch'](function(){return fetch(RESUME_FALLBACK).then(function(r){if(!r.ok)throw 0;return r.text();});})
+        ['catch'](function(){return fetch(RAW+page.file).then(function(r){if(!r.ok)throw 0;return r.text();});})
         .then(mount)
         ['catch'](function(){
-          var host=document.getElementById('jtResumeHost');
-          if(!host){
-            host=document.createElement('div');host.id='jtResumeHost';
-            var area=document.getElementById('page_body')||document.body;
-            area.insertBefore(host,area.firstChild);
-          }
-          host.innerHTML='<p style="padding:32px;text-align:center">이력서를 불러오지 못했습니다. <a href="'+RESUME_URL+'">원본 열기</a></p>';
+          staticHost().innerHTML='<p style="padding:32px;text-align:center">'+page.label+' 페이지를 불러오지 못했습니다. <a href="'+FILE_URL+'">원본 열기</a></p>';
         });
     });
   })();

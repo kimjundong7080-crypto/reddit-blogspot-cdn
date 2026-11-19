@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.30 */
+/* Reddit-style Blogger YouTube post list — v1.2.31 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -306,16 +306,16 @@ html[data-theme="dark"] .post-body > .jt-about [style*="background:#14201b"]{
   background:#0b1512 !important;
   border:1px solid #24322c !important;
 }
-html.jt-resume-page .status-msg-body,
-html.jt-resume-page .status-msg-wrap{display:none !important}
-html.jt-resume-page .sidebar-container,
-html.jt-resume-page .post-outer-container{display:none !important}
-html.jt-resume-page #jtResumeHost{
+html.jt-static-page .status-msg-body,
+html.jt-static-page .status-msg-wrap{display:none !important}
+html.jt-static-page .sidebar-container,
+html.jt-static-page .post-outer-container{display:none !important}
+html.jt-static-page #jtStaticHost{
   max-width:1100px;
   margin:0 auto;
   padding:12px 12px 48px;
 }
-html.jt-resume-page #jtResumeHost iframe{
+html.jt-static-page #jtStaticHost iframe{
   display:block;
   width:100%;
   border:0;

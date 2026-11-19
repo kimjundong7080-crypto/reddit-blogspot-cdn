@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webinar Business - Salford & Co.</title>
+    
+    <!-- Google Fonts: Playfair Display (제목용) & Lato (본문용) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons (아이콘 라이브러리) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+    <style>
+        :root {
+            --primary-navy: #0a1a2f;
+            --accent-blue: #1b3a5c;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --bg-white: #ffffff;
+            --bg-soft: #f8fafc;
+            --border-light: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-soft);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 메인 카드 컨테이너 */
+        .webinar-card {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--bg-white);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* 1. 히어로 섹션 (이미지 + 텍스트 오버레이) */
+        .hero-section {
+            position: relative;
+            height: 500px;
+            background-color: #d1d5db; /* 이미지 로딩 전 배경색 */
+            overflow: hidden;
+        }
+
+        .hero-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+        }
+
+        /* 이미지 위에 그라데이션 오버레이 (가독성 확보) */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10, 26, 47, 0.1) 0%, rgba(10, 26, 47, 0.4) 60%, rgba(10, 26, 47, 0.85) 100%);
+        }
+
+        /* 이름표 (Name Tags) */
+        .name-tag {
+            position: absolute;
+            background-color: var(--primary-navy);
+            color: #ffffff;
+            padding: 8px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .name-tag.daniel {
+            top: 40%;
+            left: 5%;
+        }
+
+        .name-tag.aaron {
+            top: 40%;
+            right: 5%;
+        }
+
+        /* 메인 타이틀 */
+        .main-title {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #ffffff;
+            z-index: 2;
+            width: 90%;
+        }
+
+        .main-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        /* 2. 상세 정보 섹션 */
+        .info-section {
+            padding: 48px 48px 32px;
+            text-align: center;
+        }
+
+        .info-description {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .info-description strong {
+            color: var(--primary-navy);
+        }
+
+        /* 이벤트 메타 정보 (날짜, 장소) */
+        .event-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            text-align: left;
+            background-color: var(--bg-soft);
+            padding: 20px 28px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .meta-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .meta-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-navy);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            color: var(--primary-navy);
+            font-size: 1.5rem;
+        }
+
+        .meta-content h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 4px;
+        }
+
+        .meta-content p {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* 3. 하단 액션 바 (등록 버튼 + 연락처) */
+        .action-bar {
+            background-color: var(--primary-navy);
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .register-btn {
+            background-color: #ffffff;
+            color: var(--primary-navy);
+            font-family: 'Lato', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .register-btn:hover {
+            background-color: #e2e8f0;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .register-btn:active {
+            transform: scale(0.98);
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 32px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-item i {
+            font-size: 1.3rem;
+            opacity: 0.8;
+        }
+
+        /* 4. 스크롤 애니메이션 (Intersection Observer) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 순차적 애니메이션을 위한 지연 클래스 */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* 5. 반응형 디자인 */
+        @media (max-width: 768px) {
+            .webinar-card {
+                border-radius: 16px;
+            }
+
+            .hero-section {
+                height: 350px;
+            }
+
+            .main-title h1 {
+                font-size: 3rem;
+            }
+
+            .name-tag {
+                font-size: 0.85rem;
+                padding: 6px 16px;
+            }
+
+            .info-section {
+                padding: 32px 24px;
+            }
+
+            .event-meta {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 24px;
+                text-align: center;
+            }
+
+            .contact-info {
+                justify-content: center;
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                height: 280px;
+            }
+
+            .main-title h1 {
+                font-size: 2.2rem;
+            }
+
+            .info-description {
+                font-size: 1rem;
+            }
+
+            .meta-item {
+                padding: 16px;
+            }
+        }
+
+        /* 접근성: 모션 감소 설정을 선호하는 사용자를 위한 배려 */
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                transition: none;
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="webinar-card">
+        <!-- 히어로 섹션 (이미지 영역) -->
+        <section class="hero-section reveal">
+            <!-- 지연 로딩(Lazy Loading)이 적용된 이미지 -->
+            <!-- 실제 서비스 시에는 아래 src에 적절한 이미지 URL을 넣고, placeholder를 활용하세요 -->
+            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop" 
+                 alt="비즈니스 웨비나 발표자 두 명" 
+                 loading="lazy" 
+                 width="900" 
+                 height="500"
+                 onerror="this.src='https://placehold.co/900x500/e2e8f0/0a1a2f?text=Webinar+Business'">
+            
+            <div class="hero-overlay"></div>
+            
+            <div class="name-tag daniel">Daniel Gallego</div>
+            <div class="name-tag aaron">Aaron Loeb</div>
+            
+            <div class="main-title">
+                <h1>WEBINAR<br>BUSINESS</h1>
+            </div>
+        </section>
+
+        <!-- 상세 정보 섹션 -->
+        <section class="info-section">
+            <p class="info-description reveal">
+                Join this inspiring webinar and discover effective strategies for <strong>growing your business</strong> in the digital age!
+            </p>
+
+            <div class="event-meta">
+                <!-- 날짜 정보 카드 -->
+                <div class="meta-item reveal delay-1">
+                    <div class="meta-icon">
+                        <i class="ph ph-calendar-blank"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h3>Monday, 17 July 2025</h3>
+                        <p>07.00 AM – 10.00 AM</p>
+                    </div>
+                </div>
+
+                <!-- 장소 정보 카드 -->
+                <div class="meta-item reveal delay-2">
+                    <div class="meta-icon">
+                        <i class="ph ph-clock"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h3>Salford & Co.</h3>
+                        <p>123 Anywhere St., Any City</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 하단 액션 바 -->
+        <footer class="action-bar reveal delay-3">
+            <button class="register-btn" type="button">REGISTER NOW</button>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="ph ph-globe"></i>
+                    <span>123-456-7890</span>
+                </div>
+                <div class="contact-item">
+                    <i class="ph ph-envelope-simple"></i>
+                    <span>hello@reallygreatsite.com</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Intersection Observer를 사용한 스크롤 애니메이션 (Scroll Reveal)
+            const revealElements = document.querySelectorAll('.reveal');
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        // 한 번 애니메이션이 실행된 요소는 관찰을 중지 (성능 최적화)
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: null, // 뷰포트 기준
+                rootMargin: '0px',
+                threshold: 0.15 // 요소가 15% 이상 보일 때 애니메이션 실행
+            });
+
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // 2. 'REGISTER NOW' 버튼 클릭 이벤트 (데모용)
+            const registerBtn = document.querySelector('.register-btn');
+            registerBtn.addEventListener('click', () => {
+                // 실제 서비스에서는 여기에 등록 폼으로 이동하는 로직을 추가하세요.
+                alert('웨비나 등록 페이지로 이동합니다. (데모)');
+            });
+        });
+    </script>
+</body>
+</html>
