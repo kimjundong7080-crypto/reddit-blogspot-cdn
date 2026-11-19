@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.22 */
+/* Reddit-style Blogger YouTube post list — v1.2.23 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -543,6 +543,13 @@
     }
     function clean(s){
       return String(s||'')
+        .replace(/<[^>]*>/g,' ')
+        .replace(/&nbsp;|&#160;/gi,' ')
+        .replace(/&amp;/gi,'&')
+        .replace(/&lt;/gi,'<')
+        .replace(/&gt;/gi,'>')
+        .replace(/&quot;/gi,'"')
+        .replace(/&#39;/gi,"'")
         .replace(/\[(?:\/)?(?:md|rede|rade)\]/gi,' ')
         .replace(/\[youtube[^\]]*\]/gi,' ')
         .replace(/```[\s\S]*?```/g,' ')
@@ -597,7 +604,10 @@
       fillMeta('property','og:type','website');
       fillMeta('name','twitter:title',HOME_TITLE);
       setMeta('name','twitter:description',HOME_DESC);
-      if(!head().querySelector('meta[property="og:title"]'))setMeta('property','og:title',HOME_TITLE);
+      setMeta('property','og:title',HOME_TITLE);
+      var homeImage='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg';
+      if(!head().querySelector('meta[property="og:image"]'))setMeta('property','og:image',homeImage);
+      if(!head().querySelector('meta[name="twitter:image"]'))setMeta('name','twitter:image',homeImage);
       putLd('jt-ld-website',{'@context':'https://schema.org','@graph':[
         {'@type':'WebSite','@id':ORIGIN+'/#website','url':ORIGIN+'/p/home.html','name':SITE,
           'alternateName':'테크라이프월드','description':HOME_DESC,'inLanguage':'ko',
@@ -610,7 +620,7 @@
       ]});
     }else if(isItem){
       var canonical=(document.querySelector('link[rel=canonical]')||{}).href||(ORIGIN+location.pathname);
-      var initialDesc=cut(bodyText(),150)||FALLBACK_DESC;
+      var initialDesc=cut(bodyText(),150)||(headline+' 관련 산업 자동화 기술 자료와 적용 사례를 정리한 JUST TECH 글입니다.');
       setMeta('name','description',initialDesc);
       setMeta('property','og:description',initialDesc);
       setMeta('name','twitter:description',initialDesc);
