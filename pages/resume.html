@@ -101,6 +101,27 @@
     }
     .btn:hover{ background:#17634a; }
 
+    .jt-privacy-lock{
+        position:fixed; inset:0; z-index:9999;
+        display:flex; align-items:center; justify-content:center;
+        background:rgba(20,29,25,.58);
+        backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    }
+    .jt-privacy-lock[hidden]{ display:none; }
+    .jt-privacy-lock .card{
+        max-width:420px; margin:20px; padding:24px;
+        border:1px solid rgba(255,255,255,.75); border-radius:16px;
+        background:#ffffff; color:#111; text-align:center;
+        box-shadow:0 18px 48px rgba(0,0,0,.28);
+    }
+    .jt-privacy-lock .card strong{ display:block; font-size:18px; margin-bottom:8px; }
+    .jt-privacy-lock .card p{ font-size:14px; line-height:1.6; color:#445049; }
+    .jt-privacy-lock .card button{
+        margin-top:16px; border:0; border-radius:999px;
+        background:#1f7a5c; color:#fff; padding:10px 18px;
+        font-family:inherit; font-size:14px; cursor:pointer;
+    }
+
     @media (max-width:640px){
         body{ padding:12px 8px 56px; }
         .resume{ min-height:auto; padding:20px 14px; border:0; }
@@ -111,19 +132,19 @@
     }
 
     @media print{
-        @page{ size:A4; margin:12mm; }
+        @page{ size:A4; margin:5mm; }
         html,body{ width:210mm; height:auto; overflow:visible; padding:0; margin:0; background:#fff; }
         .resume{
-            width:186mm;
-            max-width:186mm;
+            width:200mm;
+            max-width:200mm;
             min-height:0;
             margin:0 auto;
-            padding:8mm 10mm;
+            padding:6mm 8mm;
             border:0;
             break-inside:avoid;
             page-break-inside:avoid;
         }
-        .btn{ display:none !important; }
+        .btn,.jt-privacy-lock{ display:none !important; }
         section{ break-inside:avoid; page-break-inside:avoid; }
         table{ break-inside:avoid; page-break-inside:avoid; }
         th,td{ font-size:11px; padding:5px 7px; }
@@ -270,6 +291,14 @@
     </div>
 </main>
 
+<div class="jt-privacy-lock" id="jtPrivacyLock" hidden>
+    <div class="card" role="alertdialog" aria-modal="true" aria-labelledby="jtPrivacyTitle">
+        <strong id="jtPrivacyTitle">이력서 화면 보호</strong>
+        <p>마우스 우클릭이 차단되었습니다.<br>개인정보 보호를 위해 화면을 잠시 흐림 처리했습니다.</p>
+        <button type="button" id="jtPrivacyClose">확인하고 계속 보기</button>
+    </div>
+</div>
+
 <button class="btn" type="button" onclick="window.print()">인쇄 · PDF 저장</button>
 
 <script>
@@ -285,15 +314,29 @@
         }
         reveal();
 
-        document.addEventListener('contextmenu',function(event){event.preventDefault();});
-        document.addEventListener('dragstart',function(event){event.preventDefault();});
-        document.addEventListener('copy',function(event){event.preventDefault();});
+        var privacyLock=document.getElementById('jtPrivacyLock');
+        function lockScreen(){
+            if(privacyLock)privacyLock.hidden=false;
+            document.body.style.overflow='hidden';
+        }
+        function unlockScreen(){
+            if(privacyLock)privacyLock.hidden=true;
+            document.body.style.overflow='';
+        }
+        var closeLock=document.getElementById('jtPrivacyClose');
+        if(closeLock)closeLock.addEventListener('click',unlockScreen);
+
+        document.addEventListener('contextmenu',function(event){event.preventDefault();lockScreen();},true);
+        document.addEventListener('mousedown',function(event){if(event.button===2)lockScreen();},true);
+        document.addEventListener('dragstart',function(event){event.preventDefault();lockScreen();});
+        document.addEventListener('copy',function(event){event.preventDefault();lockScreen();});
         document.addEventListener('selectstart',function(event){event.preventDefault();});
         document.addEventListener('keydown',function(event){
             var k=(event.key||'').toLowerCase(),ctrl=event.ctrlKey||event.metaKey;
             if(event.key==='F12'||(ctrl&&(['a','c','s','u','p','x'].indexOf(k)>=0))||(ctrl&&event.shiftKey&&['i','j','c','k','s'].indexOf(k)>=0)){
-                event.preventDefault();
+                event.preventDefault();lockScreen();
             }
+            if(event.key==='Escape')unlockScreen();
         });
 
         var d=new Date();
