@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.8 */
+/* Reddit-style Blogger home landing — v1.2.9 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -206,14 +206,14 @@
       function playVideo(){
         video.preload='auto';
         if(video.readyState<1){try{video.load();}catch(e){}}
-        function start(){
+        function seekIntro(){
           try{video.currentTime=0.5;}catch(e){}
-          video.muted=true;
-          var p=video.play();
-          if(p&&p.catch)p.catch(function(){if(poster)poster.style.opacity='1';});
         }
-        if(video.readyState>=1)start();
-        else video.addEventListener('loadedmetadata',start,{once:true});
+        video.muted=true;
+        var p=video.play();
+        if(p&&p.catch)p.catch(function(){if(poster)poster.style.opacity='1';});
+        if(video.readyState>=1)seekIntro();
+        else video.addEventListener('loadedmetadata',seekIntro,{once:true});
       }
       function pauseVideo(){video.pause();if(poster)poster.style.opacity='1';}
       card.addEventListener('mouseenter',playVideo);
