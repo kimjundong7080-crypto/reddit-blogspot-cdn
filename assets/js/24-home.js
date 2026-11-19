@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.13 */
+/* Reddit-style Blogger home landing — v1.2.14 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -67,19 +67,16 @@
     var poster='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1000&q=75';
     var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
     var hzArrow='<svg class="jt-hz-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M15.707 8.707L8.707 15.707L7.293 14.293L12.586 9H0V7H12.586L7.293 1.707L8.707 0.292999L15.707 7.293C16.098 7.684 16.098 8.316 15.707 8.707Z"/></svg>';
-    var hzIndex=0;
-    function hzCard(title,description){
-      hzIndex++;
-      var index=('0'+hzIndex).slice(-2);
-      return '<article class="jt-hz-card"><span class="jt-hz-number">'+index+' / 06</span><div class="jt-hz-footer"><p class="jt-hz-desc">'+description+'</p><div class="jt-hz-title-row"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></div></article>';
+    function hzCard(title,poster,src){
+      return '<article class="jt-hz-card"><div class="jt-hz-media"><img class="jt-hz-poster" src="'+poster+'" alt="" loading="lazy" decoding="async"><video class="jt-hz-video" muted loop playsinline preload="none"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
     }
-    var hzCards=hzCard('3D Floor Plans','공간과 설비 배치를 직관적으로 계획합니다.')
-      +hzCard('Selections','자재와 사양을 효율적으로 선택합니다.')
-      +hzCard('Estimates','프로젝트 비용을 정확하게 산정합니다.')
-      +hzCard('Takeoffs','작업 범위와 물량을 체계적으로 분석합니다.')
-      +hzCard('Schedule','팀과 공정을 하나의 일정으로 관리합니다.')
-      +hzCard('Projects','프로젝트 자료와 진행 상황을 한곳에서 관리합니다.');
-    var hzSection='<section class="jt-hz-features" id="jt-features"><div class="jt-hz-container"><h2 class="jt-hz-header">Smarter Software, <span class="jt-hz-accent">Stronger Business.</span></h2><div class="jt-hz-track">'+hzCards+'</div></div></section>';
+    var hzCards=hzCard('3D Floor Plans','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg','https://pomf2.lain.la/f/1xdltask.mp4')
+      +hzCard('Selections','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-2.jpg','https://pomf2.lain.la/f/5znwgux4.mp4')
+      +hzCard('Estimates','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-3.jpg','https://pomf2.lain.la/f/g6nb4aus.mp4')
+      +hzCard('Takeoffs','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-4.jpg','https://pomf2.lain.la/f/wx4t7zlc.mp4')
+      +hzCard('Schedule','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-5.jpg','https://pomf2.lain.la/f/3c1gcz5g.mp4')
+      +hzCard('Projects','https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-6.jpg','https://pomf2.lain.la/f/0m5whhmk.mp4');
+    var hzSection='<section class="jt-hz-features" id="jt-features"><div class="jt-hz-container"><h2 class="jt-hz-header">Smarter Software, <span class="jt-hz-accent">Stronger Business.</span></h2><div class="jt-hz-carousel"><div class="jt-hz-viewport"><div class="jt-hz-track" id="jtHzTrack">'+hzCards+'</div></div></div><div class="jt-hz-controls"><button class="jt-hz-nav" id="jtHzPrev" type="button" aria-label="Previous"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12.756 18.495l1.989-1.99L8.239 10l6.505-6.506-1.989-1.989-7.499 7.5a1.409 1.409 0 000 1.99l7.5 7.5z"/></svg></button><button class="jt-hz-nav" id="jtHzNext" type="button" aria-label="Next"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M7.244 18.495l-1.989-1.99L11.761 10 5.256 3.494l1.989-1.989 7.5 7.5c.549.549.549 1.44 0 1.99l-7.5 7.5h-.001z"/></svg></button></div></div></section>';
     var landing=document.createElement('div');
     landing.className='jt-landing';
     landing.innerHTML=
@@ -112,6 +109,7 @@
     initLandingReveal();
     initHeroTyping();
     initServiceCeremony();
+    requestAnimationFrame(function(){initFeatureCarousel();});
     if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
   function initLandingReveal(){
@@ -267,6 +265,80 @@
         frame.srcdoc=html;
       }
     })['catch'](function(){});
+  }
+  function initFeatureCarousel(){
+    var track=document.getElementById('jtHzTrack');
+    if(!track||track.__jtHzReady)return;
+    track.__jtHzReady=1;
+    var viewport=track.parentElement;
+    var cards=Array.prototype.slice.call(track.children);
+    var prev=document.getElementById('jtHzPrev');
+    var next=document.getElementById('jtHzNext');
+    if(!cards.length||!prev||!next)return;
+    var index=0;
+    function gapSize(){
+      var cs=getComputedStyle(track);
+      return parseFloat(cs.columnGap||cs.gap)||0;
+    }
+    function stepSize(){
+      return cards[0].getBoundingClientRect().width+gapSize();
+    }
+    function visibleCount(){
+      var vw=viewport.getBoundingClientRect().width;
+      return Math.max(1,Math.round((vw+gapSize())/stepSize()));
+    }
+    function maxIndex(){
+      return Math.max(0,cards.length-visibleCount());
+    }
+    function render(){
+      index=Math.min(Math.max(index,0),maxIndex());
+      track.style.transform='translateX('+(-index*stepSize())+'px)';
+      prev.disabled=index===0;
+      next.disabled=index>=maxIndex();
+    }
+    prev.addEventListener('click',function(){index--;render();});
+    next.addEventListener('click',function(){index++;render();});
+    var resizeTimer;
+    window.addEventListener('resize',function(){
+      clearTimeout(resizeTimer);
+      resizeTimer=setTimeout(render,100);
+    });
+    render();
+    function initCardVideo(card,video,poster){
+      if(!video||video.__jtHoverReady)return;
+      video.__jtHoverReady=1;
+      function showPoster(){if(poster)poster.style.opacity='1';}
+      function hidePoster(){if(poster)poster.style.opacity='0';}
+      video.addEventListener('playing',hidePoster);
+      video.addEventListener('pause',showPoster);
+      video.addEventListener('error',showPoster);
+      video.addEventListener('timeupdate',function(){
+        if(!video.paused&&video.currentTime>0&&video.currentTime<0.5)video.currentTime=0.5;
+      });
+    }
+    cards.forEach(function(card){
+      var video=card.querySelector('.jt-hz-video');
+      if(!video)return;
+      var poster=card.querySelector('.jt-hz-poster');
+      initCardVideo(card,video,poster);
+      function playVideo(){
+        video.preload='auto';
+        if(video.readyState<1){try{video.load();}catch(e){}}
+        function seekIntro(){
+          try{video.currentTime=0.5;}catch(e){}
+        }
+        video.muted=true;
+        var p=video.play();
+        if(p&&p.catch)p.catch(function(){if(poster)poster.style.opacity='1';});
+        if(video.readyState>=1)seekIntro();
+        else video.addEventListener('loadedmetadata',seekIntro,{once:true});
+      }
+      function pauseVideo(){video.pause();if(poster)poster.style.opacity='1';}
+      card.addEventListener('mouseenter',playVideo);
+      card.addEventListener('mouseleave',pauseVideo);
+      card.addEventListener('focusin',playVideo);
+      card.addEventListener('focusout',pauseVideo);
+    });
   }
   function loadLandingProjects(){
     var grid=document.getElementById('jtLandingProjects');
