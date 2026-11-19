@@ -8,13 +8,20 @@
 <meta http-equiv="Pragma" content="no-cache">
 <title>이력서 | JUST TECH</title>
 <style>
-    :root{ --line:#333; --soft:#f4f5f6; --ink:#111; }
+    :root{
+        --ink:#172923;
+        --muted:#66766f;
+        --line:#dce6e1;
+        --soft:#f2f7f4;
+        --accent:#177456;
+        --accent-dark:#10563f;
+    }
     *{
         margin:0; padding:0; box-sizing:border-box;
         -webkit-print-color-adjust:exact !important;
         print-color-adjust:exact !important;
     }
-    html,body{ background:#ffffff; color:var(--ink); }
+    html,body{ background:#edf2ef; color:var(--ink); }
     body{
         font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
         font-size:13px;
@@ -22,6 +29,7 @@
         padding:24px 12px 64px;
         -webkit-user-select:none;
         user-select:none;
+        counter-reset:resume-section;
     }
 
     /* ===== A4 규격 ===== */
@@ -30,39 +38,116 @@
         max-width:210mm;
         min-height:297mm;
         margin:0 auto;
-        padding:18mm 16mm;
+        padding:15mm 16mm;
         background:#ffffff;
-        border:1px solid #e3e3e3;
+        border:1px solid #e3ebe6;
+        border-radius:16px;
+        box-shadow:0 18px 54px rgba(24,52,40,.09);
     }
 
-    .resume > h1{
-        font-size:26px;
+    .resume-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+        margin-bottom:25px;
+        padding:0 0 18px;
+        border-bottom:2px solid var(--ink);
+    }
+    .resume-head-copy{min-width:0}
+    .resume-kicker{
+        margin-bottom:7px;
+        color:var(--accent);
+        font-size:10px;
+        font-weight:800;
+        letter-spacing:.18em;
+    }
+    .resume > .resume-head h1{
+        font-size:30px;
         font-weight:700;
-        letter-spacing:.5em;
-        text-indent:.5em;
-        text-align:center;
-        margin:0 0 26px;
+        letter-spacing:.12em;
+        line-height:1.2;
+        margin:0;
     }
-
-    section{ margin-bottom:20px; }
+    .resume-subtitle{
+        margin-top:7px;
+        color:var(--muted);
+        font-size:12px;
+        letter-spacing:.02em;
+    }
+    .resume-brand{
+        flex:0 0 62px;
+        width:62px;
+        height:62px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        border:1px solid #d5e5dc;
+        border-radius:14px;
+        background:var(--soft);
+        color:var(--accent-dark);
+    }
+    .resume-brand strong{font-size:19px;line-height:1}
+    .resume-brand span{margin-top:5px;font-size:7px;font-weight:800;letter-spacing:.12em}
+    section{
+        margin-bottom:19px;
+        counter-increment:resume-section;
+    }
     section > h2{
+        display:flex;
+        align-items:center;
+        gap:9px;
         font-size:14px;
         font-weight:700;
-        margin:0 0 8px;
-        padding-bottom:5px;
-        border-bottom:2px solid var(--line);
+        margin:0 0 9px;
+        padding:0;
+        border:0;
+    }
+    section > h2:before{
+        content:counter(resume-section,"0");
+        display:inline-flex;
+        width:23px;
+        height:23px;
+        align-items:center;
+        justify-content:center;
+        border-radius:7px;
+        background:#e8f3ed;
+        color:var(--accent-dark);
+        font-size:10px;
+        font-weight:800;
+        letter-spacing:0;
+    }
+    section > h2:after{
+        content:"";
+        flex:1;
+        height:1px;
+        margin-left:3px;
+        background:var(--line);
     }
 
-    table{ width:100%; border-collapse:collapse; table-layout:fixed; }
-    th,td{
+    table{
+        width:100%;
         border:1px solid var(--line);
+        border-collapse:separate;
+        border-spacing:0;
+        border-radius:9px;
+        overflow:hidden;
+        table-layout:fixed;
+    }
+    th,td{
+        border:0;
+        border-right:1px solid var(--line);
+        border-bottom:1px solid var(--line);
         padding:7px 9px;
         font-size:12.5px;
         vertical-align:middle;
         word-break:keep-all;
         overflow-wrap:anywhere;
     }
-    th{ background:var(--soft); font-weight:700; text-align:center; color:#222; }
+    tr:last-child th,tr:last-child td{border-bottom:0}
+    th:last-child,td:last-child{border-right:0}
+    th{ background:var(--soft); font-weight:700; text-align:center; color:#3e554a; }
     td{ text-align:left; }
     td.c{ text-align:center; }
 
@@ -71,35 +156,40 @@
     .top .info{ flex:1 1 auto; min-width:0; }
     .photo{
         flex:0 0 78px; width:78px;
-        border:1px solid var(--line);
-        background:#fafafa;
+        border:1px dashed #b6cfc1;
+        border-radius:9px;
+        background:linear-gradient(145deg,#f8fbf9,#eef5f1);
         display:flex; align-items:center; justify-content:center;
         text-align:center;
-        font-size:11px; color:#888;
+        font-size:11px; color:#7a9185;
     }
 
-    ul{ list-style:none; }
-    li{ position:relative; padding-left:11px; font-size:12.5px; }
-    li:before{ content:"·"; position:absolute; left:0; }
+    ul{list-style:none;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:#fbfdfb}
+    li{position:relative;padding-left:14px;font-size:12.5px;color:#34483e}
+    li+li{margin-top:5px}
+    li:before{content:"";position:absolute;left:1px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
 
     .sign{
-        margin-top:34px;
-        text-align:center;
+        margin-top:26px;
+        padding-top:13px;
+        border-top:1px solid var(--line);
+        text-align:right;
         font-size:13px;
     }
-    .sign .date{ margin-bottom:14px; color:#444; }
-    .sign .name{ margin-top:10px; font-size:15px; font-weight:700; }
-    .sign .name span{ font-weight:400; font-size:12px; color:#666; }
+    .sign .date{margin-bottom:5px;color:var(--muted);font-size:11px}
+    .sign .name{margin-top:8px;font-size:14px;font-weight:700}
+    .sign .name span{font-weight:400;font-size:12px;color:var(--muted)}
 
     .btn{
         position:fixed; right:20px; bottom:20px; z-index:9;
         border:0; border-radius:999px;
-        background:#1f7a5c; color:#fff;
+        background:var(--accent-dark); color:#fff;
         font-family:inherit; font-size:14px; font-weight:700;
         padding:12px 22px; cursor:pointer;
-        box-shadow:0 8px 20px rgba(0,0,0,.18);
+        box-shadow:0 8px 22px rgba(16,86,63,.24);
+        transition:transform .18s ease,background .18s ease;
     }
-    .btn:hover{ background:#17634a; }
+    .btn:hover{background:#0b4533;transform:translateY(-2px)}
 
     .jt-privacy-lock{
         position:fixed; inset:0; z-index:9999;
@@ -124,8 +214,11 @@
 
     @media (max-width:640px){
         body{ padding:12px 8px 56px; }
-        .resume{ min-height:auto; padding:20px 14px; border:0; }
-        .resume > h1{ font-size:22px; }
+        .resume{min-height:auto;padding:20px 14px;border:0;border-radius:12px}
+        .resume-head{margin-bottom:19px;padding-bottom:14px}
+        .resume > .resume-head h1{font-size:25px}
+        .resume-brand{flex-basis:50px;width:50px;height:50px}
+        .resume-brand strong{font-size:16px}
         .photo{ flex:0 0 64px; width:64px; }
         th,td{ padding:6px; font-size:12px; }
         .btn{ right:14px; bottom:14px; font-size:13px; padding:11px 18px; }
@@ -141,9 +234,16 @@
             margin:0 auto;
             padding:6mm 8mm;
             border:0;
+            border-radius:0;
+            box-shadow:none;
             break-inside:avoid;
             page-break-inside:avoid;
         }
+        .resume-head{margin-bottom:16px;padding-bottom:12px}
+        .resume > .resume-head h1{font-size:25px}
+        .resume-brand{width:48px;height:48px;flex-basis:48px}
+        section{margin-bottom:13px}
+        section > h2{margin-bottom:6px}
         .btn,.jt-privacy-lock{ display:none !important; }
         section{ break-inside:avoid; page-break-inside:avoid; }
         table{ break-inside:avoid; page-break-inside:avoid; }
@@ -155,7 +255,17 @@
 <body>
 
 <main class="resume">
-    <h1>이력서</h1>
+    <header class="resume-head">
+        <div class="resume-head-copy">
+            <p class="resume-kicker">JUST TECH · CAREER PROFILE</p>
+            <h1>이력서</h1>
+            <p class="resume-subtitle">산업 자동화 · 로봇 · 생산설비</p>
+        </div>
+        <div class="resume-brand" aria-label="JUST TECH">
+            <strong>JT</strong>
+            <span>PROFILE</span>
+        </div>
+    </header>
 
     <!-- 인적사항 -->
     <section>
