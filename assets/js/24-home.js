@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.20 */
+/* Reddit-style Blogger home landing — v1.2.21 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -100,9 +100,9 @@
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 3.5-3.5"/></svg></span><h3>검사 장비</h3><p>비전·치수·외관 검사 자동화.</p></div>'
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 8 8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8M12 12v8"/></svg></span><h3>포장 자동화</h3><p>포장·라벨링·이송 시스템.</p></div>'
       +'</div></section>'
-      +hzSection
       +'<section class="jt-landing-section" id="jt-projects"><div class="jt-section-head"><div><p class="jt-eyebrow">SELECTED PROJECTS</p><h2>현장에서 검증된 프로젝트</h2></div><a href="/search">프로젝트 더 보기 →</a></div>'
       +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+card+'</div></section>'
+      +hzSection
       +'<section class="jt-landing-section jt-about" id="jt-about"><div class="jt-about-grid"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는<br>자동화 파트너</h2></div><div><p class="jt-about-copy">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p><a class="jt-about-link" href="/search">기술 자료 살펴보기 →</a></div></div></section>'
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
