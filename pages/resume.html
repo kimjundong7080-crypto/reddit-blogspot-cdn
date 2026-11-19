@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <title>이력서 | JUST TECH</title>
 <style>
     :root{ --line:#333; --soft:#f4f5f6; --ink:#111; }
@@ -17,6 +20,8 @@
         font-size:13px;
         line-height:1.5;
         padding:24px 12px 64px;
+        -webkit-user-select:none;
+        user-select:none;
     }
 
     /* ===== A4 규격 ===== */
@@ -107,15 +112,22 @@
 
     @media print{
         @page{ size:A4; margin:12mm; }
-        body{ padding:0; background:#fff; }
+        html,body{ width:210mm; height:auto; overflow:visible; padding:0; margin:0; background:#fff; }
         .resume{
-            max-width:none;
+            width:186mm;
+            max-width:186mm;
             min-height:0;
-            padding:0;
+            margin:0 auto;
+            padding:8mm 10mm;
             border:0;
+            break-inside:avoid;
+            page-break-inside:avoid;
         }
         .btn{ display:none !important; }
-        section{ break-inside:avoid; }
+        section{ break-inside:avoid; page-break-inside:avoid; }
+        table{ break-inside:avoid; page-break-inside:avoid; }
+        th,td{ font-size:11px; padding:5px 7px; }
+        body{-webkit-user-select:text; user-select:text; }
     }
 </style>
 </head>
@@ -136,16 +148,16 @@
                     </colgroup>
                     <tbody>
                         <tr>
-                            <th>성명</th><td>김준동</td>
-                            <th>생년월일</th><td>1985. 03. 12</td>
+                            <th>성명</th><td class="jt-private" data-jt="[44553,51529,45968]">····</td>
+                            <th>생년월일</th><td class="jt-private" data-jt="[120,112,113,124,103,105,121,122,103,105,120,123]">····</td>
                         </tr>
                         <tr>
-                            <th>연락처</th><td>010-1234-5678</td>
-                            <th>이메일</th><td>ssii@naver.com</td>
+                            <th>연락처</th><td class="jt-private" data-jt="[121,120,121,100,120,123,122,125,100,124,127,126,113]">····</td>
+                            <th>이메일</th><td class="jt-private" data-jt="[58,58,32,32,9,39,40,63,44,59,103,42,38,36]">····</td>
                         </tr>
                         <tr>
                             <th>주소</th>
-                            <td colspan="3">경기도 화성시 동탄대로 123</td>
+                            <td colspan="3" class="jt-private" data-jt="[44276,44665,45965,105,54813,49528,49813,105,45968,53389,45897,47125,105,120,123,122]">····</td>
                         </tr>
                     </tbody>
                 </table>
@@ -254,7 +266,7 @@
     <div class="sign">
         <p class="date" id="today"></p>
         <p>위의 기재 사항은 사실과 틀림없습니다.</p>
-        <p class="name">김준동 <span>(서명)</span></p>
+        <p class="name"><span class="jt-private" data-jt="[44553,51529,45968]">····</span> <span>(서명)</span></p>
     </div>
 </main>
 
@@ -262,6 +274,28 @@
 
 <script>
     (function(){
+        var key=73;
+        function reveal(){
+            var nodes=document.querySelectorAll('[data-jt]');
+            for(var i=0;i<nodes.length;i++){
+                var node=nodes[i],codes=[];
+                try{codes=JSON.parse(node.getAttribute('data-jt')||'[]');}catch(e){continue;}
+                node.textContent=codes.map(function(code){return String.fromCharCode(code^key);}).join('');
+            }
+        }
+        reveal();
+
+        document.addEventListener('contextmenu',function(event){event.preventDefault();});
+        document.addEventListener('dragstart',function(event){event.preventDefault();});
+        document.addEventListener('copy',function(event){event.preventDefault();});
+        document.addEventListener('selectstart',function(event){event.preventDefault();});
+        document.addEventListener('keydown',function(event){
+            var k=(event.key||'').toLowerCase(),ctrl=event.ctrlKey||event.metaKey;
+            if(event.key==='F12'||(ctrl&&(['a','c','s','u','p','x'].indexOf(k)>=0))||(ctrl&&event.shiftKey&&['i','j','c','k','s'].indexOf(k)>=0)){
+                event.preventDefault();
+            }
+        });
+
         var d=new Date();
         var s=d.getFullYear()+'년 '+String(d.getMonth()+1).padStart(2,'0')+'월 '+String(d.getDate()).padStart(2,'0')+'일';
         var el=document.getElementById('today');

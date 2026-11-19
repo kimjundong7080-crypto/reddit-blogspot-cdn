@@ -324,6 +324,25 @@ html.jt-static-page #jtStaticHost iframe{
   background:#fff;
   box-shadow:0 12px 34px rgba(0,0,0,.14);
 }
+html.jt-static-page.jt-resume-page body{overflow-x:hidden !important;margin:0 !important}
+html.jt-static-page.jt-resume-page .header-outer,
+html.jt-static-page.jt-resume-page .header-wrapper,
+html.jt-static-page.jt-resume-page .tabs-outer,
+html.jt-static-page.jt-resume-page .footer-outer,
+html.jt-static-page.jt-resume-page .footer-fix,
+html.jt-static-page.jt-resume-page .sidebar-container,
+html.jt-static-page.jt-resume-page .sidebar-wrapper,
+html.jt-static-page.jt-resume-page #rd3Left,
+html.jt-static-page.jt-resume-page #jtLeftToggle,
+html.jt-static-page.jt-resume-page .post-outer-container,
+html.jt-static-page.jt-resume-page .post-footer,
+html.jt-static-page.jt-resume-page .comments{display:none !important}
+html.jt-static-page.jt-resume-page #page_body,
+html.jt-static-page.jt-resume-page .main-inner,
+html.jt-static-page.jt-resume-page .main-outer,
+html.jt-static-page.jt-resume-page .main_content_container{width:100% !important;max-width:none !important;margin:0 !important;padding:0 !important;display:block !important}
+html.jt-static-page.jt-resume-page #jtStaticHost{width:100% !important;max-width:none !important;margin:0 !important;padding:0 !important}
+html.jt-static-page.jt-resume-page #jtStaticHost iframe{width:100%;max-width:210mm;margin:0 auto;border-radius:0;box-shadow:none}
 html[data-theme="dark"] .sidebar-container,
 html[data-theme="dark"] .rd3-left-inner{
   border-color:rgba(255,255,255,.14) !important;
@@ -1543,7 +1562,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
   (function(){
     if(window.__jtStaticPage)return; window.__jtStaticPage=1;
     var PAGES={
-      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서'},
+      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서',resume:true},
       '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
       '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
     };
@@ -1591,6 +1610,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
       if(document.querySelector('.post-body.entry-content'))return;
       if(!document.querySelector('.status-msg-body'))return;
       document.documentElement.classList.add('jt-static-page');
+      if(page.resume)document.documentElement.classList.add('jt-resume-page');
       document.title=page.title;
       if(!document.querySelector('meta[name="robots"]')){
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');

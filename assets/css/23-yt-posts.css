@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.44 */
+/* Reddit-style Blogger YouTube post list — v1.2.45 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -324,6 +324,25 @@ html.jt-static-page #jtStaticHost iframe{
   background:#fff;
   box-shadow:0 12px 34px rgba(0,0,0,.14);
 }
+html.jt-static-page.jt-resume-page body{overflow-x:hidden !important;margin:0 !important}
+html.jt-static-page.jt-resume-page .header-outer,
+html.jt-static-page.jt-resume-page .header-wrapper,
+html.jt-static-page.jt-resume-page .tabs-outer,
+html.jt-static-page.jt-resume-page .footer-outer,
+html.jt-static-page.jt-resume-page .footer-fix,
+html.jt-static-page.jt-resume-page .sidebar-container,
+html.jt-static-page.jt-resume-page .sidebar-wrapper,
+html.jt-static-page.jt-resume-page #rd3Left,
+html.jt-static-page.jt-resume-page #jtLeftToggle,
+html.jt-static-page.jt-resume-page .post-outer-container,
+html.jt-static-page.jt-resume-page .post-footer,
+html.jt-static-page.jt-resume-page .comments{display:none !important}
+html.jt-static-page.jt-resume-page #page_body,
+html.jt-static-page.jt-resume-page .main-inner,
+html.jt-static-page.jt-resume-page .main-outer,
+html.jt-static-page.jt-resume-page .main_content_container{width:100% !important;max-width:none !important;margin:0 !important;padding:0 !important;display:block !important}
+html.jt-static-page.jt-resume-page #jtStaticHost{width:100% !important;max-width:none !important;margin:0 !important;padding:0 !important}
+html.jt-static-page.jt-resume-page #jtStaticHost iframe{width:100%;max-width:210mm;margin:0 auto;border-radius:0;box-shadow:none}
 html[data-theme="dark"] .sidebar-container,
 html[data-theme="dark"] .rd3-left-inner{
   border-color:rgba(255,255,255,.14) !important;

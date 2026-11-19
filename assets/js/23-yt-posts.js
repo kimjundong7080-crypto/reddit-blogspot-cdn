@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.44 */
+/* Reddit-style Blogger YouTube post list — v1.2.45 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -909,7 +909,7 @@
   (function(){
     if(window.__jtStaticPage)return; window.__jtStaticPage=1;
     var PAGES={
-      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서'},
+      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서',resume:true},
       '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
       '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
     };
@@ -957,6 +957,7 @@
       if(document.querySelector('.post-body.entry-content'))return;
       if(!document.querySelector('.status-msg-body'))return;
       document.documentElement.classList.add('jt-static-page');
+      if(page.resume)document.documentElement.classList.add('jt-resume-page');
       document.title=page.title;
       if(!document.querySelector('meta[name="robots"]')){
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
