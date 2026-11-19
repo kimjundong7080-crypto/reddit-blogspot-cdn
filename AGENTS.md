@@ -249,6 +249,8 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 - 이력서 요청 반영: 본문 글자 확대 및 검정색 통일, 인적사항·희망직종 좌측 정렬, 학력 중앙 정렬, 회사명·경력기간·직무명·경력 설명 수정, 경력 20년 11개월 표기, 자격 구분을 `국가기술자격`으로 통일.
 - 사진을 추가하고 3:4 표시 비율로 맞췄다. 자기소개서는 다섯 문단으로 보강해 이력서 맨 마지막에 배치했다.
 - 변경 파일: `pages/resume.html`, `pages/resume-photo.jpg`, `scripts/release.mjs`, `AGENTS.md`. 릴리스 커밋에도 Co-authored-by trailer를 포함하도록 했다. 사진 원본 크기는 413×531이며 GPS EXIF 항목은 없다.
-- 로컬 브라우저에서 주소·연락처·사진 및 자기소개서 표시를 확인했다. 사진은 로드되고, 인적사항 표와 사진 프레임 높이가 일치한다.
-- `node scripts/build.mjs --check`, `git diff --check` 통과. 인쇄 CSS는 A4 3쪽 배치를 의도했으나 실제 인쇄/PDF 페이지 수는 아직 확인하지 않았다.
-- 최종 확인 요청에 따라 v1.2.55로 릴리스한다. 실제 공개 후에도 jsDelivr 캐시 반영 여부를 별도 확인하고, 테마 XML은 열지 않는다.
+- 로컬 및 실제 Blogger 페이지(`https://www.techlifeworld.com/p/resume.html`)에서 본문·사진을 확인했다. 이미지 응답은 413×531이며, 모바일 사진 프레임은 78×104(3:4), 데스크톱도 인적사항 표 높이에 맞춰 표시된다.
+- `node scripts/build.mjs --check`, `node --check scripts/release.mjs`, `git diff --check` 통과. A4 인쇄 CSS에서 경력사항·자기소개서의 페이지 나눔을 확인했으나 실제 인쇄/PDF 페이지 수는 별도 확인이 필요하다.
+- GitHub `main`과 태그 `v1.2.55` 배포 완료(릴리스 커밋 `06ee25b24ce26c4e57061df0ad8ef6a85bcd7f47`). 로컬 브랜치는 `origin/main`과 동기화됐다.
+- jsDelivr `@v1`의 `pages/resume.html`, `pages/resume-photo.jpg` 캐시 purge가 모두 `throttled:false`로 완료됐다. 두 URL 모두 HTTP 200 및 `x-jsd-version: 1.2.55`를 확인했다.
+- 브라우저 캐시에 따라 방문자 화면은 최대 7일간 이전 내용일 수 있으므로 필요 시 강력 새로고침한다. 테마 XML은 열지 않는다.
