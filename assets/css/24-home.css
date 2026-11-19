@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.36 */
+/* Reddit-style Blogger home landing — v1.2.37 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -287,34 +287,37 @@ html.jt-home-page .jt-hz-card{
   overflow:hidden;
   transition:flex-grow .45s cubic-bezier(.4,0,.2,1),border-color .2s ease;
 }
-html.jt-home-page .jt-hz-card:hover{
+html.jt-home-page body .jt-hz-card:hover{
   flex-grow:1;
   border-color:var(--jt-accent);
 }
-html.jt-home-page .jt-hz-media{
+html.jt-home-page body .jt-hz-media{
   position:relative;
+  width:100%;
   aspect-ratio:1 / 2;
   height:auto;
+  min-height:0;
   background-color:#eef1ef;
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
   overflow:hidden;
 }
-html.jt-home-page .jt-hz-card:nth-child(1) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(2) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-2.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(3) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-3.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(4) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-4.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(5) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-5.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(6) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-6.jpg")}
-html.jt-home-page .jt-hz-video{
-  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
-  background:transparent;position:relative;z-index:0;
+html.jt-home-page body .jt-hz-card:nth-child(1) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(2) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-2.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(3) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-3.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(4) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-4.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(5) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-5.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(6) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-6.jpg")}
+html.jt-home-page body .jt-hz-video{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center;background:transparent;
+  opacity:0;z-index:1;pointer-events:none;transition:opacity .2s ease;
 }
-html.jt-home-page .jt-hz-poster{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
-  z-index:1;pointer-events:none;transition:opacity .2s ease;
-  display:none;
+html.jt-home-page body .jt-hz-poster{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  z-index:2;pointer-events:none;transition:opacity .2s ease;
 }
 html.jt-home-page .jt-hz-footer{
   display:flex;align-items:center;justify-content:space-between;

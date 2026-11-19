@@ -286,34 +286,37 @@ html.jt-home-page .jt-hz-card{
   overflow:hidden;
   transition:flex-grow .45s cubic-bezier(.4,0,.2,1),border-color .2s ease;
 }
-html.jt-home-page .jt-hz-card:hover{
+html.jt-home-page body .jt-hz-card:hover{
   flex-grow:1;
   border-color:var(--jt-accent);
 }
-html.jt-home-page .jt-hz-media{
+html.jt-home-page body .jt-hz-media{
   position:relative;
+  width:100%;
   aspect-ratio:1 / 2;
   height:auto;
+  min-height:0;
   background-color:#eef1ef;
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
   overflow:hidden;
 }
-html.jt-home-page .jt-hz-card:nth-child(1) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(2) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-2.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(3) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-3.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(4) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-4.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(5) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-5.jpg")}
-html.jt-home-page .jt-hz-card:nth-child(6) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-6.jpg")}
-html.jt-home-page .jt-hz-video{
-  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
-  background:transparent;position:relative;z-index:0;
+html.jt-home-page body .jt-hz-card:nth-child(1) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(2) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-2.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(3) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-3.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(4) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-4.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(5) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-5.jpg")}
+html.jt-home-page body .jt-hz-card:nth-child(6) .jt-hz-media{background-image:url("https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-6.jpg")}
+html.jt-home-page body .jt-hz-video{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center;background:transparent;
+  opacity:0;z-index:1;pointer-events:none;transition:opacity .2s ease;
 }
-html.jt-home-page .jt-hz-poster{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
-  z-index:1;pointer-events:none;transition:opacity .2s ease;
-  display:none;
+html.jt-home-page body .jt-hz-poster{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  z-index:2;pointer-events:none;transition:opacity .2s ease;
 }
 html.jt-home-page .jt-hz-footer{
   display:flex;align-items:center;justify-content:space-between;
@@ -1186,8 +1189,14 @@ html.jt-home-page #footer{display:none!important}
     function initCardVideo(card,video,poster){
       if(!video||video.__jtHoverReady)return;
       video.__jtHoverReady=1;
-      function showPoster(){if(poster)poster.style.opacity='1';}
-      function hidePoster(){if(poster)poster.style.opacity='0';}
+      function showPoster(){
+        if(poster)poster.style.setProperty('opacity','1','important');
+        video.style.setProperty('opacity','0','important');
+      }
+      function hidePoster(){
+        if(poster)poster.style.setProperty('opacity','0','important');
+        video.style.setProperty('opacity','1','important');
+      }
       video.addEventListener('loadedmetadata',function(){
         if(video.__jtHovering&&!video.__jtIntroSkipped&&video.duration>0.5){
           video.currentTime=0.5;
@@ -1210,6 +1219,12 @@ html.jt-home-page #footer{display:none!important}
         media.className='jt-hz-media';
         card.insertBefore(media,card.firstChild);
       }
+      media.style.setProperty('aspect-ratio','1 / 2','important');
+      media.style.setProperty('height','auto','important');
+      media.style.setProperty('width','100%','important');
+      media.style.setProperty('position','relative','important');
+      media.style.setProperty('overflow','hidden','important');
+      media.style.setProperty('background-color','#eef1ef','important');
       var poster=media.querySelector('.jt-hz-poster');
       if(!poster){
         poster=document.createElement('img');
@@ -1228,6 +1243,12 @@ html.jt-home-page #footer{display:none!important}
         video.className='jt-hz-video';
         media.appendChild(video);
       }
+      video.style.setProperty('position','absolute','important');
+      video.style.setProperty('inset','0','important');
+      video.style.setProperty('width','100%','important');
+      video.style.setProperty('height','100%','important');
+      video.style.setProperty('object-fit','cover','important');
+      video.style.setProperty('opacity','0','important');
       video.muted=true;
       video.defaultMuted=true;
       video.loop=true;
@@ -1262,13 +1283,17 @@ html.jt-home-page #footer{display:none!important}
           try{video.load();}catch(e){}
         }
         var promise=video.play();
-        if(promise&&promise.catch)promise.catch(function(){if(poster)poster.style.opacity='1';});
+        if(promise&&promise.catch)promise.catch(function(){
+          if(poster)poster.style.setProperty('opacity','1','important');
+          video.style.setProperty('opacity','0','important');
+        });
       }
       function pauseVideo(){
         video.__jtHovering=false;
         video.pause();
         try{video.currentTime=0;}catch(e){}
-        if(poster)poster.style.opacity='1';
+        if(poster)poster.style.setProperty('opacity','1','important');
+        video.style.setProperty('opacity','0','important');
       }
       card.addEventListener('mouseenter',playVideo);
       card.addEventListener('mouseleave',pauseVideo);
