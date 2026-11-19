@@ -44,7 +44,13 @@ readme = readme
 fs.writeFileSync(readmePath, readme, 'utf8');
 
 run(['add', 'package.json', 'assets', 'src', 'scripts', '.github', 'pages', 'README.md', 'AGENTS.md']);
-run(['commit', '-m', `Release ${tag}`]);
+run([
+  'commit',
+  '-m',
+  `Release ${tag}`,
+  '-m',
+  'Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>'
+]);
 run(['tag', '-a', tag, '-m', `Release ${tag}`]);
 run(['push', 'origin', 'main']);
 run(['push', 'origin', tag]);

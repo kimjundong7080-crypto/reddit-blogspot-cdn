@@ -248,7 +248,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 
 - 이력서 요청 반영: 본문 글자 확대 및 검정색 통일, 인적사항·희망직종 좌측 정렬, 학력 중앙 정렬, 회사명·경력기간·직무명·경력 설명 수정, 경력 20년 11개월 표기, 자격 구분을 `국가기술자격`으로 통일.
 - 사진을 추가하고 3:4 표시 비율로 맞췄다. 자기소개서는 다섯 문단으로 보강해 이력서 맨 마지막에 배치했다.
-- 변경 파일: `pages/resume.html`, `pages/resume-photo.jpg`, `AGENTS.md`. 사진 원본 크기는 413×531이며 GPS EXIF 항목은 없다.
+- 변경 파일: `pages/resume.html`, `pages/resume-photo.jpg`, `scripts/release.mjs`, `AGENTS.md`. 릴리스 커밋에도 Co-authored-by trailer를 포함하도록 했다. 사진 원본 크기는 413×531이며 GPS EXIF 항목은 없다.
 - 로컬 브라우저에서 주소·연락처·사진 및 자기소개서 표시를 확인했다. 사진은 로드되고, 인적사항 표와 사진 프레임 높이가 일치한다.
 - `node scripts/build.mjs --check`, `git diff --check` 통과. 인쇄 CSS는 A4 3쪽 배치를 의도했으나 실제 인쇄/PDF 페이지 수는 아직 확인하지 않았다.
 - 최종 확인 요청에 따라 v1.2.55로 릴리스한다. 실제 공개 후에도 jsDelivr 캐시 반영 여부를 별도 확인하고, 테마 XML은 열지 않는다.
