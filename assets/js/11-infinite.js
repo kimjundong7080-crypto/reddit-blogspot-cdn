@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.9 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.10 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -49,6 +49,65 @@
     end.setAttribute('role','status');
     end.setAttribute('aria-live','polite');
     feed.appendChild(end);
+
+    /* ===== 🔒 Turnstile 인증 게이트 (무한 로딩 시 표시) ===== */
+    var tsBox=document.createElement('div');
+    tsBox.className='jt-inf-turnstile';
+    tsBox.setAttribute('role','region');
+    tsBox.setAttribute('aria-label','로봇 방지 인증');
+    tsBox.innerHTML='<p class="jt-inf-ts-label">계속 불러오려면 인증을 완료해 주세요.</p><div class="jt-inf-ts-slot"></div>';
+    feed.insertBefore(tsBox,loader);
+
+    var TURNSTILE_SITE_KEY='0x4AAAAAAC96yJ0EvG1DobqO';
+    var TS_KEY='jtInfTurnstileOk';
+    var TS_TTL=30*60*1000;   /* 인증 유효시간: 30분 */
+    var _tsLoaded=false, _tsWidgetId=null, _tsGating=false;
+
+    function tsFresh(){
+      try{var t=parseInt(localStorage.getItem(TS_KEY),10)||0;return (Date.now()-t)<TS_TTL;}
+      catch(e){return false;}
+    }
+    function tsMark(){
+      try{localStorage.setItem(TS_KEY,String(Date.now()));}catch(e){}
+    }
+    function loadTurnstile(cb){
+      if(window.turnstile){if(cb)cb();return;}
+      if(_tsLoaded){if(cb){var iv=setInterval(function(){if(window.turnstile){clearInterval(iv);cb();}},120);}return;}
+      _tsLoaded=true;
+      var s=document.createElement('script');
+      s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async=true;s.defer=true;
+      if(cb)s.onload=function(){cb();};
+      document.head.appendChild(s);
+    }
+    function tsReset(){try{if(_tsWidgetId!==null)window.turnstile.reset(_tsWidgetId);}catch(e){}}
+    function tsOpen(){
+      if(_tsGating||tsFresh())return;
+      _tsGating=true;
+      loader.classList.remove('on');
+      tsBox.classList.add('on');
+      loadTurnstile(function(){
+        if(_tsWidgetId===null){
+          try{
+            _tsWidgetId=window.turnstile.render(tsBox.querySelector('.jt-inf-ts-slot'),{
+              sitekey:TURNSTILE_SITE_KEY,
+              callback:tsPassed,
+              'error-callback':tsReset,
+              'expired-callback':tsReset
+            });
+          }catch(e){}
+        }else{
+          tsReset();
+        }
+      });
+    }
+    function tsPassed(){
+      tsMark();
+      _tsGating=false;
+      tsBox.classList.remove('on');
+      loadNext();
+    }
+    /* ===================================================== */
 
     var cand=[], cache={}, ptr=-1, appended=0, done=false, randomMode=false, booted=false, busy=false, fails=0;
     var seen={}; seen[curPath]=1;
@@ -197,6 +256,7 @@
     function loadNext(){
       if(busy||done)return;
       if(CFG.max&&appended>=CFG.max){showEnd();return;}
+      if(!tsFresh()){tsOpen();return;}
       busy=true;loader.classList.add('on');
 
       (function attempt(){
