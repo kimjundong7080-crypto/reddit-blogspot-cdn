@@ -1096,7 +1096,29 @@ html.jt-home-page #footer{display:none!important}
       }
     })['catch'](function(){});
   }
-    ready(function(){initHomeLanding();initHomeFooter();});
+    /* Cloudflare Turnstile infrastructure (widget position TBD).
+       Set TURNSTILE_MOUNT to a CSS selector to render the widget.
+       Site key is public; secret key verified server-side only. */
+    var TURNSTILE_SITE_KEY = '0x4AAAAAAC96yJ0EvG1DobqO';
+    var TURNSTILE_MOUNT = null;
+    var _tsLoaded = false;
+    function loadTurnstile(cb){
+      if(window.turnstile){ if(cb)cb(); return; }
+      if(_tsLoaded){ if(cb){ var iv=setInterval(function(){if(window.turnstile){clearInterval(iv);cb();}},120);} return; }
+      _tsLoaded = true;
+      var s=document.createElement('script');
+      s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async=true; s.defer=true;
+      if(cb) s.onload=function(){cb();};
+      document.head.appendChild(s);
+    }
+    function renderTurnstile(selector){
+      var el=document.querySelector(selector);
+      if(!el) return;
+      loadTurnstile(function(){ try{ window.turnstile.render(el,{sitekey:TURNSTILE_SITE_KEY}); }catch(e){} });
+    }
+    function initTurnstile(){ if(TURNSTILE_MOUNT) renderTurnstile(TURNSTILE_MOUNT); }
+    ready(function(){initHomeLanding();initHomeFooter();initTurnstile();});
 })();
 //]]>
 </script>
