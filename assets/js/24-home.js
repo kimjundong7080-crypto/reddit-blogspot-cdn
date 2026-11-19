@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.10 */
+/* Reddit-style Blogger home landing — v1.2.11 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -87,7 +87,7 @@
       +'</nav>'
       +'<section class="jt-landing-hero">'
       +'<div class="jt-landing-copy"><p class="jt-eyebrow">INDUSTRIAL AUTOMATION STUDIO</p>'
-      +'<h1>자동화의 모든 순간을<br><em>한 곳에서</em></h1>'
+      +'<h1 class="jt-type"><span class="jt-type-line">자동화의 모든 순간을</span><br><em class="jt-type-line">한 곳에서</em></h1>'
       +'<p class="jt-lead">로봇·조립·검사·포장 설비까지. 현장 중심의 자동화 기술 자료와 프로젝트를 한눈에 확인하세요.</p>'
       +'<div class="jt-hero-actions"><a class="jt-btn-primary" href="/search">프로젝트 보기</a><a class="jt-btn-secondary" href="mailto:qwe6973@proton.me">상담 문의</a></div>'
       +'<div class="jt-trust"><span>로봇 자동화</span><span>조립 설비</span><span>검사 장비</span><span>포장 자동화</span></div></div>'
@@ -107,6 +107,7 @@
       +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
     initLandingReveal();
+    initHeroTyping();
     requestAnimationFrame(function(){initFeatureCarousel();});
     if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
@@ -131,6 +132,68 @@
       el.style.transitionDelay=(i%4)*45+'ms';
       io.observe(el);
     });
+  }
+  function initHeroTyping(){
+    var h1=document.querySelector('.jt-landing .jt-type');
+    if(!h1||h1.__jtType)return;
+    h1.__jtType=1;
+    var lineEls=[].slice.call(h1.querySelectorAll('.jt-type-line'));
+    if(!lineEls.length)return;
+    var lines=lineEls.map(function(el){
+      var text=el.textContent.replace(/\s+$/,'');
+      el.textContent='';
+      var spans=[];
+      for(var i=0;i<text.length;i++){
+        var s=document.createElement('span');
+        s.className='jt-ch';
+        s.textContent=text.charAt(i);
+        el.appendChild(s);
+        spans.push(s);
+      }
+      return {el:el,spans:spans};
+    });
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){
+      lines.forEach(function(l){l.spans.forEach(function(s){s.classList.add('jt-on');});});
+      return;
+    }
+    var started=false;
+    function start(){
+      if(started)return;started=true;
+      var caret=document.createElement('span');
+      caret.className='jt-caret';
+      caret.setAttribute('aria-hidden','true');
+      function finish(){
+        setTimeout(function(){
+          caret.classList.add('jt-caret-off');
+          setTimeout(function(){if(caret.parentNode)caret.parentNode.removeChild(caret);},380);
+        },1300);
+      }
+      function typeLine(line,cb){
+        line.el.insertBefore(caret,line.spans[0]||null);
+        var i=0;
+        (function step(){
+          if(i>=line.spans.length){cb();return;}
+          line.spans[i].classList.add('jt-on');
+          line.el.insertBefore(caret,line.spans[i+1]||null);
+          i++;
+          setTimeout(step,85);
+        })();
+      }
+      function run(idx){
+        if(idx>=lines.length){finish();return;}
+        typeLine(lines[idx],function(){setTimeout(function(){run(idx+1);},210);});
+      }
+      setTimeout(function(){run(0);},250);
+    }
+    if(!('IntersectionObserver' in window)){start();return;}
+    var io=new IntersectionObserver(function(entries){
+      for(var i=0;i<entries.length;i++){
+        if(entries[i].isIntersecting||entries[i].boundingClientRect.top<0){io.disconnect();start();return;}
+      }
+    },{threshold:0.3});
+    io.observe(h1);
+    setTimeout(function(){if(!started){io.disconnect();start();}},6000);
   }
   function initTopHeroFrame(){
     var frame=document.querySelector('.jt-home-hero-frame');

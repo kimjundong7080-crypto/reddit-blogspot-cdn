@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.10 */
+/* Reddit-style Blogger home landing — v1.2.11 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -75,6 +75,15 @@ html.jt-home-page .jt-landing-copy h1{
 html.jt-home-page .jt-landing-copy h1 em{
   font-style:normal;color:var(--jt-accent);
 }
+html.jt-home-page .jt-landing-copy h1 .jt-ch{visibility:hidden}
+html.jt-home-page .jt-landing-copy h1 .jt-ch.jt-on{visibility:visible}
+html.jt-home-page .jt-landing-copy h1 .jt-caret{
+  display:inline-block;width:0;height:1.02em;vertical-align:-.14em;
+  border-left:2px solid currentColor;margin-left:-2px;
+  animation:jt-caret-blink .85s steps(1,end) infinite;
+}
+html.jt-home-page .jt-landing-copy h1 .jt-caret.jt-caret-off{animation:none;opacity:0;transition:opacity .35s ease}
+@keyframes jt-caret-blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
 html.jt-home-page .jt-lead{
   max-width:520px;margin:18px 0 0;font-size:15px;line-height:1.75;
   color:var(--jt-muted);
@@ -802,6 +811,8 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
 }
 @media (prefers-reduced-motion:reduce){
   html.jt-home-page{scroll-behavior:auto}
+  html.jt-home-page .jt-landing-copy h1 .jt-ch{visibility:visible !important}
+  html.jt-home-page .jt-landing-copy h1 .jt-caret{display:none}
   html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal{
     opacity:1 !important;
     transform:none !important;
