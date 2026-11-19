@@ -1,7 +1,7 @@
 # AGENTS.md — JUST TECH Blogger 운영 작업 지침 (인수인계 문서)
 
 이 문서는 **다른 AI/작업자가 이어서 작업할 때** 반드시 따라야 하는 규칙과 현재 상태를 정리한 문서입니다.
-최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.50**
+최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.51**
 
 ---
 
@@ -69,7 +69,7 @@ PowerShell 프로필 로딩 차단 경고(`running scripts is disabled`)는 매 
 | CDN 저장소 | https://github.com/kimjundong7080-crypto/reddit-blogspot-cdn |
 | CDN 방식 | jsDelivr + GitHub (`@v1` major alias) |
 | 엣지 API | https://reddit-blogspot-edge.pages.dev (`/api/blogger-feed`) |
-| 최신 태그 | **v1.2.50** |
+| 최신 태그 | **v1.2.51** |
 
 테마의 9개 URL은 모두 `@v1`이다. 새 `v1.x.y` 태그를 발행하면 테마 수정 없이 반영된다.
 
@@ -148,7 +148,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 
 ---
 
-## 6. 현재 구현 상태 (v1.2.50)
+## 6. 현재 구현 상태 (v1.2.51)
 
 ### 6-1. 홈 랜딩 (`src/24-home.html`)
 - 타이핑 애니메이션 2곳: 히어로(`자동화의 모든 순간을 한 곳에서`), 서비스 제목(`자동화의 전 과정을 다룹니다`) — `IntersectionObserver`, 1회 실행, `prefers-reduced-motion` 대응.
@@ -222,6 +222,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 | v1.2.48 | 인쇄 표 테두리 강화 및 글자 크기 확대 |
 | v1.2.49 | 이력서 제목 중앙 정렬, 브랜드 표시 제거, 사진 영역 확대 |
 | v1.2.50 | 사진 영역을 인적사항 높이에 맞추고 주소를 두 줄로 표시 |
+| v1.2.51 | 최신 인적사항·학력·희망조건·경력·자격·기술 이력 반영 |
 
 ---
 
