@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.29 */
+/* Reddit-style Blogger YouTube post list — v1.2.30 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -689,5 +689,64 @@
       fillMeta('property','og:type','website');
       setMeta('name','twitter:description',FALLBACK_DESC);
     }
+  })();
+
+  (function(){
+    if(window.__jtResumePage)return; window.__jtResumePage=1;
+    if(location.pathname!=='/p/resume.html')return;
+    if(!window.fetch)return;
+    var RESUME_URL='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/pages/resume.html';
+    var RESUME_FALLBACK='https://raw.githubusercontent.com/kimjundong7080-crypto/reddit-blogspot-cdn/main/pages/resume.html';
+    function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
+    function mount(html){
+      var host=document.getElementById('jtResumeHost');
+      if(!host){
+        host=document.createElement('div');
+        host.id='jtResumeHost';
+        var area=document.getElementById('page_body')||document.querySelector('.main_content_container')||document.body;
+        area.insertBefore(host,area.firstChild);
+      }
+      var frame=document.createElement('iframe');
+      frame.setAttribute('title','이력서');
+      frame.setAttribute('scrolling','no');
+      frame.style.height='1200px';
+      frame.srcdoc=html;
+      frame.addEventListener('load',function(){
+        function fit(){
+          try{
+            var doc=frame.contentDocument;
+            if(!doc||!doc.documentElement)return;
+            var h=Math.max(doc.documentElement.scrollHeight,doc.body?doc.body.scrollHeight:0);
+            if(h>200)frame.style.height=(h+8)+'px';
+          }catch(e){}
+        }
+        fit();setTimeout(fit,400);setTimeout(fit,1400);
+        try{frame.contentWindow.addEventListener('resize',fit);}catch(e){}
+      });
+      host.appendChild(frame);
+    }
+    ready(function(){
+      if(document.querySelector('.post-body.entry-content'))return;
+      if(!document.querySelector('.status-msg-body'))return;
+      document.documentElement.classList.add('jt-resume-page');
+      document.title='이력서 | JUST TECH';
+      if(!document.querySelector('meta[name="robots"]')){
+        var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
+        (document.head||document.getElementsByTagName('head')[0]).appendChild(rb);
+      }
+      fetch(RESUME_URL,{cache:'force-cache'})
+        .then(function(r){if(!r.ok)throw 0;return r.text();})
+        ['catch'](function(){return fetch(RESUME_FALLBACK).then(function(r){if(!r.ok)throw 0;return r.text();});})
+        .then(mount)
+        ['catch'](function(){
+          var host=document.getElementById('jtResumeHost');
+          if(!host){
+            host=document.createElement('div');host.id='jtResumeHost';
+            var area=document.getElementById('page_body')||document.body;
+            area.insertBefore(host,area.firstChild);
+          }
+          host.innerHTML='<p style="padding:32px;text-align:center">이력서를 불러오지 못했습니다. <a href="'+RESUME_URL+'">원본 열기</a></p>';
+        });
+    });
   })();
 })();

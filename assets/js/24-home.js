@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.29 */
+/* Reddit-style Blogger home landing — v1.2.30 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -43,7 +43,7 @@
     footer.className='jt-home-footer';
     footer.innerHTML='<div class="jt-home-footer-inner">'
       +'<div><p class="jt-home-footer-brand">JUST TECH</p><p class="jt-home-footer-desc">산업 자동화·로봇·설비 기술 자료를 기록하는 블로그입니다.</p></div>'
-      +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about-us.html">About</a><a href="/p/contact-us.html">Contact</a></nav>'
+      +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about.html">About</a><a href="/p/resume.html">이력서</a><a href="/p/contact-us.html">Contact</a></nav>'
       +'<div class="jt-home-footer-contact"><p>PROJECT INQUIRY</p><a href="mailto:qwe6973@proton.me">qwe6973@proton.me</a></div>'
       +'<p class="jt-home-footer-copy">© 2026 JUST TECH. All rights reserved.</p>'
       +'</div>';
