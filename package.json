@@ -1,6 +1,6 @@
 {
   "name": "reddit-blogspot-cdn",
-  "version": "1.2.53",
+  "version": "1.2.54",
   "private": true,
   "type": "module",
   "description": "Version-pinned CSS/JS assets for the Reddit-style Blogger theme",
