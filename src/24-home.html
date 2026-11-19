@@ -859,9 +859,12 @@ html.jt-home-page .jt-landing.jt-reveal-ready .jt-reveal.is-in{
 
 /* 제목 자간 확대 */
 html.jt-home-page body .jt-landing h1,
-html.jt-home-page body .jt-landing h2{letter-spacing:.02em}
+html.jt-home-page body .jt-landing h2{letter-spacing:.02em;word-break:keep-all}
 html.jt-home-page .jt-landing .jt-hz-title,
 html.jt-home-page .jt-landing .jt-project-title{letter-spacing:.01em}
+@media screen and (max-width:560px){
+  html.jt-home-page body .jt-landing h1{font-size:30px}
+}
 
 /* 404 fallback: render the home landing even when the Blogger page is missing */
 html.jt-home-page .status-msg-body,
