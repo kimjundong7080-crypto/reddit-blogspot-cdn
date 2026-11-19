@@ -143,6 +143,38 @@
         text-align:center;
         font-size:11px; color:#7a9185;
     }
+    .resume-subheading{
+        margin:11px 0 6px;
+        color:var(--accent-dark);
+        font-size:12px;
+        font-weight:700;
+    }
+    .section-note{margin-left:auto;color:var(--muted);font-size:11px;font-weight:500}
+    .career-entry{
+        padding:9px 11px;
+        border:1px solid var(--line);
+        border-radius:8px;
+        background:#fff;
+    }
+    .career-entry+.career-entry{margin-top:7px}
+    .career-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+    .career-head strong{font-size:13px;color:var(--ink)}
+    .career-period{flex:0 0 auto;color:var(--accent-dark);font-size:11px;font-weight:700}
+    .career-meta{margin-top:3px;color:var(--muted);font-size:11px}
+    .career-task{margin-top:5px;color:#34483e;font-size:12px;line-height:1.55}
+    .career-task-list{list-style:none;margin-top:5px}
+    .career-task-list li{font-size:11.5px;line-height:1.45}
+    .career-task-list li+li{margin-top:2px}
+    .portfolio-link{color:var(--accent-dark);overflow-wrap:anywhere}
+    .skill-list{display:flex;flex-wrap:wrap;gap:6px}
+    .skill-list span{
+        padding:5px 8px;
+        border:1px solid var(--line);
+        border-radius:6px;
+        background:#fbfdfb;
+        color:#34483e;
+        font-size:11.5px;
+    }
 
     ul{list-style:none;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:#fbfdfb}
     li{position:relative;padding-left:14px;font-size:12.5px;color:#34483e}
@@ -252,28 +284,34 @@
         </div>
     </header>
 
-    <!-- 인적사항 -->
     <section>
         <h2>인적사항</h2>
         <div class="top">
             <div class="info">
                 <table>
                     <colgroup>
-                        <col style="width:22%"><col style="width:28%">
-                        <col style="width:22%"><col style="width:28%">
+                        <col style="width:17%"><col style="width:33%">
+                        <col style="width:17%"><col style="width:33%">
                     </colgroup>
                     <tbody>
                         <tr>
                             <th>성명</th><td class="jt-private" data-jt="[44553,51529,45968]">····</td>
-                            <th>생년월일</th><td class="jt-private" data-jt="[120,112,113,124,103,105,121,122,103,105,120,123]">····</td>
+                            <th>성별</th><td class="jt-private" data-jt="[45281]">·</td>
                         </tr>
                         <tr>
-                            <th>연락처</th><td class="jt-private" data-jt="[121,120,121,100,120,123,122,125,100,124,127,126,113]">····</td>
-                            <th>이메일</th><td class="jt-private" data-jt="[58,58,32,32,9,39,40,63,44,59,103,42,38,36]">····</td>
+                            <th>출생년도</th><td colspan="3" class="jt-private" data-jt="[120,112,126,124,45325,49300]">····</td>
                         </tr>
                         <tr>
                             <th>주소</th>
-                            <td colspan="3" class="jt-private jt-private-address" data-jt="[44276,44665,45965,105,54813,49528,49813,105,45968,53389,45897,47125,67,120,123,122]">····</td>
+                            <td colspan="3" class="jt-private jt-private-address" data-jt="[97,125,123,126,113,127,96,105,45897,44325,44376,50596,49813,105,45733,49493,44325,105,50845,44200,47125,124,120,44657,105,123,122,100,120,122,67,120,121,122,45968,105,123,121,123,54897]">····</td>
+                        </tr>
+                        <tr>
+                            <th>일반전화</th><td>-</td>
+                            <th>휴대전화</th><td class="jt-private" data-jt="[121,120,121,100,125,122,127,120,100,127,127,120,120]">····</td>
+                        </tr>
+                        <tr>
+                            <th>이메일</th>
+                            <td colspan="3" class="jt-private" data-jt="[58,58,32,32,9,39,40,63,44,59,103,42,38,36]">····</td>
                         </tr>
                     </tbody>
                 </table>
@@ -282,107 +320,123 @@
         </div>
     </section>
 
-    <!-- 학력사항 -->
     <section>
-        <h2>학력사항</h2>
+        <h2>학력사항 <span class="section-note">최종학력 · 전문대 졸업</span></h2>
         <table>
             <colgroup>
-                <col style="width:26%"><col style="width:32%">
-                <col style="width:26%"><col style="width:16%">
+                <col style="width:20%"><col style="width:24%">
+                <col style="width:24%"><col style="width:10%"><col style="width:22%">
             </colgroup>
             <thead>
-                <tr>
-                    <th>기간</th><th>학교명</th><th>전공</th><th>졸업구분</th>
-                </tr>
+                <tr><th>학교명</th><th>재학기간</th><th>재학 상태</th><th>학점</th><th>전공</th></tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="c">2006. 03 ~ 2010. 02</td>
-                    <td>한국산업기술대학교</td>
-                    <td>기계공학과</td>
-                    <td class="c">졸업</td>
-                </tr>
-                <tr>
-                    <td class="c">2003. 03 ~ 2006. 02</td>
-                    <td>○○고등학교</td>
-                    <td>인문계</td>
-                    <td class="c">졸업</td>
+                    <td>영남이공대</td><td class="c">1999.03 ~ 2000.12</td>
+                    <td>전문대 졸업</td><td class="c">-</td><td>금속공학과</td>
                 </tr>
             </tbody>
         </table>
     </section>
 
-    <!-- 경력사항 -->
     <section>
-        <h2>경력사항</h2>
+        <h2>희망조건</h2>
+        <p class="resume-subheading">희망직종</p>
         <table>
-            <colgroup>
-                <col style="width:26%"><col style="width:26%">
-                <col style="width:20%"><col style="width:28%">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>기간</th><th>회사명</th><th>부서 / 직위</th><th>담당업무</th>
-                </tr>
-            </thead>
+            <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
             <tbody>
-                <tr>
-                    <td class="c">2015. 03 ~ 현재</td>
-                    <td>(주)저스트테크</td>
-                    <td class="c">자동화설비팀 / 팀장</td>
-                    <td>로봇·조립·검사 설비 설계 및 구축</td>
-                </tr>
-                <tr>
-                    <td class="c">2010. 03 ~ 2015. 02</td>
-                    <td>○○정밀(주)</td>
-                    <td class="c">설비기술팀 / 대리</td>
-                    <td>자동화 설비 유지보수 및 개선</td>
-                </tr>
+                <tr><th>희망직종</th><td>기계공학 기술자 및 연구원</td></tr>
+                <tr><th>경력여부</th><td>경력 (17년 0개월)</td></tr>
+                <tr><th>희망직무내용</th><td>기계설계 2D·3D, 자동화 장비 개발·설계, Autodesk Inventor, SolidWorks</td></tr>
+            </tbody>
+        </table>
+        <p class="resume-subheading">희망지역 및 임금</p>
+        <table>
+            <colgroup><col style="width:22%"><col style="width:35%"><col style="width:18%"><col style="width:25%"></colgroup>
+            <tbody>
+                <tr><th>희망근무지역</th><td>대구 · 부산 · 경남</td><th>희망임금</th><td>시급 19,000원 이상<br>(면접 후 결정 가능)</td></tr>
+            </tbody>
+        </table>
+        <p class="resume-subheading">기타 희망사항</p>
+        <table>
+            <colgroup><col style="width:22%"><col style="width:28%"><col style="width:22%"><col style="width:28%"></colgroup>
+            <tbody>
+                <tr><th>고용형태</th><td>관계없음</td><th>희망근무시간</th><td>09:00 ~ 18:00</td></tr>
+                <tr><th>병역대체 근무희망</th><td>해당 없음</td><th>그 밖의 희망사항</th><td>별도 기재 없음</td></tr>
             </tbody>
         </table>
     </section>
 
-    <!-- 자격 및 면허 -->
     <section>
-        <h2>자격 및 면허</h2>
+        <h2>경력사항 <span class="section-note">총 근무기간 · 20년 11개월</span></h2>
+        <article class="career-entry">
+            <div class="career-head"><strong>져스텍</strong><span class="career-period">2014.03 ~ 2025.01</span></div>
+            <p class="career-meta">대표 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
+            <ul class="career-task-list">
+                <li>2014~2018 · 자동차 부품 생산 공정 자동화 설비 구축</li>
+                <li>2018~2019 · PCB 솔더링·코팅기·건조기·자동 스크류 체결기 개발</li>
+                <li>2019~2020 · 자동차 차체 용접 지그 자동화 및 시트 조립 라인 구축</li>
+                <li>2020~2021 · EV 배터리 자동 조립 라인 및 스마트폰 필름 성형기 개발</li>
+                <li>2021~2025.01 · 엔진 블록 세정기, 스테이터 코어 열처리기, 경찰 내구성 시험기, EV 충전 설비 구축</li>
+            </ul>
+            <p class="career-meta">기타사항 · <a class="portfolio-link" href="https://prfom.blogspot.com/" target="_blank" rel="noopener noreferrer">https://prfom.blogspot.com/</a></p>
+        </article>
+        <article class="career-entry">
+            <div class="career-head"><strong>티피에스</strong><span class="career-period">2013.03 ~ 2014.03</span></div>
+            <p class="career-meta">과장 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
+            <p class="career-task">반도체 실리콘 웨이퍼 제조 설비 및 희토류 분리 플랜트 설비 설계</p>
+        </article>
+        <article class="career-entry">
+            <div class="career-head"><strong>(주)에버테크노</strong><span class="career-period">2004.10 ~ 2009.10</span></div>
+            <p class="career-meta">직급 없음 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
+            <p class="career-task">스마트폰용 유리 기판 식각 장비 개발 및 설계</p>
+        </article>
+        <article class="career-entry">
+            <div class="career-head"><strong>쓰리비시스템</strong><span class="career-period">2001.01 ~ 2004.10</span></div>
+            <p class="career-meta">직급 없음 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
+            <p class="career-task">스마트 카트 제조 설비와 비전 검사 장비 개발 및 기계 설계</p>
+        </article>
+    </section>
+
+    <section>
+        <h2>보유 자격면허</h2>
         <table>
-            <colgroup>
-                <col style="width:26%"><col style="width:40%"><col style="width:34%">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>취득일</th><th>자격명</th><th>발급기관</th>
-                </tr>
-            </thead>
+            <colgroup><col style="width:30%"><col style="width:32%"><col style="width:25%"><col style="width:13%"></colgroup>
+            <thead><tr><th>구분</th><th>자격면허</th><th>발급기관</th><th>취득일</th></tr></thead>
             <tbody>
-                <tr>
-                    <td class="c">2009. 05</td>
-                    <td>일반기계기사</td>
-                    <td class="c">한국산업인력공단</td>
-                </tr>
-                <tr>
-                    <td class="c">2012. 11</td>
-                    <td>설비보전기사</td>
-                    <td class="c">한국산업인력공단</td>
-                </tr>
+                <tr><td>공인자격(국가/민간)</td><td>전산응용기계제도기능사</td><td>한국산업인력공단</td><td class="c">미기재</td></tr>
+                <tr><td>공인자격(국가/민간)</td><td>기계설계산업기사</td><td>한국산업인력공단</td><td class="c">미기재</td></tr>
+                <tr><td>국가기술자격(과정평가형)</td><td>특수용접기능사</td><td>한국산업인력공단</td><td class="c">미기재</td></tr>
+                <tr><td>공인자격(국가/민간)</td><td>전기기능사</td><td>한국산업인력공단</td><td class="c">미기재</td></tr>
             </tbody>
         </table>
     </section>
 
-    <!-- 자기소개 -->
     <section>
-        <h2>자기소개</h2>
-        <ul>
-            <li>산업 자동화 설비의 설계·제작·현장 적용을 10년 이상 수행해 왔습니다.</li>
-            <li>로봇 조립, 검사, 포장 공정 자동화를 중심으로 생산성과 품질 안정성을 함께 개선해 왔습니다.</li>
-            <li>현장 문제를 우선 진단하고, 유지보수가 쉬운 구조로 설비를 표준화하는 것을 강점으로 합니다.</li>
-        </ul>
+        <h2>컴퓨터 활용</h2>
+        <div class="skill-list">
+            <span>문서작성(워드프로세스)</span>
+            <span>표 계산(스프레드시트)</span>
+            <span>프레젠테이션</span>
+            <span>Autodesk Inventor 3D</span>
+            <span>SolidWorks 3D</span>
+            <span>Autodesk Vault PDM</span>
+            <span>AutoCAD 2D</span>
+        </div>
+    </section>
+
+    <section>
+        <h2>운전 및 차량</h2>
+        <table>
+            <colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+            <tbody><tr><th>운전 여부</th><td>가능</td><th>차량 소지 여부</th><td>보유</td></tr></tbody>
+        </table>
     </section>
 
     <div class="sign">
-        <p class="date" id="today"></p>
-        <p>위의 기재 사항은 사실과 틀림없습니다.</p>
-        <p class="name"><span class="jt-private" data-jt="[44553,51529,45968]">····</span> <span>(서명)</span></p>
+        <p class="date">2026년 10월 19일</p>
+        <p>상기 등록한 내용은 사실과 다름없음을 확인합니다.</p>
+        <p class="name"><span class="jt-private" data-jt="[44553,51529,45968]">····</span> (서명 또는 인)</p>
     </div>
 </main>
 
