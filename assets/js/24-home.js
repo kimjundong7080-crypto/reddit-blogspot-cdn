@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.11 */
+/* Reddit-style Blogger home landing — v1.2.12 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -93,7 +93,7 @@
       +'<div class="jt-trust"><span>로봇 자동화</span><span>조립 설비</span><span>검사 장비</span><span>포장 자동화</span></div></div>'
       +'<div class="jt-hero-visual"><img src="'+poster+'" alt="자동화 설비" loading="eager" fetchpriority="high" decoding="async"><div class="jt-floating-card"><strong>현장 중심 자동화 아카이브</strong><span>로봇 · 설비 · 검사 · 포장</span></div></div>'
       +'</section>'
-      +'<section class="jt-landing-section" id="jt-services"><div class="jt-section-head"><div><p class="jt-eyebrow">WHAT WE DO</p><h2>자동화의 전 과정을 다룹니다</h2></div><a href="/search">전체 자료 →</a></div>'
+      +'<section class="jt-landing-section" id="jt-services"><div class="jt-section-head"><div><p class="jt-eyebrow">WHAT WE DO</p><h2 class="jt-service-type">자동화의 전 과정을 다룹니다</h2></div><a href="/search">전체 자료 →</a></div>'
       +'<div class="jt-cards">'
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="7" width="16" height="11" rx="2"/><path d="M9 7V4m6 3V4M8 11h.01M16 11h.01M9 15h6"/></svg></span><h3>로봇 자동화</h3><p>용접·조립·핸들링 로봇과 셀 설계.</p></div>'
       +'<div class="jt-service-card"><span class="jt-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg></span><h3>조립 설비</h3><p>반자동·전자동 조립 라인 구축.</p></div>'
@@ -108,6 +108,7 @@
     body.insertBefore(landing,body.firstChild);
     initLandingReveal();
     initHeroTyping();
+    initServiceCeremony();
     requestAnimationFrame(function(){initFeatureCarousel();});
     if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
@@ -194,6 +195,60 @@
     },{threshold:0.3});
     io.observe(h1);
     setTimeout(function(){if(!started){io.disconnect();start();}},6000);
+  }
+  function initServiceCeremony(){
+    var section=document.querySelector('#jt-services');
+    var title=section&&section.querySelector('.jt-service-type');
+    if(!section||!title||section.__jtCeremony)return;
+    section.__jtCeremony=1;
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce)return;
+    var text=title.textContent.replace(/\s+$/,'');
+    title.textContent='';
+    var chars=[];
+    for(var i=0;i<text.length;i++){
+      var ch=document.createElement('span');
+      ch.className='jt-service-ch';
+      ch.textContent=text.charAt(i);
+      title.appendChild(ch);
+      chars.push(ch);
+    }
+    section.classList.add('jt-services-ceremony-ready');
+    var started=false;
+    function start(){
+      if(started)return;
+      started=true;
+      var caret=document.createElement('span');
+      caret.className='jt-service-caret';
+      caret.setAttribute('aria-hidden','true');
+      title.insertBefore(caret,chars[0]||null);
+      var index=0;
+      (function typeNext(){
+        if(index>=chars.length){
+          setTimeout(function(){
+            section.classList.add('jt-services-cards-in');
+            caret.classList.add('jt-service-caret-off');
+            setTimeout(function(){if(caret.parentNode)caret.parentNode.removeChild(caret);},380);
+          },180);
+          return;
+        }
+        chars[index].classList.add('jt-service-on');
+        title.insertBefore(caret,chars[index+1]||null);
+        index++;
+        setTimeout(typeNext,62);
+      })();
+    }
+    if(!('IntersectionObserver' in window)){start();return;}
+    var io=new IntersectionObserver(function(entries){
+      for(var i=0;i<entries.length;i++){
+        if(entries[i].isIntersecting){
+          io.disconnect();
+          start();
+          return;
+        }
+      }
+    },{threshold:0.25});
+    io.observe(section);
   }
   function initTopHeroFrame(){
     var frame=document.querySelector('.jt-home-hero-frame');
