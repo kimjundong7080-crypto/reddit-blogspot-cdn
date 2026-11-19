@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.38 */
+/* Reddit-style Blogger home landing — v1.2.39 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -37,6 +37,25 @@
     });
   }
   function https(u){return (typeof u==='string'&&u.indexOf('http://')===0)?('https://'+u.slice(7)):u;}
+  var JT_MAIL_CODE=[104,104,114,114,91,117,122,109,126,105,53,120,116,118];
+  var JT_MAIL_KEY=27;
+  function jtEmail(){
+    var out='';
+    for(var i=0;i<JT_MAIL_CODE.length;i++)out+=String.fromCharCode(JT_MAIL_CODE[i]^JT_MAIL_KEY);
+    return out;
+  }
+  function jtBindMail(root){
+    var scope=root||document;
+    var nodes=scope.querySelectorAll('[data-jt-mail]');
+    if(!nodes.length)return;
+    var mail=jtEmail();
+    var href='mai'+'lto:'+mail;
+    for(var i=0;i<nodes.length;i++){
+      var el=nodes[i];
+      if(el.tagName==='A')el.setAttribute('href',href);
+      if(el.getAttribute('data-jt-mail')==='text')el.textContent=mail;
+    }
+  }
   function initHomeFooter(){
     if(document.querySelector('.jt-home-footer'))return;
     var footer=document.createElement('footer');
@@ -44,10 +63,11 @@
     footer.innerHTML='<div class="jt-home-footer-inner">'
       +'<div><p class="jt-home-footer-brand">JUST TECH</p><p class="jt-home-footer-desc">산업 자동화·로봇·설비 기술 자료를 기록하는 블로그입니다.</p></div>'
       +'<nav class="jt-home-footer-nav" aria-label="푸터 메뉴"><a href="/">홈</a><a href="/search">전체 글</a><a href="/p/about.html">About</a><a href="/p/resume.html">이력서</a><a href="/p/contact-us.html">Contact</a></nav>'
-      +'<div class="jt-home-footer-contact"><p>PROJECT INQUIRY</p><a href="mailto:qwe6973@proton.me">qwe6973@proton.me</a></div>'
+      +'<div class="jt-home-footer-contact"><p>PROJECT INQUIRY</p><a href="#" data-jt-mail="text" aria-label="이메일 문의">이메일 문의</a></div>'
       +'<p class="jt-home-footer-copy">© 2026 JUST TECH. All rights reserved.</p>'
       +'</div>';
     (document.querySelector('.all-container')||document.body).appendChild(footer);
+    jtBindMail(footer);
   }
   function initHomeLanding(){
     if(document.querySelector('.jt-landing'))return;
@@ -83,13 +103,13 @@
       '<nav class="jt-landing-nav">'
       +'<a class="jt-landing-brand" href="/p/home.html"><span class="jt-brand-mark">JT</span><span>JUST TECH<small>INDUSTRIAL AUTOMATION</small></span></a>'
       +'<div class="jt-landing-navlinks"><a href="#jt-services">서비스</a><a href="#jt-projects">프로젝트</a><a href="#jt-about">소개</a></div>'
-      +'<a class="jt-landing-cta" href="mailto:qwe6973@proton.me">프로젝트 문의</a>'
+      +'<a class="jt-landing-cta" href="#" data-jt-mail="link">프로젝트 문의</a>'
       +'</nav>'
       +'<section class="jt-landing-hero">'
       +'<div class="jt-landing-copy"><p class="jt-eyebrow">INDUSTRIAL AUTOMATION STUDIO</p>'
       +'<h1 class="jt-type"><span class="jt-type-line">자동화의 모든 순간을</span><br><em class="jt-type-line">한 곳에서</em></h1>'
       +'<p class="jt-lead">로봇·조립·검사·포장 설비까지. 현장 중심의 자동화 기술 자료와 프로젝트를 한눈에 확인하세요.</p>'
-      +'<div class="jt-hero-actions"><a class="jt-btn-primary" href="/search">프로젝트 보기</a><a class="jt-btn-secondary" href="mailto:qwe6973@proton.me">상담 문의</a></div>'
+      +'<div class="jt-hero-actions"><a class="jt-btn-primary" href="/search">프로젝트 보기</a><a class="jt-btn-secondary" href="#" data-jt-mail="link">상담 문의</a></div>'
       +'<div class="jt-trust"><span>로봇 자동화</span><span>조립 설비</span><span>검사 장비</span><span>포장 자동화</span></div></div>'
       +'<div class="jt-hero-visual"><img src="'+poster+'" alt="자동화 설비" loading="eager" fetchpriority="high" decoding="async"><div class="jt-floating-card"><strong>현장 중심 자동화 아카이브</strong><span>로봇 · 설비 · 검사 · 포장</span></div></div>'
       +'</section>'
@@ -104,8 +124,9 @@
       +'<div class="jt-projects" id="jtLandingProjects">'+card+card+card+card+'</div></section>'
       +hzSection
       +'<section class="jt-landing-section jt-about" id="jt-about"><div class="jt-about-grid"><div><p class="jt-eyebrow">ABOUT JUST TECH</p><h2>현장을 이해하는<br>자동화 파트너</h2></div><div><p class="jt-about-copy">JUST TECH는 산업 자동화·로봇·설비 기술 자료를 기록하고 공유합니다. 실제 현장의 문제를 중심으로 설계, 제작, 적용 과정을 정리합니다.</p><a class="jt-about-link" href="/search">기술 자료 살펴보기 →</a></div></div></section>'
-      +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="mailto:qwe6973@proton.me">문의하기</a></div>';
+      +'<div class="jt-cta"><div><h2>다음 자동화 프로젝트를 함께 시작하세요</h2><p>설비·로봇·검사·포장 자동화 상담을 받아보세요.</p></div><a href="#" data-jt-mail="link">문의하기</a></div>';
     body.insertBefore(landing,body.firstChild);
+    jtBindMail(landing);
     for(var n=body.children.length-1;n>=0;n--){
       var leftover=body.children[n];
       if(leftover!==landing&&!leftover.contains(landing))body.removeChild(leftover);
