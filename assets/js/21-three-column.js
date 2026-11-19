@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.2.43 */
+/* Reddit-style Blogger 3-column layout — v1.2.44 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -47,7 +47,7 @@
       links=[
         {t:'Home',h:'/'},
         {t:'All posts',h:'/search'},
-        {t:'About',h:'/p/about-us.html'},
+        {t:'About',h:'/p/about.html'},
         {t:'Contact',h:'/p/contact-us.html'}
       ];
     }
