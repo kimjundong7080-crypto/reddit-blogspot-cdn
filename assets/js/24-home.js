@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.6 */
+/* Reddit-style Blogger home landing — v1.2.7 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -68,7 +68,7 @@
     var card='<a class="jt-project-card" href="/search"><span class="jt-project-media"><img alt="" loading="lazy" decoding="async"></span><span class="jt-project-body"><small>PROJECT</small><strong class="jt-project-title">자동화 프로젝트</strong><span class="jt-project-desc">현장 적용 사례</span></span></a>';
     var hzArrow='<svg class="jt-hz-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M15.707 8.707L8.707 15.707L7.293 14.293L12.586 9H0V7H12.586L7.293 1.707L8.707 0.292999L15.707 7.293C16.098 7.684 16.098 8.316 15.707 8.707Z"/></svg>';
     function hzCard(title,poster,src){
-      return '<article class="jt-hz-card"><div class="jt-hz-media"><video class="jt-hz-video" poster="'+poster+'" data-poster="'+poster+'" muted loop playsinline preload="metadata"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
+      return '<article class="jt-hz-card"><div class="jt-hz-media"><video class="jt-hz-video" muted loop playsinline preload="metadata"><source src="'+src+'" type="video/mp4"></video></div><div class="jt-hz-footer"><h3 class="jt-hz-title">'+title+'</h3>'+hzArrow+'</div></article>';
     }
     var hzCards=hzCard('3D Floor Plans','https://st.hzcdn.com/static/houzzPro/3DFloorPlans@4x.webp','https://pomf2.lain.la/f/1xdltask.mp4')
       +hzCard('Selections','https://st.hzcdn.com/static/houzzPro/Selections@4x.webp','https://pomf2.lain.la/f/5znwgux4.mp4')
@@ -186,32 +186,30 @@
       resizeTimer=setTimeout(render,100);
     });
     render();
-    function loadPoster(card){
-      var video=card.querySelector('.jt-hz-video');
-      if(!video||video.getAttribute('poster'))return;
-      var p=video.getAttribute('data-poster');
-      if(p)video.setAttribute('poster',p);
+    function showThumbnail(video){
+      if(!video||!isFinite(video.duration)||video.duration<=0)return;
+      try{video.currentTime=video.duration*0.5;}catch(e){}
     }
-    if('IntersectionObserver' in window){
-      var posterIO=new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          if(entry.isIntersecting){loadPoster(entry.target);posterIO.unobserve(entry.target);}
-        });
-      },{rootMargin:'320px 0px'});
-      cards.forEach(function(card){posterIO.observe(card);});
-    }else{
-      cards.forEach(loadPoster);
+    function initCardVideo(video){
+      if(!video||video.__jtThumbReady)return;
+      video.__jtThumbReady=1;
+      video.addEventListener('loadedmetadata',function(){showThumbnail(video);});
+      video.addEventListener('timeupdate',function(){
+        if(!video.paused&&video.currentTime>0&&video.currentTime<0.5)video.currentTime=0.5;
+      });
+      if(video.readyState>=1)showThumbnail(video);
     }
     cards.forEach(function(card){
       var video=card.querySelector('.jt-hz-video');
       if(!video)return;
+      initCardVideo(video);
       function playVideo(){
-        loadPoster(card);
+        try{video.currentTime=0.5;}catch(e){}
         video.muted=true;
         var p=video.play();
         if(p&&p.catch)p.catch(function(){});
       }
-      function pauseVideo(){video.pause();}
+      function pauseVideo(){video.pause();showThumbnail(video);}
       card.addEventListener('mouseenter',playVideo);
       card.addEventListener('mouseleave',pauseVideo);
       card.addEventListener('focusin',playVideo);
