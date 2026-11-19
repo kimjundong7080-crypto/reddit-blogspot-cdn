@@ -607,6 +607,11 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
     var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=14;
 
     function makeItem(e){
+      var categories=e.category||[];
+      var hasCad=categories.some(function(category){
+        return String(category.term||'').trim().toLowerCase()==='cad';
+      });
+      if(!hasCad)return null;
       var links=e.link||[],href='';
       for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
       if(!href||seen[href])return null;
@@ -689,7 +694,6 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
         }
         nextStart+=entries.length;
         addEntries(entries,function(added){
-          if(!added)exhausted=true;
           loading=false;
           if(cb)cb();
         });

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.14 */
+/* Reddit-style Blogger YouTube post list — v1.2.15 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -137,6 +137,11 @@
     var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=14;
 
     function makeItem(e){
+      var categories=e.category||[];
+      var hasCad=categories.some(function(category){
+        return String(category.term||'').trim().toLowerCase()==='cad';
+      });
+      if(!hasCad)return null;
       var links=e.link||[],href='';
       for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
       if(!href||seen[href])return null;
@@ -219,7 +224,6 @@
         }
         nextStart+=entries.length;
         addEntries(entries,function(added){
-          if(!added)exhausted=true;
           loading=false;
           if(cb)cb();
         });
