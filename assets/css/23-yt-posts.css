@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.28 */
+/* Reddit-style Blogger YouTube post list — v1.2.29 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -282,27 +282,27 @@ html[data-theme="dark"] .post-body-container img{
   border-color:rgba(255,255,255,.22) !important;
   background:#111 !important;
 }
-html[data-theme="dark"] .jt-about{
+html[data-theme="dark"] .post-body > .jt-about{
   background:#12161a !important;
   border-color:#262e34 !important;
   color:#e9edf0 !important;
 }
-html[data-theme="dark"] .jt-about [style*="background:#f7faf8"]{
+html[data-theme="dark"] .post-body > .jt-about [style*="background:#f7faf8"]{
   background:#12161a !important;
   border-color:#262e34 !important;
   color:#e9edf0 !important;
 }
-html[data-theme="dark"] .jt-about [style*="background:#ffffff"]{
+html[data-theme="dark"] .post-body > .jt-about [style*="background:#ffffff"]{
   background:#171d21 !important;
   border-color:#2a3238 !important;
 }
-html[data-theme="dark"] .jt-about [style*="border:1px solid #dfe5e1"]{border-color:#2a3238 !important}
-html[data-theme="dark"] .jt-about [style*="background:#e7f3ec"]{background:rgba(31,122,92,.22) !important}
-html[data-theme="dark"] .jt-about [style*="color:#14201b"]{color:#eef2f5 !important}
-html[data-theme="dark"] .jt-about [style*="color:#5f6b65"]{color:#b3bcc4 !important}
-html[data-theme="dark"] .jt-about [style*="color:#8a958f"]{color:#97a1a9 !important}
-html[data-theme="dark"] .jt-about [style*="color:#1f7a5c"]{color:#5fd3a9 !important}
-html[data-theme="dark"] .jt-about [style*="background:#14201b"]{
+html[data-theme="dark"] .post-body > .jt-about [style*="border:1px solid #dfe5e1"]{border-color:#2a3238 !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="background:#e7f3ec"]{background:rgba(31,122,92,.22) !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="color:#14201b"]{color:#eef2f5 !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="color:#5f6b65"]{color:#b3bcc4 !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="color:#8a958f"]{color:#97a1a9 !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="color:#1f7a5c"]{color:#5fd3a9 !important}
+html[data-theme="dark"] .post-body > .jt-about [style*="background:#14201b"]{
   background:#0b1512 !important;
   border:1px solid #24322c !important;
 }
