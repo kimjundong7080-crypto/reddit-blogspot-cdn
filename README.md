@@ -33,19 +33,19 @@ npm run release -- 1.0.5       # 빌드 + 커밋 + 태그 + push
 
 ```html
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.16/assets/css/21-three-column.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.17/assets/css/21-three-column.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.16/assets/js/21-three-column.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.17/assets/js/21-three-column.js"
   defer></script>
 
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.16/assets/css/11-infinite.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.17/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.16/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.17/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.2.16`처럼 버전을 고정하세요. 21·11 모두 **v1.2.16** 기준입니다.
+> `@main` 대신 `@v1.2.17`처럼 버전을 고정하세요. 21·11 모두 **v1.2.17** 기준입니다.
 
 ## Blogger 설치
 

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.16 */
+/* Reddit-style Blogger YouTube post list — v1.2.17 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -275,6 +275,17 @@
     loadMore(function(){setPos(0,false);measure();});
   });
 
+  window.__jtPrepareYouTubeShortcodes=function(source){
+    var pattern=/\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]/gi;
+    return String(source).replace(pattern,function(full,link){
+      link=String(link||'').trim();
+      var match=link.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+      if(!match)match=link.match(/^([A-Za-z0-9_-]{11})$/);
+      var id=match?match[1]:'';
+      return id?'\n<div class="jt-yt-embed" data-yt="'+id+'"></div>\n':full;
+    });
+  };
+
   (function(){
     if(window.__jtMarkdown)return; window.__jtMarkdown=1;
     var pending=[],markedLoading=false;
@@ -320,6 +331,7 @@
       return fold;
     }
     function renderInto(container,src){
+      if(window.__jtPrepareYouTubeShortcodes)src=window.__jtPrepareYouTubeShortcodes(src);
       var re=/\[r[ea]de\]([\s\S]*?)\[\/r[ea]de\]/gi,last=0,m;
       container.innerHTML='';
       while((m=re.exec(src))!==null){
