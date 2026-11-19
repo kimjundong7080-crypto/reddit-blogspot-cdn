@@ -977,7 +977,6 @@ html.jt-home-page #footer{display:none!important}
     initLandingReveal();
     initHeroTyping();
     initServiceCeremony();
-    requestAnimationFrame(function(){initFeatureCarousel();});
     if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
   function initLandingReveal(){
@@ -1135,14 +1134,95 @@ html.jt-home-page #footer{display:none!important}
     })['catch'](function(){});
   }
   function initFeatureCarousel(){
-    var track=document.getElementById('jtHzTrack');
+    var track=document.getElementById('jtHzTrack')||document.querySelector('.jt-hz-track');
     if(!track||track.__jtHzReady)return;
     track.__jtHzReady=1;
-    var viewport=track.parentElement;
     var cards=Array.prototype.slice.call(track.children);
+    if(!cards.length)return;
+    var videoSources=[
+      'https://pomf2.lain.la/f/1xdltask.mp4',
+      'https://pomf2.lain.la/f/5znwgux4.mp4',
+      'https://pomf2.lain.la/f/g6nb4aus.mp4',
+      'https://pomf2.lain.la/f/wx4t7zlc.mp4',
+      'https://pomf2.lain.la/f/3c1gcz5g.mp4',
+      'https://pomf2.lain.la/f/0m5whhmk.mp4'
+    ];
+    function initCardVideo(card,video,poster){
+      if(!video||video.__jtHoverReady)return;
+      video.__jtHoverReady=1;
+      function showPoster(){if(poster)poster.style.opacity='1';}
+      function hidePoster(){if(poster)poster.style.opacity='0';}
+      video.addEventListener('playing',hidePoster);
+      video.addEventListener('pause',showPoster);
+      video.addEventListener('error',showPoster);
+    }
+    cards.forEach(function(card,index){
+      var media=card.querySelector('.jt-hz-media');
+      if(!media){
+        media=document.createElement('div');
+        media.className='jt-hz-media';
+        card.insertBefore(media,card.firstChild);
+      }
+      var poster=media.querySelector('.jt-hz-poster');
+      if(!poster){
+        poster=document.createElement('img');
+        poster.className='jt-hz-poster';
+        poster.alt='';
+        poster.loading='lazy';
+        poster.decoding='async';
+        poster.src='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-'+(index+1)+'.jpg';
+        media.appendChild(poster);
+      }
+      var video=media.querySelector('.jt-hz-video');
+      if(!video){
+        video=document.createElement('video');
+        video.className='jt-hz-video';
+        media.appendChild(video);
+      }
+      video.muted=true;
+      video.defaultMuted=true;
+      video.loop=true;
+      video.playsInline=true;
+      video.setAttribute('muted','');
+      video.setAttribute('playsinline','');
+      video.preload='none';
+      if(!video.getAttribute('src')&&!video.querySelector('source')&&videoSources[index]){
+        var source=document.createElement('source');
+        source.src=videoSources[index];
+        source.type='video/mp4';
+        video.appendChild(source);
+      }
+      initCardVideo(card,video,poster);
+      function playVideo(){
+        cards.forEach(function(other){
+          if(other===card)return;
+          var otherVideo=other.querySelector('.jt-hz-video');
+          if(otherVideo&&!otherVideo.paused){
+            otherVideo.pause();
+            try{otherVideo.currentTime=0;}catch(e){}
+          }
+        });
+        video.muted=true;
+        video.preload='auto';
+        if(video.readyState<1){try{video.load();}catch(e){}}
+        var promise=video.play();
+        if(promise&&promise.catch)promise.catch(function(){if(poster)poster.style.opacity='1';});
+      }
+      function pauseVideo(){
+        video.pause();
+        try{video.currentTime=0;}catch(e){}
+        if(poster)poster.style.opacity='1';
+      }
+      card.addEventListener('mouseenter',playVideo);
+      card.addEventListener('mouseleave',pauseVideo);
+      card.addEventListener('focusin',playVideo);
+      card.addEventListener('focusout',pauseVideo);
+    });
+
+    var viewport=track.parentElement;
     var prev=document.getElementById('jtHzPrev');
     var next=document.getElementById('jtHzNext');
-    if(!cards.length||!prev||!next)return;
+    if(!viewport||!prev||!next)return;
     var index=0;
     function gapSize(){
       var cs=getComputedStyle(track);
@@ -1172,41 +1252,6 @@ html.jt-home-page #footer{display:none!important}
       resizeTimer=setTimeout(render,100);
     });
     render();
-    function initCardVideo(card,video,poster){
-      if(!video||video.__jtHoverReady)return;
-      video.__jtHoverReady=1;
-      function showPoster(){if(poster)poster.style.opacity='1';}
-      function hidePoster(){if(poster)poster.style.opacity='0';}
-      video.addEventListener('playing',hidePoster);
-      video.addEventListener('pause',showPoster);
-      video.addEventListener('error',showPoster);
-      video.addEventListener('timeupdate',function(){
-        if(!video.paused&&video.currentTime>0&&video.currentTime<0.5)video.currentTime=0.5;
-      });
-    }
-    cards.forEach(function(card){
-      var video=card.querySelector('.jt-hz-video');
-      if(!video)return;
-      var poster=card.querySelector('.jt-hz-poster');
-      initCardVideo(card,video,poster);
-      function playVideo(){
-        video.preload='auto';
-        if(video.readyState<1){try{video.load();}catch(e){}}
-        function seekIntro(){
-          try{video.currentTime=0.5;}catch(e){}
-        }
-        video.muted=true;
-        var p=video.play();
-        if(p&&p.catch)p.catch(function(){if(poster)poster.style.opacity='1';});
-        if(video.readyState>=1)seekIntro();
-        else video.addEventListener('loadedmetadata',seekIntro,{once:true});
-      }
-      function pauseVideo(){video.pause();if(poster)poster.style.opacity='1';}
-      card.addEventListener('mouseenter',playVideo);
-      card.addEventListener('mouseleave',pauseVideo);
-      card.addEventListener('focusin',playVideo);
-      card.addEventListener('focusout',pauseVideo);
-    });
   }
   function loadLandingProjects(){
     var grid=document.getElementById('jtLandingProjects');
@@ -1251,7 +1296,11 @@ html.jt-home-page #footer{display:none!important}
       }
     })['catch'](function(){});
   }
-    ready(function(){initHomeLanding();initHomeFooter();});
+    ready(function(){
+      initHomeLanding();
+      initHomeFooter();
+      requestAnimationFrame(function(){initFeatureCarousel();});
+    });
 })();
 //]]>
 </script>
