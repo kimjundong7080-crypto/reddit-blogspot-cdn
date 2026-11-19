@@ -24,7 +24,7 @@
     html,body{ background:#edf2ef; color:var(--ink); }
     body{
         font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
-        font-size:13px;
+        font-size:14px;
         line-height:1.5;
         padding:24px 12px 64px;
         -webkit-user-select:none;
@@ -39,6 +39,7 @@
         min-height:297mm;
         margin:0 auto;
         padding:15mm 16mm;
+        color:#000;
         background:#ffffff;
         border:1px solid #e3ebe6;
         border-radius:16px;
@@ -65,8 +66,8 @@
     }
     .resume-subtitle{
         margin-top:7px;
-        color:var(--muted);
-        font-size:12px;
+        color:#000;
+        font-size:13px;
         letter-spacing:.02em;
     }
     section{
@@ -77,7 +78,7 @@
         display:flex;
         align-items:center;
         gap:9px;
-        font-size:14px;
+        font-size:15px;
         font-weight:700;
         margin:0 0 9px;
         padding:0;
@@ -92,8 +93,8 @@
         justify-content:center;
         border-radius:7px;
         background:#e8f3ed;
-        color:var(--accent-dark);
-        font-size:10px;
+        color:#000;
+        font-size:11px;
         font-weight:800;
         letter-spacing:0;
     }
@@ -119,37 +120,46 @@
         border-right:1px solid var(--line);
         border-bottom:1px solid var(--line);
         padding:7px 9px;
-        font-size:12.5px;
+        font-size:13.5px;
         vertical-align:middle;
         word-break:keep-all;
         overflow-wrap:anywhere;
     }
     tr:last-child th,tr:last-child td{border-bottom:0}
     th:last-child,td:last-child{border-right:0}
-    th{ background:var(--soft); font-weight:700; text-align:center; color:#3e554a; }
+    th{ background:var(--soft); font-weight:700; text-align:center; color:#000; }
     td{ text-align:left; }
     td.c{ text-align:center; }
 
     /* 인적사항 + 사진 */
     .top{ display:flex; gap:14px; align-items:stretch; }
     .top .info{ flex:1 1 auto; min-width:0; }
-    .jt-private-address{white-space:pre-line}
+    .top .info th,.top .info td{text-align:left}
+    .jt-private-address{white-space:nowrap}
     .photo{
-        flex:0 0 96px; width:96px; height:auto; align-self:stretch;
+        flex:0 0 132px; width:132px; height:auto; align-self:stretch;
         border:1px dashed #b6cfc1;
         border-radius:9px;
-        background:linear-gradient(145deg,#f8fbf9,#eef5f1);
+        overflow:hidden;
+        background:#fff;
         display:flex; align-items:center; justify-content:center;
         text-align:center;
-        font-size:11px; color:#7a9185;
+        font-size:12px; color:#000;
     }
+    .photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
     .resume-subheading{
         margin:11px 0 6px;
-        color:var(--accent-dark);
-        font-size:12px;
+        color:#000;
+        font-size:13px;
         font-weight:700;
     }
-    .section-note{margin-left:auto;color:var(--muted);font-size:11px;font-weight:500}
+    .hope-job-table th,.hope-job-table td{text-align:left}
+    .self-intro-section p+p{margin-top:8px}
+    .section-note{margin-left:auto;color:#000;font-size:12px;font-weight:500}
+    .education > h2{justify-content:center;text-align:center}
+    .education > h2:after{display:none}
+    .education .section-note{margin-left:0}
+    .education th,.education td{text-align:center}
     .career-entry{
         padding:9px 11px;
         border:1px solid var(--line);
@@ -158,12 +168,12 @@
     }
     .career-entry+.career-entry{margin-top:7px}
     .career-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-    .career-head strong{font-size:13px;color:var(--ink)}
-    .career-period{flex:0 0 auto;color:var(--accent-dark);font-size:11px;font-weight:700}
-    .career-meta{margin-top:3px;color:var(--muted);font-size:11px}
-    .career-task{margin-top:5px;color:#34483e;font-size:12px;line-height:1.55}
+    .career-head strong{font-size:14px;color:#000}
+    .career-period{flex:0 0 auto;color:#000;font-size:12px;font-weight:700}
+    .career-meta{margin-top:3px;color:#000;font-size:12px}
+    .career-task{margin-top:5px;color:#000;font-size:13px;line-height:1.55}
     .career-task-list{list-style:none;margin-top:5px}
-    .career-task-list li{font-size:11.5px;line-height:1.45}
+    .career-task-list li{font-size:12.5px;line-height:1.45}
     .career-task-list li+li{margin-top:2px}
     .skill-list{display:flex;flex-wrap:wrap;gap:6px}
     .skill-list span{
@@ -171,12 +181,12 @@
         border:1px solid var(--line);
         border-radius:6px;
         background:#fbfdfb;
-        color:#34483e;
-        font-size:11.5px;
+        color:#000;
+        font-size:12.5px;
     }
 
     ul{list-style:none;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:#fbfdfb}
-    li{position:relative;padding-left:14px;font-size:12.5px;color:#34483e}
+    li{position:relative;padding-left:14px;font-size:13px;color:#000}
     li+li{margin-top:5px}
     li:before{content:"";position:absolute;left:1px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
 
@@ -185,11 +195,11 @@
         padding-top:13px;
         border-top:1px solid var(--line);
         text-align:right;
-        font-size:13px;
+        font-size:14px;
     }
-    .sign .date{margin-bottom:5px;color:var(--muted);font-size:11px}
-    .sign .name{margin-top:8px;font-size:14px;font-weight:700}
-    .sign .name span{font-weight:400;font-size:12px;color:var(--muted)}
+    .sign .date{margin-bottom:5px;color:#000;font-size:12px}
+    .sign .name{margin-top:8px;font-size:15px;font-weight:700}
+    .sign .name span{font-weight:400;font-size:13px;color:#000}
 
     .btn{
         position:fixed; right:20px; bottom:20px; z-index:9;
@@ -229,31 +239,33 @@
         .resume-head{margin-bottom:19px;padding-bottom:14px}
         .resume > .resume-head h1{font-size:25px}
         .photo{flex:0 0 78px;width:78px;height:auto;align-self:stretch}
-        th,td{ padding:6px; font-size:12px; }
+        .photo img{object-fit:contain}
+        th,td{ padding:6px; font-size:13px; }
         .btn{ right:14px; bottom:14px; font-size:13px; padding:11px 18px; }
     }
 
     @media print{
         @page{ size:A4; margin:5mm; }
-        html,body{ width:210mm; height:auto; overflow:visible; padding:0; margin:0; background:#fff; }
+        html,body{ width:auto; height:auto; overflow:visible; padding:0; margin:0; background:#fff; }
         .resume{
-            width:200mm;
-            max-width:200mm;
+            width:100%;
+            max-width:none;
             min-height:0;
             margin:0 auto;
             padding:6mm 8mm;
             border:0;
             border-radius:0;
             box-shadow:none;
-            break-inside:avoid;
-            page-break-inside:avoid;
+            break-inside:auto;
+            page-break-inside:auto;
         }
-        .resume-head{margin-bottom:16px;padding-bottom:12px}
+        .resume-head{margin-bottom:16px;padding-bottom:12px;break-after:avoid;page-break-after:avoid}
         .resume > .resume-head h1{font-size:25px}
-        section{margin-bottom:13px}
-        section > h2{margin-bottom:6px}
+        section{margin-bottom:13px;break-inside:auto;page-break-inside:auto}
+        section > h2{margin-bottom:6px;break-after:avoid;page-break-after:avoid}
+        .career-section{break-before:page;page-break-before:always;margin-top:0}
+        .self-intro-section{break-before:page;page-break-before:always;margin-top:0}
         .btn,.jt-privacy-lock{ display:none !important; }
-        section{ break-inside:avoid; page-break-inside:avoid; }
         table{
             break-inside:avoid;
             page-break-inside:avoid;
@@ -263,12 +275,13 @@
         }
         th,td{
             border:1px solid #59675e !important;
-            color:#111;
-            font-size:12px;
+            color:#000;
+            font-size:13px;
             line-height:1.45;
             padding:6px 7px;
         }
-        th{background:#e8eeea !important;color:#15231b}
+        th{background:#e8eeea !important;color:#000}
+        .career-entry,.sign{break-inside:avoid;page-break-inside:avoid}
         body{-webkit-user-select:text; user-select:text; }
     }
 </style>
@@ -302,7 +315,7 @@
                         </tr>
                         <tr>
                             <th>주소</th>
-                            <td colspan="3" class="jt-private jt-private-address" data-jt="[97,125,123,126,113,127,96,105,45897,44325,44376,50596,49813,67,45733,49493,44325]">····</td>
+                            <td colspan="3" class="jt-private jt-private-address" data-jt="[45897,44325,44376,50596,49813,105,45733,49493,44325]">····</td>
                         </tr>
                         <tr>
                             <th>일반전화</th><td>-</td>
@@ -315,11 +328,11 @@
                     </tbody>
                 </table>
             </div>
-            <div class="photo">사진<br>(3 × 4)</div>
+            <div class="photo"><img id="resumePhoto" src="resume-photo.jpg" data-published-src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/pages/resume-photo.jpg" alt="이력서 사진"></div>
         </div>
     </section>
 
-    <section>
+    <section class="education">
         <h2>학력사항 <span class="section-note">최종학력 · 전문대 졸업</span></h2>
         <table>
             <colgroup>
@@ -341,11 +354,11 @@
     <section>
         <h2>희망조건</h2>
         <p class="resume-subheading">희망직종</p>
-        <table>
+        <table class="hope-job-table">
             <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
             <tbody>
                 <tr><th>희망직종</th><td>기계공학 기술자 및 연구원</td></tr>
-                <tr><th>경력여부</th><td>경력 (17년 0개월)</td></tr>
+                <tr><th>경력여부</th><td>경력 (20년 11개월)</td></tr>
                 <tr><th>희망직무내용</th><td>기계설계 2D·3D, 자동화 장비 개발·설계, Autodesk Inventor, SolidWorks</td></tr>
             </tbody>
         </table>
@@ -366,29 +379,29 @@
         </table>
     </section>
 
-    <section>
+    <section class="career-section">
         <h2>경력사항 <span class="section-note">총 근무기간 · 20년 11개월</span></h2>
         <article class="career-entry">
-            <div class="career-head"><strong>쓰리비시스템</strong><span class="career-period">2001.01 ~ 2004.10</span></div>
-            <p class="career-meta">직급 없음 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
-            <p class="career-task">스마트 카트 제조 설비와 비전 검사 장비 개발 및 기계 설계</p>
+            <div class="career-head"><strong>(주)쓰리비시스템</strong><span class="career-period">2001.01 ~ 2004.10</span></div>
+            <p class="career-meta">직급 없음 · 기계설계 및 기구개발 · 퇴직</p>
+            <p class="career-task">스마트 카트 제조 설비의 기계 설계·개발과 비전 검사 장비 개발 수행</p>
         </article>
         <article class="career-entry">
             <div class="career-head"><strong>(주)에버테크노</strong><span class="career-period">2004.10 ~ 2009.10</span></div>
-            <p class="career-meta">직급 없음 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
-            <p class="career-task">스마트폰용 유리 기판 식각 장비 개발 및 설계</p>
+            <p class="career-meta">직급 없음 · 기계설계 및 기구개발 · 퇴직</p>
+            <p class="career-task">스마트폰용 유리 기판 식각 장비 개발 및 장비 설계 수행</p>
         </article>
         <article class="career-entry">
-            <div class="career-head"><strong>티피에스</strong><span class="career-period">2013.03 ~ 2014.03</span></div>
-            <p class="career-meta">과장 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
-            <p class="career-task">반도체 실리콘 웨이퍼 제조 설비 및 희토류 분리 플랜트 설비 설계</p>
+            <div class="career-head"><strong>(주)티피에스</strong><span class="career-period">2010.03 ~ 2014.03</span></div>
+            <p class="career-meta">과장 · 기계설계 및 기구개발 · 퇴직</p>
+            <p class="career-task">반도체 실리콘 웨이퍼 제조 설비와 희토류 분리 플랜트 설비 설계 수행</p>
         </article>
         <article class="career-entry">
             <div class="career-head"><strong>져스텍</strong><span class="career-period">2014.03 ~ 2025.01</span></div>
-            <p class="career-meta">대표 · 산업기계공학 기술자 및 연구원 · 퇴직</p>
+            <p class="career-meta">대표 · 기계설계 및 기구개발 · 퇴직</p>
             <ul class="career-task-list">
                 <li>2014~2018 · 자동차 부품 생산 공정 자동화 설비 구축</li>
-                <li>2018~2019 · PCB 솔더링·코팅기·건조기·자동 스크류 체결기 개발</li>
+                <li>2018~2019 · PCB 솔더링·코팅·건조 설비 및 자동 스크류 체결기 개발</li>
                 <li>2019~2020 · 자동차 차체 용접 지그 자동화 및 시트 조립 라인 구축</li>
                 <li>2020~2021 · EV 배터리 자동 조립 라인 및 스마트폰 필름 성형기 개발</li>
                 <li>2021~2025.01 · 엔진 블록 세정기, 스테이터 코어 열처리기, 경찰 내구성 시험기, EV 충전 설비 구축</li>
@@ -402,10 +415,10 @@
             <colgroup><col style="width:30%"><col style="width:32%"><col style="width:25%"><col style="width:13%"></colgroup>
             <thead><tr><th>구분</th><th>자격면허</th><th>발급기관</th><th>취득일</th></tr></thead>
             <tbody>
-                <tr><td>공인자격(국가/민간)</td><td>전산응용기계제도기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
-                <tr><td>공인자격(국가/민간)</td><td>기계설계산업기사</td><td>한국산업인력공단</td><td class="c"></td></tr>
-                <tr><td>국가기술자격(과정평가형)</td><td>특수용접기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
-                <tr><td>공인자격(국가/민간)</td><td>전기기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
+                <tr><td>국가기술자격</td><td>전산응용기계제도기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
+                <tr><td>국가기술자격</td><td>기계설계산업기사</td><td>한국산업인력공단</td><td class="c"></td></tr>
+                <tr><td>국가기술자격</td><td>특수용접기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
+                <tr><td>국가기술자격</td><td>전기기능사</td><td>한국산업인력공단</td><td class="c"></td></tr>
             </tbody>
         </table>
     </section>
@@ -431,6 +444,15 @@
         </table>
     </section>
 
+    <section class="self-intro-section">
+        <h2>자기소개서</h2>
+        <p>기계설계 및 자동화 설비 개발 분야에서 20년 11개월 동안 근무하며 자동차 부품 생산, 반도체, 유리 가공, EV 등 다양한 산업의 설비를 설계·개발·구축했습니다. 프로젝트마다 장비의 목적과 생산 공정이 다른 만큼, 요구 조건을 정확히 반영한 기계 설계를 중요하게 생각합니다.</p>
+        <p>초기에는 스마트 카트 제조 설비와 비전 검사 장비 개발·기계 설계를 맡았고, 스마트폰용 유리 기판 식각 장비도 개발·설계했습니다. 이후 반도체 실리콘 웨이퍼 제조 설비와 희토류 분리 플랜트 설비를 설계했습니다.</p>
+        <p>자동화 분야에서는 자동차 부품 생산 공정 설비, PCB 솔더링·코팅·건조 설비, 자동 스크류 체결기, 차체 용접 지그 자동화 및 시트 조립 라인 구축을 경험했습니다. EV 배터리 자동 조립 라인과 스마트폰 필름 성형기 개발도 수행했습니다.</p>
+        <p>최근에는 엔진 블록 세정기, 스테이터 코어 열처리기, 경찰 내구성 시험기, EV 충전 설비 구축 프로젝트를 수행했습니다.</p>
+        <p>Autodesk Inventor, SolidWorks, AutoCAD를 활용한 2D·3D 설계와 Vault PDM 활용 경험, 기계제도·기계설계·특수용접·전기 분야 국가기술자격을 바탕으로 현장 요구에 부합하는 설비 개발에 기여하겠습니다.</p>
+    </section>
+
     <div class="sign">
         <p class="date" id="today"></p>
         <p>상기 등록한 내용은 사실과 다름없음을 확인합니다.</p>
@@ -450,6 +472,8 @@
 <script>
     (function(){
         var key=73;
+        var photo=document.getElementById('resumePhoto');
+        if(photo&&location.protocol!=='file:')photo.src=photo.getAttribute('data-published-src');
         function reveal(){
             var nodes=document.querySelectorAll('[data-jt]');
             for(var i=0;i<nodes.length;i++){

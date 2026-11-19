@@ -1,7 +1,7 @@
 # AGENTS.md — JUST TECH Blogger 운영 작업 지침 (인수인계 문서)
 
 이 문서는 **다른 AI/작업자가 이어서 작업할 때** 반드시 따라야 하는 규칙과 현재 상태를 정리한 문서입니다.
-최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.54**
+최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.55**
 
 ---
 
@@ -69,7 +69,7 @@ PowerShell 프로필 로딩 차단 경고(`running scripts is disabled`)는 매 
 | CDN 저장소 | https://github.com/kimjundong7080-crypto/reddit-blogspot-cdn |
 | CDN 방식 | jsDelivr + GitHub (`@v1` major alias) |
 | 엣지 API | https://reddit-blogspot-edge.pages.dev (`/api/blogger-feed`) |
-| 최신 태그 | **v1.2.54** |
+| 최신 태그 | **v1.2.55** |
 
 테마의 9개 URL은 모두 `@v1`이다. 새 `v1.x.y` 태그를 발행하면 테마 수정 없이 반영된다.
 
@@ -115,6 +115,7 @@ reddit-blogspot-cdn/
 ```powershell
 & 'C:\Program Files\nodejs\node.exe' scripts/release.mjs 1.2.43
 ```
+- 먼저 로컬에서 수정과 미리보기를 마치고, 사용자가 최종 결과를 확인하기 전에는 커밋·태그·푸시·CDN purge를 하지 않는다.
 - `release.mjs`는 `package.json`, `assets`, `src`, `scripts`, `.github`, `pages`, `README.md`를 커밋하고 태그를 push한다.
 - **태그 번호는 항상 이전보다 크게** (재사용 금지).
 
@@ -174,8 +175,9 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 ### 6-3. 정적 페이지 (`pages/` + 23-yt-posts 렌더러)
 - `/p/resume.html`, `/p/contact-us.html` 은 Blogger 404 셸 위에 `fetch` → iframe `srcdoc`로 렌더
 - 높이 자동 측정, 다크모드에서도 **흰 배경** 강제(`html.jt-static-page body{background:#fff!important}`)
-- `pages/resume.html`: 한국식 이력서(인적사항/학력/경력/자격/자기소개), A4(210×297mm), 인쇄 `@page A4 margin 12mm`, `인쇄 · PDF 저장` 버튼
-  - ⚠️ 성명·연락처 등은 **샘플 값**이므로 실제 정보로 교체 필요
+- `pages/resume.html`: 한국식 이력서(인적사항/학력/희망조건/경력/자격/컴퓨터 활용/운전/자기소개), A4(210×297mm), 인쇄 `@page A4 margin 5mm`, `인쇄 · PDF 저장` 버튼
+- 이력서 사진은 `pages/resume-photo.jpg`에 있으며 로컬 파일 미리보기는 상대 경로, Blogger `iframe srcdoc`에서는 `data-published-src`의 jsDelivr `@v1` 경로를 사용한다. 사진 파일도 이력서와 함께 릴리스해야 한다.
+- 인쇄 CSS는 경력사항과 자기소개서를 새 페이지에서 시작하며, 본문은 페이지 사이에서 흐르도록 한다. 최종 PDF 페이지 수는 브라우저 인쇄 미리보기에서 확인할 것.
 
 ### 6-4. SEO (`src/23-yt-posts.html` IIFE `window.__jtSeo`)
 - canonical/OG/Twitter/JSON-LD(WebSite, Organization, BlogPosting, BreadcrumbList)
@@ -226,6 +228,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 | v1.2.52 | 출생월·주소·희망임금 수정 및 취득일 표기 제거 |
 | v1.2.53 | 도메인 삭제 및 경력 순서를 오래된 이력부터 표시 |
 | v1.2.54 | 서명자 제거 및 날짜 자동 갱신 |
+| v1.2.55 | 이력서 사진·자기소개서 추가, 경력·자격·정렬·글자 및 인쇄 레이아웃 보강 |
 
 ---
 
@@ -235,7 +238,17 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 - [ ] `src/*.html`(또는 `pages/*.html`)만 수정했는가
 - [ ] `build` → `--check` → `node --check` 통과
 - [ ] 새 `v1.x.y` 태그 발행 (기존 태그 재사용 없음)
+- [ ] `pages/resume-photo.jpg`를 이력서 HTML과 함께 포함
 - [ ] 수정 파일 jsDelivr purge
 - [ ] `x-jsd-version` 헤더로 새 버전 확인
 - [ ] 실제 브라우저에서 화면 확인 (캐시 때문에 Ctrl+F5 필요할 수 있음)
 - [ ] 이메일 평문 미노출 확인
+
+## 10. 최신 인수인계 (2026-11-20)
+
+- 이력서 요청 반영: 본문 글자 확대 및 검정색 통일, 인적사항·희망직종 좌측 정렬, 학력 중앙 정렬, 회사명·경력기간·직무명·경력 설명 수정, 경력 20년 11개월 표기, 자격 구분을 `국가기술자격`으로 통일.
+- 사진을 추가하고 3:4 표시 비율로 맞췄다. 자기소개서는 다섯 문단으로 보강해 이력서 맨 마지막에 배치했다.
+- 변경 파일: `pages/resume.html`, `pages/resume-photo.jpg`, `AGENTS.md`. 사진 원본 크기는 413×531이며 GPS EXIF 항목은 없다.
+- 로컬 브라우저에서 주소·연락처·사진 및 자기소개서 표시를 확인했다. 사진은 로드되고, 인적사항 표와 사진 프레임 높이가 일치한다.
+- `node scripts/build.mjs --check`, `git diff --check` 통과. 인쇄 CSS는 A4 3쪽 배치를 의도했으나 실제 인쇄/PDF 페이지 수는 아직 확인하지 않았다.
+- 최종 확인 요청에 따라 v1.2.55로 릴리스한다. 실제 공개 후에도 jsDelivr 캐시 반영 여부를 별도 확인하고, 테마 XML은 열지 않는다.
