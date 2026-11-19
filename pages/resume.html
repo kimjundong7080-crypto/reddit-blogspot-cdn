@@ -133,8 +133,9 @@
     /* 인적사항 + 사진 */
     .top{ display:flex; gap:14px; align-items:stretch; }
     .top .info{ flex:1 1 auto; min-width:0; }
+    .jt-private-address{white-space:pre-line}
     .photo{
-        flex:0 0 96px; width:96px; height:128px;
+        flex:0 0 96px; width:96px; height:auto; align-self:stretch;
         border:1px dashed #b6cfc1;
         border-radius:9px;
         background:linear-gradient(145deg,#f8fbf9,#eef5f1);
@@ -196,7 +197,7 @@
         .resume{min-height:auto;padding:20px 14px;border:0;border-radius:12px}
         .resume-head{margin-bottom:19px;padding-bottom:14px}
         .resume > .resume-head h1{font-size:25px}
-        .photo{flex:0 0 78px;width:78px;height:104px}
+        .photo{flex:0 0 78px;width:78px;height:auto;align-self:stretch}
         th,td{ padding:6px; font-size:12px; }
         .btn{ right:14px; bottom:14px; font-size:13px; padding:11px 18px; }
     }
@@ -272,7 +273,7 @@
                         </tr>
                         <tr>
                             <th>주소</th>
-                            <td colspan="3" class="jt-private" data-jt="[44276,44665,45965,105,54813,49528,49813,105,45968,53389,45897,47125,105,120,123,122]">····</td>
+                            <td colspan="3" class="jt-private jt-private-address" data-jt="[44276,44665,45965,105,54813,49528,49813,105,45968,53389,45897,47125,67,120,123,122]">····</td>
                         </tr>
                     </tbody>
                 </table>
