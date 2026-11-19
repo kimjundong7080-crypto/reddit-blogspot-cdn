@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.15 */
+/* Reddit-style Blogger YouTube post list — v1.2.16 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -455,6 +455,38 @@ html.jt-home-page .jt-hero-sub{
   font-size:clamp(12px,1.3vw,16px);
   color:rgba(255,255,255,.86);
 }
+
+/* [md] Markdown rendering */
+.post-body .md-ready{display:block}
+.post-body .markdown h1{font-size:28px;line-height:1.3;margin:34px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--border-color,#e5e5e5)}
+.post-body .markdown h2{font-size:23px;line-height:1.35;margin:30px 0 14px;padding-left:12px;border-left:4px solid var(--main-color,#ec4899)}
+.post-body .markdown h3{font-size:19px;line-height:1.4;margin:26px 0 12px;color:var(--main-color,#ec4899)}
+.post-body .markdown h4,.post-body .markdown h5,.post-body .markdown h6{font-size:16px;margin:22px 0 10px;color:var(--title-color,#222)}
+.post-body .markdown u{text-decoration:underline;text-decoration-color:var(--main-color,#ec4899);text-decoration-thickness:2px;text-underline-offset:3px}
+.post-body .markdown mark{background-color:rgba(255,214,0,.45);color:inherit;padding:1px 4px;border-radius:3px}
+.post-body .md-code{position:relative;margin:0 0 20px}
+.post-body .md-code pre{margin:0}
+.post-body .md-copy{position:absolute;top:8px;right:8px;z-index:2;padding:4px 10px;font-family:var(--meta-font,Arial,sans-serif);font-size:12px;font-weight:600;line-height:1;border:0;border-radius:4px;background:var(--main-color,#ec4899);color:#fff;cursor:pointer;opacity:.85;transition:opacity .2s ease}
+.post-body .md-copy:hover{opacity:1}
+.post-body .ify-fold{position:relative;margin:0}
+.post-body .ify-fold:not(:last-child){margin-bottom:20px}
+.post-body .ify-fold-inner{position:relative;max-height:260px;overflow:hidden}
+.post-body .ify-fold.is-open .ify-fold-inner{max-height:none;overflow:visible}
+.post-body .ify-fold:not(.is-open) .ify-fold-inner{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 90px),transparent 100%);mask-image:linear-gradient(to bottom,#000 calc(100% - 90px),transparent 100%)}
+.post-body .ify-fold:not(.is-open) .ify-fold-inner:after{display:none !important}
+.post-body .ify-fold-more{text-align:center}
+.post-body .ify-fold-btn{display:inline-block;margin:12px 0 0;padding:9px 24px;border:0;border-radius:20px;background:var(--main-color,#ec4899);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s ease}
+.post-body .ify-fold-btn:hover{opacity:.88}
+.post-body .ify-fold:last-child .ify-fold-more{margin-bottom:0}
+.post-body .markdown:last-child{margin-bottom:0}
+.post-body .markdown:last-child>*:last-child{margin-bottom:0}
+
+/* [youtube link="..."] responsive embed */
+.jt-yt-embed{display:block;position:relative;width:min(100%,820px);aspect-ratio:16/9;margin:22px auto;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.jt-yt-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.jt-yt-embed:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),transparent 60%)}
+.jt-yt-embed.ready:before{display:none}
+@media only screen and (max-width:768px){.jt-yt-embed{border-radius:10px;margin:16px auto}}
 
 /* 추천 글 사이드바 스크롤바 숨김 */
 body.rd3-layout .sidebar-container{
