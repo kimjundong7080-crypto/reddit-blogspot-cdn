@@ -1022,6 +1022,150 @@ body.rd3-layout .sidebar-container::-webkit-scrollbar{
       new MutationObserver(run).observe(document.body,{childList:true,subtree:true});
     }
   })();
+
+  (function(){
+    if(window.__jtSeo)return; window.__jtSeo=1;
+    var ORIGIN='https://www.techlifeworld.com';
+    var SITE='JUST TECH';
+    var HOME_TITLE='JUST TECH | 산업 자동화·로봇·설비 기술 아카이브';
+    var HOME_DESC='로봇·조립·검사·포장 설비까지 산업 자동화 현장의 설계·제작·적용 사례와 기술 자료를 정리한 JUST TECH 블로그입니다.';
+    var FALLBACK_DESC='산업 자동화·로봇·설비 기술 자료를 기록하는 JUST TECH 블로그입니다.';
+    function head(){return document.head||document.getElementsByTagName('head')[0];}
+    function fillMeta(attr,key,value){
+      if(!value)return;
+      var m=head().querySelector('meta['+attr+'="'+key+'"]');
+      if(!m){m=document.createElement('meta');m.setAttribute(attr,key);head().appendChild(m);}
+      if(!(m.getAttribute('content')||'').trim())m.setAttribute('content',value);
+    }
+    function setMeta(attr,key,value){
+      if(!value)return;
+      var m=head().querySelector('meta['+attr+'="'+key+'"]');
+      if(!m){m=document.createElement('meta');m.setAttribute(attr,key);head().appendChild(m);}
+      m.setAttribute('content',value);
+    }
+    function clean(s){
+      return String(s||'')
+        .replace(/\[(?:\/)?(?:md|rede|rade)\]/gi,' ')
+        .replace(/\[youtube[^\]]*\]/gi,' ')
+        .replace(/```[\s\S]*?```/g,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
+    function cut(s,max){
+      s=clean(s);
+      if(s.length<=max)return s;
+      var t=s.slice(0,max),i=Math.max(t.lastIndexOf('다.'),t.lastIndexOf('. '));
+      if(i<max*0.55)i=t.lastIndexOf(' ');
+      if(i>max*0.55)t=t.slice(0,i);
+      return t.replace(/[\s,·]+$/,'')+'.';
+    }
+    function bodyText(){
+      var b=document.querySelector('.post-body');
+      if(!b)return '';
+      var c=b.cloneNode(true),drop=c.querySelectorAll('script,style,iframe,.jt-yt-embed,.ify-fold-more,.jt-landing');
+      for(var i=0;i<drop.length;i++)if(drop[i].parentNode)drop[i].parentNode.removeChild(drop[i]);
+      return c.textContent||'';
+    }
+    function ogImage(){
+      var m=head().querySelector('meta[property="og:image"]'),u=m&&(m.getAttribute('content')||'');
+      if(u)return u;
+      var img=document.querySelector('.post-body img, .jt-project-media img');
+      return img&&img.src?img.src:ORIGIN+'/favicon.ico';
+    }
+    function putLd(id,data){
+      var el=document.getElementById(id);
+      if(!el){el=document.createElement('script');el.type='application/ld+json';el.id=id;head().appendChild(el);}
+      el.textContent=JSON.stringify(data);
+    }
+    var isHome=location.pathname==='/p/home.html'||location.pathname==='/';
+    var isItem=!!(document.body&&document.body.classList.contains('item-view'));
+    var rawTitle=(document.title||'').replace(/\s+/g,' ').trim();
+    var headline=rawTitle.replace(/\s*\|\s*JUST TECH$/,'')||SITE;
+    if(isHome){
+      document.title=HOME_TITLE;
+    }else if(isItem&&rawTitle&&rawTitle.indexOf(SITE)<0){
+      document.title=rawTitle+' | '+SITE;
+    }
+    if(!head().querySelector('meta[name="robots"]')&&(isItem||isHome)){
+      fillMeta('name','robots','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    }
+    fillMeta('property','og:site_name',SITE);
+    fillMeta('property','og:locale','ko_KR');
+    fillMeta('name','twitter:card','summary_large_image');
+    if(isHome){
+      document.title=HOME_TITLE;
+      setMeta('name','description',HOME_DESC);
+      setMeta('property','og:description',HOME_DESC);
+      fillMeta('property','og:type','website');
+      fillMeta('name','twitter:title',HOME_TITLE);
+      setMeta('name','twitter:description',HOME_DESC);
+      if(!head().querySelector('meta[property="og:title"]'))setMeta('property','og:title',HOME_TITLE);
+      putLd('jt-ld-website',{'@context':'https://schema.org','@graph':[
+        {'@type':'WebSite','@id':ORIGIN+'/#website','url':ORIGIN+'/p/home.html','name':SITE,
+          'alternateName':'테크라이프월드','description':HOME_DESC,'inLanguage':'ko',
+          'publisher':{'@id':ORIGIN+'/#organization'},
+          'potentialAction':{'@type':'SearchAction',
+            'target':{'@type':'EntryPoint','urlTemplate':ORIGIN+'/search?q={search_term_string}'},
+            'query-input':'required name=search_term_string'}},
+        {'@type':'Organization','@id':ORIGIN+'/#organization','name':SITE,'url':ORIGIN+'/p/home.html',
+          'description':FALLBACK_DESC}
+      ]});
+    }else if(isItem){
+      var canonical=(document.querySelector('link[rel=canonical]')||{}).href||(ORIGIN+location.pathname);
+      var initialDesc=cut(bodyText(),150)||FALLBACK_DESC;
+      setMeta('name','description',initialDesc);
+      setMeta('property','og:description',initialDesc);
+      setMeta('name','twitter:description',initialDesc);
+      fillMeta('property','og:type','article');
+      fillMeta('name','twitter:title',headline);
+      if(!head().querySelector('meta[name="twitter:image"]'))setMeta('name','twitter:image',ogImage());
+      function renderArticle(extra){
+        extra=extra||{};
+        var desc=extra.desc||initialDesc;
+        var graph=[{
+          '@type':'BlogPosting','@id':canonical+'#article',
+          'mainEntityOfPage':{'@type':'WebPage','@id':canonical},
+          'headline':headline,'description':desc,'image':[ogImage()],'inLanguage':'ko',
+          'author':{'@type':'Organization','name':SITE,'url':ORIGIN+'/p/home.html'},
+          'publisher':{'@type':'Organization','name':SITE,'url':ORIGIN+'/p/home.html'},
+          'isPartOf':{'@type':'Blog','name':SITE,'url':ORIGIN+'/p/home.html'}
+        }];
+        if(extra.published)graph[0].datePublished=extra.published;
+        if(extra.updated)graph[0].dateModified=extra.updated;
+        if(extra.section)graph[0].articleSection=extra.section;
+        graph.push({'@type':'BreadcrumbList','itemListElement':[
+          {'@type':'ListItem','position':1,'name':'홈','item':ORIGIN+'/p/home.html'},
+          {'@type':'ListItem','position':2,'name':headline,'item':canonical}
+        ]});
+        putLd('jt-ld-article',{'@context':'https://schema.org','@graph':graph});
+      }
+      renderArticle({});
+      var postPath=location.pathname;
+      try{postPath=decodeURIComponent(postPath);}catch(e){}
+      fetch('/feeds/posts/default?alt=json&path='+encodeURIComponent(postPath),{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){
+          var e=j&&j.feed&&j.feed.entry&&j.feed.entry[0];
+          if(!e)return;
+          var cats=(e.category||[]).map(function(c){return c.term;}).filter(Boolean);
+          var desc=cut(e.summary&&e.summary.$t,150)||initialDesc;
+          setMeta('name','description',desc);
+          setMeta('property','og:description',desc);
+          setMeta('name','twitter:description',desc);
+          renderArticle({
+            published:e.published&&e.published.$t,
+            updated:e.updated&&e.updated.$t,
+            desc:desc,
+            section:cats[0]||''
+          });
+        })['catch'](function(){});
+    }else{
+      setMeta('name','description',FALLBACK_DESC);
+      setMeta('property','og:description',FALLBACK_DESC);
+      fillMeta('property','og:type','website');
+      setMeta('name','twitter:description',FALLBACK_DESC);
+    }
+  })();
 })();
 //]]>
 </script>
