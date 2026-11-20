@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.77 */
+/* Reddit-style Blogger home landing — v1.2.78 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -136,38 +136,74 @@
     initServiceCeremony();
     if('requestIdleCallback' in window){requestIdleCallback(function(){loadLandingProjects();},{timeout:1600});}else{setTimeout(loadLandingProjects,700);}
   }
+  /* 랜딩이 복제/재생성되어도 공개(reveal)가 끊기지 않도록
+     노드 identity에 의존하지 않는 문서 레벨 티커를 함께 사용한다. */
+  function revealTick(){
+    var els=document.querySelectorAll('.jt-landing.jt-reveal-ready .jt-reveal:not(.is-in)');
+    if(!els.length)return;
+    var vh=window.innerHeight||document.documentElement.clientHeight;
+    for(var i=0;i<els.length;i++){
+      var r=els[i].getBoundingClientRect();
+      if(r.top<vh-40&&r.bottom>0)els[i].classList.add('is-in');
+    }
+  }
+  function bindRevealTicker(){
+    if(window.__jtRevealTicker)return;
+    window.__jtRevealTicker=1;
+    var queued=false;
+    function schedule(){
+      if(queued)return;queued=true;
+      requestAnimationFrame(function(){queued=false;revealTick();});
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    window.addEventListener('load',schedule);
+    /* 복제/지연 레이아웃 대비: 초기 12초간 주기 점검 + 관련 초기화 재시도 */
+    var n=0;
+    var iv=setInterval(function(){
+      revealTick();
+      initHeroTyping();
+      initServiceCeremony();
+      initFeatureCarousel();
+      if(++n>=15)clearInterval(iv);
+    },800);
+  }
   function initLandingReveal(){
     var root=document.querySelector('.jt-landing');
-    if(!root||root.__jtReveal)return;
-    root.__jtReveal=1;
-    if(!('IntersectionObserver' in window))return;
+    if(!root)return;
     var els=[].slice.call(root.querySelectorAll('.jt-landing-hero, .jt-landing-section, .jt-cta'));
-    if(!els.length)return;
-    root.classList.add('jt-reveal-ready');
-    var io=new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting){
-          entry.target.classList.add('is-in');
-          io.unobserve(entry.target);
-        }
+    if(els.length){
+      root.classList.add('jt-reveal-ready');
+      els.forEach(function(el,i){
+        if(!el.classList.contains('jt-reveal'))el.classList.add('jt-reveal');
+        if(!el.style.transitionDelay)el.style.transitionDelay=(i%4)*45+'ms';
       });
-    },{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
-    els.forEach(function(el,i){
-      el.classList.add('jt-reveal');
-      el.style.transitionDelay=(i%4)*45+'ms';
-      io.observe(el);
-    });
-    /* 다른 위젯이 랜딩 DOM을 다시 만들면 옵저버가 끊기므로 새 랜딩을 감지해 재연결한다. */
-    if(window.MutationObserver&&root.parentNode){
-      new MutationObserver(function(){
-        var cur=document.querySelector('.jt-landing');
-        if(cur&&!cur.__jtReveal)initLandingReveal();
-      }).observe(root.parentNode,{childList:true});
+      if(!root.__jtReveal&&'IntersectionObserver' in window){
+        var io=new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(entry.isIntersecting){
+              entry.target.classList.add('is-in');
+              io.unobserve(entry.target);
+            }
+          });
+        },{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
+        els.forEach(function(el){io.observe(el);});
+      }
     }
+    root.__jtReveal=1;
+    bindRevealTicker();
+    revealTick();
   }
   function initHeroTyping(){
     var h1=document.querySelector('.jt-landing .jt-type');
     if(!h1||h1.__jtType)return;
+    /* 복제된 DOM: 이미 문자 span이 있으면 애니메이션을 반복하지 않고 완료 상태로 맞춘다. */
+    var done=h1.querySelectorAll('.jt-ch');
+    if(done.length){
+      h1.__jtType=1;
+      for(var d=0;d<done.length;d++)done[d].classList.add('jt-on');
+      return;
+    }
     h1.__jtType=1;
     var lineEls=[].slice.call(h1.querySelectorAll('.jt-type-line'));
     if(!lineEls.length)return;
@@ -232,6 +268,14 @@
     var title=section&&section.querySelector('.jt-service-type');
     if(!section||!title||section.__jtCeremony)return;
     section.__jtCeremony=1;
+    /* 복제된 DOM: 이미 문자 span이 있으면 타이핑을 반복하지 않고 완료 상태로 맞춘다. */
+    var done=section.querySelectorAll('.jt-service-ch');
+    if(done.length){
+      for(var d=0;d<done.length;d++)done[d].classList.add('jt-service-on');
+      section.classList.add('jt-services-ceremony-ready');
+      section.classList.add('jt-services-cards-in');
+      return;
+    }
     var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce)return;
     var text=title.textContent.replace(/\s+$/,'');
