@@ -1391,6 +1391,9 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
       play.addEventListener('click',function(){startPlayback(box,id,null);});
       box.appendChild(thumb);
       box.appendChild(play);
+      if(box.closest('.jt-inf-post')){
+        return;
+      }
       function schedule(observer){
         if(box.__jtYtTimer||box.getAttribute('data-loaded'))return;
         box.__jtYtTimer=setTimeout(function(){
