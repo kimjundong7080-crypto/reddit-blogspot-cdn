@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.66 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.67 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -100,20 +100,26 @@
       return fetch('/feeds/posts/default?alt=json&max-results='+CFG.feedMax)
         .then(function(r){if(!r.ok)throw 0;return r.json();});
     }
+    /* Blogger 직접 호출을 우선하고, 실패할 때만 Edge API를 보조로 사용한다.
+       Edge API가 404인 상태에서 매 글마다 실패 요청을 보내지 않도록 순서를 뒤집었다. */
     function fetchFeed(){
-      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directFeed();
-      return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
-        .then(function(r){if(!r.ok)throw 0;return r.json();})
-        ['catch'](function(){edgeUnavailable=true;return directFeed();});
+      return directFeed()['catch'](function(){
+        if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
+        return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
+          .then(function(r){if(!r.ok)throw 0;return r.json();})
+          ['catch'](function(){edgeUnavailable=true;throw 0;});
+      });
     }
     function directPost(u){
       return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});
     }
     function fetchPostText(u){
-      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directPost(u);
-      return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
-        .then(function(r){if(!r.ok)throw 0;return r.text();})
-        ['catch'](function(){edgeUnavailable=true;return directPost(u);});
+      return directPost(u)['catch'](function(){
+        if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
+        return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
+          .then(function(r){if(!r.ok)throw 0;return r.text();})
+          ['catch'](function(){edgeUnavailable=true;throw 0;});
+      });
     }
 
     function fetchPage(u){

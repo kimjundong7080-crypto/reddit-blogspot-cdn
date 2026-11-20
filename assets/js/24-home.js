@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.66 */
+/* Reddit-style Blogger home landing — v1.2.67 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -157,6 +157,13 @@
       el.style.transitionDelay=(i%4)*45+'ms';
       io.observe(el);
     });
+    /* 다른 위젯이 랜딩 DOM을 다시 만들면 옵저버가 끊기므로 새 랜딩을 감지해 재연결한다. */
+    if(window.MutationObserver&&root.parentNode){
+      new MutationObserver(function(){
+        var cur=document.querySelector('.jt-landing');
+        if(cur&&!cur.__jtReveal)initLandingReveal();
+      }).observe(root.parentNode,{childList:true});
+    }
   }
   function initHeroTyping(){
     var h1=document.querySelector('.jt-landing .jt-type');
@@ -468,6 +475,9 @@
   function loadLandingProjects(){
     var grid=document.getElementById('jtLandingProjects');
     if(!grid)return;
+    function cleanTitle(v){
+      return String(v||'').replace(/\[youtube[^\]]*\]/gi,' ').replace(/\s+/g,' ').trim();
+    }
     fetchHomeFeed(1,6).then(function(data){
       var entries=(data.feed&&data.feed.entry)||[];
       for(var i=0;i<entries.length&&i<4;i++){
@@ -476,8 +486,8 @@
         var links=e.link||[],href='';
         for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
         if(href)card.href=href;
-        var title=(e.title&&e.title.$t||'').trim();
         var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
+        var title=cleanTitle(e.title&&e.title.$t||'')||cat||'자동화 프로젝트';
         var t=card.querySelector('.jt-project-title'),d=card.querySelector('.jt-project-desc');
         if(t&&title)t.textContent=title;
         if(d&&cat)d.textContent=cat;
@@ -513,5 +523,8 @@
       initHomeLanding();
       initHomeFooter();
       requestAnimationFrame(function(){initFeatureCarousel();});
+      /* 랜딩이 나중에 교체되는 경우에도 공개 애니메이션이 끊기지 않도록 재시도 */
+      window.addEventListener('load',initLandingReveal);
+      setTimeout(initLandingReveal,1500);
     });
 })();

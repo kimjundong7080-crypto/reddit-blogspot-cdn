@@ -63,24 +63,6 @@
   color:#6B7280;
   font-size:12px;
 }
-/* 무한 로딩 게이트: Turnstile 인증 박스 */
-.jt-inf-turnstile{
-  display:none;
-  text-align:center;
-  padding:18px 0 30px;
-}
-.jt-inf-turnstile.on{display:block}
-.jt-inf-turnstile .jt-inf-ts-label{
-  margin:0 0 10px;
-  color:#6B7280;
-  font-size:12px;
-  font-weight:600;
-}
-.jt-inf-turnstile .jt-inf-ts-slot{
-  display:flex;
-  justify-content:center;
-  min-height:65px;
-}
 @media screen and (max-width:768px){
   #jtInfiniteFeed .jt-inf-post{margin-top:22px;padding-top:20px}
 }
@@ -88,7 +70,6 @@
   #jtInfiniteFeed .jt-inf-post{border-top-color:rgba(255,255,255,.14)}
   .jt-inf-loader,.jt-inf-end{color:#9CA3AF}
   .jt-inf-loader i{border-color:rgba(255,255,255,.18);border-top-color:#FF4500}
-  .jt-inf-turnstile .jt-inf-ts-label{color:#9CA3AF}
 }
 
 /* 추가 글: 하단 빈 공간 제거 + 데스크톱에서 좌우로 조금 더 넓게 */
@@ -309,20 +290,26 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
       return fetch('/feeds/posts/default?alt=json&max-results='+CFG.feedMax)
         .then(function(r){if(!r.ok)throw 0;return r.json();});
     }
+    /* Blogger 직접 호출을 우선하고, 실패할 때만 Edge API를 보조로 사용한다.
+       Edge API가 404인 상태에서 매 글마다 실패 요청을 보내지 않도록 순서를 뒤집었다. */
     function fetchFeed(){
-      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directFeed();
-      return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
-        .then(function(r){if(!r.ok)throw 0;return r.json();})
-        ['catch'](function(){edgeUnavailable=true;return directFeed();});
+      return directFeed()['catch'](function(){
+        if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
+        return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
+          .then(function(r){if(!r.ok)throw 0;return r.json();})
+          ['catch'](function(){edgeUnavailable=true;throw 0;});
+      });
     }
     function directPost(u){
       return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});
     }
     function fetchPostText(u){
-      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directPost(u);
-      return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
-        .then(function(r){if(!r.ok)throw 0;return r.text();})
-        ['catch'](function(){edgeUnavailable=true;return directPost(u);});
+      return directPost(u)['catch'](function(){
+        if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
+        return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
+          .then(function(r){if(!r.ok)throw 0;return r.text();})
+          ['catch'](function(){edgeUnavailable=true;throw 0;});
+      });
     }
 
     function fetchPage(u){

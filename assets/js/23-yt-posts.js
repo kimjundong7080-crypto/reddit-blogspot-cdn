@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.66 */
+/* Reddit-style Blogger YouTube post list — v1.2.67 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -803,6 +803,10 @@
       var shortcode=/\[youtube[^\]]{0,400}\]/gi;
       for(var b=0;b<bodies.length;b++){
         var body=bodies[b];
+        /* 홈 랜딩(.jt-landing)은 위젯이 만든 UI이므로 숏코드 치환 대상에서 제외한다.
+           제목 데이터에 남은 [youtube ...] 문자열을 숏코드로 오인해 innerHTML을
+           다시 쓰면 랜딩 DOM이 재생성되어 공개(reveal) 옵저버가 끊긴다. */
+        if(body.querySelector('.jt-landing'))continue;
         if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1)continue;
         var html=body.innerHTML,found=false;
         html=html.replace(paragraph,function(full,link){
