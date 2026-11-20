@@ -1,21 +1,21 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.74**
-Current local package version: **1.2.74**
+Latest published release: **v1.2.75**
+Current local package version: **1.2.75**
 
-This document is the handoff for the next AI or engineer. Release v1.2.74 is published; favicon assets are live, and the `23-yt-posts.js@v1` purge is pending a throttled retry.
+This document is the handoff for the next AI or engineer. Release v1.2.75 is published; `24-home.js@v1` is current, and the `23-yt-posts.js@v1` purge is pending a throttled retry.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `dc9aca4 Release v1.2.74`.
-- Latest GitHub release/tag: `v1.2.74`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.74 is published.** Content:
+- Branch: `main`; latest release commit: `92a02dc Release v1.2.75`.
+- Latest GitHub release/tag: `v1.2.75`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.75 is published.** Content:
   - All prior fixes (see below).
-  - New favicon set under `assets/img/`: `favicon.svg`, `favicon-16.png`, `favicon-32.png`, `favicon-48.png`, `favicon.ico`, `apple-touch-icon.png` (green `#1f7a5c` rounded square with white `JT`). `23-yt-posts` removes existing icon links and injects them into `<head>` on every page, plus `theme-color=#1f7a5c`.
-  - Single-post YouTube autoplay now uses `loop=1&playlist=<id>` so short demo clips do not stop on YouTube's end-screen overlay (the listing/clone previews already looped).
-- **CDN status:** favicon assets verified HTTP 200 at both `@v1.2.74` and `@v1`. `23-yt-posts.js@1.2.74` is purged. The `23-yt-posts.js@v1` purge is throttled (~35 min); a wakeup is scheduled to retry and verify. Until then, `@v1` still serves 1.2.72, so the favicon links and loop fix are not yet applied for visitors.
+  - `src/24-home.html`: home feed cache key is now `jt-home-feed-v2` with a **5-minute** TTL (was `v1`/6 hours), so new posts appear on the landing quickly.
+  - New YouTube post published on 2026-11-21 KST: **“두산 협동로봇 솔루션적용: 스크류 체결”** at `https://www.techlifeworld.com/2026/11/blog-post.html` (post id `2105647337331496730`, video `4GL2ndz7etQ`). Body uses the `[youtube link="..."]` shortcode plus a short Korean description.
+- **CDN status:** favicon assets live; `24-home.js@v1` is confirmed **1.2.75**. `23-yt-posts.js@v1` is still **1.2.72**; its purge is throttled (~24 min) with a wakeup scheduled. Until it updates, the favicon head injection, single-post loop, and v1.2.73 SEO meta are not live for visitors.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -179,9 +179,13 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Added the favicon set (`favicon.svg`/16/32/48/ico + apple-touch-icon) and head injection on every page; `theme-color` is set to `#1f7a5c`.
   - Single-post YouTube autoplay now loops (`loop=1&playlist=<id>`), preventing the video from stopping on the end-screen overlay after the 18-second clip.
   - Favicon assets verified 200 at `@v1` and `@v1.2.74`; favicon links, SVG/PNG/ICO sizes, and `theme-color` verified locally.
+- `v1.2.75`:
+  - Home feed cache key bumped to `jt-home-feed-v2` and TTL reduced to 5 minutes so new posts reach the landing quickly.
+  - New post “두산 협동로봇 솔루션적용: 스크류 체결” (`/2026/11/blog-post.html`, post id `2105647337331496730`, YouTube `4GL2ndz7etQ`) published via the Blogger API with the shortcode and a Korean description; label `CAD`.
+  - Fresh browser verification: the new post is the first home project card (poster + correct title), all 4 cards have images (0 broken), and the search result list starts with the new post. Post page: embed iframe visible (620×349), no raw shortcode, infinite scroll appends posts.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–74)
+### Verification notes (2026-11-20, v1.2.63–75)
 
 - A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
@@ -189,6 +193,8 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - v1.2.73 SEO meta verified locally: search/archive `og:title` descriptive; About `robots=index, follow`; resume/contact `robots=noindex, follow`; vlog post `og:image=https://i.ytimg.com/vi/opVMctYiY6s/hqdefault.jpg`.
 - v1.2.74 favicon verified locally: head contains SVG/32/16/ICO/apple-touch icon links, `theme-color=#1f7a5c`, 0 console errors; favicon assets are HTTP 200 on jsDelivr.
 - v1.2.74 loop fix verified in the embed URL: `...&loop=1&playlist=lyFcrrULyN0...` on the single-post player.
+- v1.2.75 fresh-context check: new post “두산 협동로봇 솔루션적용: 스크류 체결” is first on the home project cards with `poster-1.jpg`, no broken images, and first in search results. The post page renders the 4GL2ndz7etQ player at 620×349 with no raw shortcode.
+- Home stale-cache caveat: the old 6-hour `jt-home-feed-v1` cache may keep the previous project cards for up to 6 hours on browsers that had loaded the old `24-home.js`; a hard refresh loads the v2/5-minute cache immediately.
 - `/p/resume.html`, `/p/contact-us.html`, `/p/about.html` all have page-specific descriptions and a poster OG image fallback after v1.2.73.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
@@ -233,7 +239,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- **Pending:** `23-yt-posts.js@v1` purge for v1.2.74 is throttled until roughly 16:05Z. A wakeup is scheduled; after it succeeds, confirm `x-jsd-version=1.2.74`, the favicon links/`theme-color`, the single-post loop URL, and the v1.2.73 SEO meta, then remove this item.
+- **Pending:** `23-yt-posts.js@v1` purge (currently throttled ~24 min) is still required to deliver v1.2.73 SEO meta, v1.2.74 favicon links + theme-color + single-post loop. A wakeup is scheduled; after it succeeds, confirm `x-jsd-version=1.2.75`, the favicon links/`theme-color`, the loop URL on the new post, the SEO meta, and 0 console errors, then remove this item.
 - Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
