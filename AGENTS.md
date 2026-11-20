@@ -1,16 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.82**
-Current local package version: **1.2.82**
+Latest published release: **v1.2.83**
+Current local package version: **1.2.83**
 
-This document is the handoff for the next AI or engineer. Release v1.2.82 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.83 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `d5b2114 Release v1.2.82`.
-- Latest GitHub release/tag: `v1.2.82`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `ba8073f Release v1.2.83`.
+- Latest GitHub release/tag: `v1.2.83`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.83 is published.** Content:
+  - **High-resolution YouTube thumbnails first**: `thumbSources` is now `maxresdefault.jpg` → `sddefault.jpg` → `hqdefault.jpg`. YouTube returns a 120×90 gray placeholder (HTTP 200) for videos without `maxres`, so `onload` checks `naturalWidth<=120` and advances to the next source.
+  - Verified live on `/2026/11/blog-post.html`: `.jt-yt-thumb` src ends with `maxresdefault.jpg`, natural size 1280×720, fills the 16:9 box with no letterbox.
 - **v1.2.82 is published.** Content:
   - **Left menu rail narrowed by 20%**: the effective left grid column is 220→**176px** at all desktop breakpoints (≥1240 and 1024–1239), `--rd3-left-w` 250→200px, and `#jtLeftToggle` `left` 220→176px. Verified live: rail 176px, center column +44px, labels unclipped, no horizontal overflow.
   - Note: `#jtLeftToggle` is `position:fixed` from the viewport edge, so on wide screens (max-width 1360 centered) it does not sit flush against the rail's right edge. This is pre-existing behavior, not introduced by v1.2.82.
@@ -217,6 +220,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - `v1.2.82`:
   - Left rail 20% narrower: `@media (min-width:1240px)` grid `220px`→`176px`, `1024–1239` blocks `220px`→`176px`, `--rd3-left-w` 250→200px, `#jtLeftToggle` `left` 220→176px.
   - Verified live on `/search` at a 1964px viewport: `.rd3-left` 176px, center 840px (was 796px), right 280px, total 1328+padding = 1360; menu labels 165/165 (no clipping), 0 horizontal overflow, toggle at x=176.
+- `v1.2.83`:
+  - YouTube embed thumbnails request the highest available resolution first: `maxresdefault.jpg` → `sddefault.jpg` → `hqdefault.jpg`.
+  - Because YouTube answers missing `maxres` images with a 120×90 gray placeholder (HTTP 200), `onload` checks `naturalWidth<=120` and falls through to the next source; `onerror` keeps the old behavior.
+  - Verified live: `maxresdefault.jpg`, 1280×720, `object-fit:cover` inside the 16:9 box, no letterbox; a second post thumbnail also loaded at maxres.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)

@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-20 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.82**
+Latest published release: **v1.2.83**
 
-This is the consolidated English record for the work cycle that ended with v1.2.82.
+This is the consolidated English record for the work cycle that ended with v1.2.83.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -34,6 +34,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.80 | `6002f4b` | **Quick nav moved and restyled**: no longer bottom-center (was overlapping the `/search` page numbers); now a vertical pill fixed at the right edge, vertically centered. Buttons 36→44px (icons 22px), background 50% transparent (`rgba(255,255,255,.5)` / `rgba(10,14,17,.5)`), stronger border + layered shadow. Verified: no intersection with pager at any scroll position. |
 | v1.2.81 | `6483107` | **Recommended-posts list scaled ~1.3×**: `.yt-item` 78→101px, thumbnail 122→159px, title 12.5→16px, meta 11→14px. Scroll step (measured) becomes 103px; wheel-driven advance still animates. |
 | v1.2.82 | `d5b2114` | **Left menu rail narrowed 20%**: effective grid column 220→176px at every desktop breakpoint, `--rd3-left-w` 250→200px, and `#jtLeftToggle` `left` 220→176px. Verified live: rail 176px, center column +44px, labels unclipped, no horizontal overflow. |
+| v1.2.83 | `ba8073f` | **High-resolution YouTube thumbnails first**: `.jt-yt-thumb` now tries `maxresdefault.jpg` → `sddefault.jpg` → `hqdefault.jpg`. A 120px-wide placeholder (returned for videos without maxres) is detected and skipped. Verified: 1280×720 thumbnail, 16:9 filled, no letterbox. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
