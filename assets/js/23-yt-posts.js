@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.62 */
+/* Reddit-style Blogger YouTube post list — v1.2.63 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -666,6 +666,8 @@
 
   (function(){
     if(window.__jtYouTube)return; window.__jtYouTube=1;
+    var isPostView=!!(document.body&&document.body.classList.contains('item-view'));
+    var activePlaybackBox=null;
     function ytId(value){
       value=String(value||'').trim();
       var match=value.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
@@ -673,8 +675,17 @@
       match=value.match(/^([A-Za-z0-9_-]{11})$/);
       return match?match[1]:'';
     }
+    function stopPlayback(box){
+      if(!box)return;
+      box.removeAttribute('data-loaded');
+      box.classList.remove('ready');
+      var frames=box.querySelectorAll('iframe');
+      for(var i=0;i<frames.length;i++)frames[i].remove();
+    }
     function startPlayback(box,id,observer){
       if(box.getAttribute('data-loaded')||!document.documentElement.contains(box))return;
+      if(activePlaybackBox&&activePlaybackBox!==box)stopPlayback(activePlaybackBox);
+      activePlaybackBox=box;
       box.setAttribute('data-loaded','1');
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
@@ -695,7 +706,7 @@
       var id=box.getAttribute('data-yt');
       if(!id)return;
       var loaded=box.getAttribute('data-loaded');
-      if(loaded&&box.__jtYtMounted)return;
+      if(box.__jtYtMounted)return;
       if(loaded){
         box.removeAttribute('data-loaded');
         box.classList.remove('ready');
@@ -705,14 +716,20 @@
       box.__jtYtMounted=1;
       var thumb=document.createElement('img');
       thumb.className='jt-yt-thumb';
-      thumb.src='https://i.ytimg.com/vi/'+id+'/maxresdefault.jpg';
+      var thumbSources=[
+        'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg',
+        'https://i.ytimg.com/vi/'+id+'/sddefault.jpg'
+      ];
+      var thumbSourceIndex=0;
+      thumb.src=thumbSources[thumbSourceIndex];
       thumb.alt='YouTube 동영상 썸네일';
-      thumb.loading='eager';
+      thumb.loading='lazy';
       thumb.decoding='async';
       thumb.referrerPolicy='no-referrer';
       thumb.onerror=function(){
-        if(thumb.dataset.fallback==='sd')thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
-        else{thumb.dataset.fallback='sd';thumb.src='https://i.ytimg.com/vi/'+id+'/sddefault.jpg';}
+        thumbSourceIndex++;
+        if(thumbSourceIndex<thumbSources.length)thumb.src=thumbSources[thumbSourceIndex];
+        else thumb.style.display='none';
       };
       var play=document.createElement('button');
       play.type='button';
@@ -722,7 +739,7 @@
       play.addEventListener('click',function(){startPlayback(box,id,null);});
       box.appendChild(thumb);
       box.appendChild(play);
-      if(box.closest('.jt-inf-post')){
+      if(box.closest('.jt-inf-post')||!isPostView){
         return;
       }
       function schedule(observer){

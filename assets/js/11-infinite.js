@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.62 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.63 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -27,6 +27,7 @@
   ready(function(){
     if(!isPostView())return;
 
+    var edgeUnavailable=false;
     var current=document.querySelector('.post-outer-container');
     if(!current)return;
     var curPath=location.pathname;
@@ -100,19 +101,19 @@
         .then(function(r){if(!r.ok)throw 0;return r.json();});
     }
     function fetchFeed(){
-      if(!CFG.useEdge||!CFG.edgeBase)return directFeed();
+      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directFeed();
       return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
         .then(function(r){if(!r.ok)throw 0;return r.json();})
-        ['catch'](function(){return directFeed();});
+        ['catch'](function(){edgeUnavailable=true;return directFeed();});
     }
     function directPost(u){
       return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});
     }
     function fetchPostText(u){
-      if(!CFG.useEdge||!CFG.edgeBase)return directPost(u);
+      if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)return directPost(u);
       return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
         .then(function(r){if(!r.ok)throw 0;return r.text();})
-        ['catch'](function(){return directPost(u);});
+        ['catch'](function(){edgeUnavailable=true;return directPost(u);});
     }
 
     function fetchPage(u){
