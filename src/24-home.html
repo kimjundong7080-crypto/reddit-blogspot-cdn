@@ -1385,6 +1385,7 @@ html.jt-home-page #footer{display:none!important}
         if(t&&title)t.textContent=title;
         if(d&&cat)d.textContent=cat;
         var thumb=e.media$thumbnail&&e.media$thumbnail.url||'';
+        if(!thumb)thumb='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-'+((i%6)+1)+'.jpg';
         if(thumb){
           thumb=thumb.replace(/\/s\d+(-c)?\//,'/w600-h400-c/');
           var img=card.querySelector('img');

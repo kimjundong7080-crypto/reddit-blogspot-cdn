@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.70 */
+/* Reddit-style Blogger home landing — v1.2.71 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
@@ -492,6 +492,7 @@
         if(t&&title)t.textContent=title;
         if(d&&cat)d.textContent=cat;
         var thumb=e.media$thumbnail&&e.media$thumbnail.url||'';
+        if(!thumb)thumb='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-'+((i%6)+1)+'.jpg';
         if(thumb){
           thumb=thumb.replace(/\/s\d+(-c)?\//,'/w600-h400-c/');
           var img=card.querySelector('img');

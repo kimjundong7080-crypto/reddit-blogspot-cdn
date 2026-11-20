@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.70 */
+/* Reddit-style Blogger YouTube post list — v1.2.71 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -916,13 +916,13 @@
     /* 정적 페이지(/p/resume.html, /p/contact-us.html)는 posts 피드에 없으므로
        item-view 로 취급하지 않는다. (불필요한 feeds/posts 404 방지) */
     var isStaticPage=!!(document.documentElement&&document.documentElement.classList.contains('jt-static-page'))
-      ||location.pathname==='/p/resume.html'||location.pathname==='/p/contact-us.html'||location.pathname==='/p/contact.html';
+      ||(/^\/p\/[^/]+\.html$/.test(location.pathname)&&location.pathname!=='/p/home.html');
     var isItem=!!(document.body&&document.body.classList.contains('item-view'))&&!isStaticPage;
     var rawTitle=(document.title||'').replace(/\s+/g,' ').trim();
     var headline=rawTitle.replace(/\s*\|\s*JUST TECH$/,'')||SITE;
     if(isHome){
       document.title=HOME_TITLE;
-    }else if(isItem&&rawTitle&&rawTitle.indexOf(SITE)<0){
+    }else if((isItem||isStaticPage)&&rawTitle&&rawTitle.indexOf(SITE)<0){
       document.title=rawTitle+' | '+SITE;
     }
     if(!head().querySelector('meta[name="robots"]')){
