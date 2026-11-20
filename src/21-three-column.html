@@ -1,7 +1,7 @@
 <!-- ============================================================================
   REDDIT LAYOUT — 21. 반응형 가로 3열 레이아웃
   ▸ 기초테마 1.xml의 .main_content_container 안에 좌측 열을 생성
-  ▸ 데스크톱: [좌측 200px] [중앙 가변] [우측 280px]
+  ▸ 데스크톱: [좌측 200px] [중앙 가변] [우측 320px]
   ▸ 1240px 미만: [아이콘 레일 76px] [중앙] / 우측 레일 숨김
   ▸ 1024px 미만: 1열 / 좌우 레일 숨김
   ▸ 기존 우측 사이드바(.sidebar-container)를 고정 오버레이에서 3열 컬럼으로 전환
@@ -20,7 +20,7 @@ html,body,body *{
 :root{
   --rd3-max:        1360px;
   --rd3-left-w:     200px;
-  --rd3-right-w:    280px;
+  --rd3-right-w:    320px;
   --rd3-gap:        20px;
   --rd3-pad:        16px;
   --rd3-border:     rgba(0,0,0,.10);
@@ -453,7 +453,7 @@ html.jt-home-page body.rd3-layout .post-title-container{
 /* ===== 1240px 이상: 글보기 좌측 메뉴를 아이콘 1열로 최소화 ===== */
 @media screen and (min-width:1240px){
   body.rd3-layout .main_content_container{
-    grid-template-columns:176px minmax(0,1fr) 280px !important;
+    grid-template-columns:176px minmax(0,1fr) 320px !important;
     gap:16px !important;
   }
   .rd3-left-inner{padding:8px 10px 14px 0}
@@ -527,7 +527,7 @@ html[data-theme="dark"] #jtLeftToggle{
 }
 @media screen and (min-width:1024px){
   body.jt-left-collapsed.rd3-layout .main_content_container{
-    grid-template-columns:64px minmax(0,1fr) 280px !important;
+    grid-template-columns:64px minmax(0,1fr) 320px !important;
   }
   body.jt-left-collapsed .rd3-label{display:none !important}
   body.jt-left-collapsed .rd3-link{
