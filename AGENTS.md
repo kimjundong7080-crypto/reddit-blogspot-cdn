@@ -1,41 +1,31 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.62**
-Current local package version: **1.2.62**
+Latest published release: **v1.2.66**
+Current local package version: **1.2.66**
 
-This document is the English handoff for the next AI or engineer. Read the current working tree status before making changes; the local, unpublished performance fix described below is intentional.
+This document is the handoff for the next AI or engineer. The working tree is clean and everything described below is published and purged.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest published commit observed: `0e9a923 Release v1.2.62`.
-- Latest GitHub release/tag: `v1.2.62`. The release script updates and pushes both `main` and a new version tag.
-- **Unpublished local changes exist** in:
-  - `src/11-infinite.html`
-  - `assets/js/11-infinite.js` (generated; do not edit directly)
-  - `src/23-yt-posts.html`
-  - `assets/js/23-yt-posts.js` (generated; do not edit directly)
-  - `AGENTS.md`
-- These changes have been built and checked locally, but have **not** been committed, tagged, pushed, purged, or confirmed in the live browser. The project workflow requires the user to review/approve before publishing. Do not release them without that approval.
-- Last local checks passed: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, and `git diff --check`.
-- Live HTTP checks on 2026-11-20:
-  - `https://www.techlifeworld.com/` returned HTTP 200.
-  - `https://www.techlifeworld.com/p/home.html` returned HTTP 200.
-  - `https://www.techlifeworld.com/feeds/posts/default?alt=json&max-results=500` returned HTTP 200 in about 0.7 seconds.
-  - `https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=500` returned HTTP 404. The `max=6` request also returned 404.
-  - The tested Edge `api/blogger-post` request returned HTTP 400.
-- The integrated browser inspection timed out while connecting over CDP. HTTP success does not prove that the visual/browser loading stall is fixed. A browser page shared by the user is the YouTube post below; reuse it if browser access is available:
-  `https://www.techlifeworld.com/2026/11/youtube-linkhttpsyoutubelyfcrrulyn0.html`
-- The likely performance contributors are repeated YouTube autoplay/player creation on listing pages and repeated requests to the currently failing Edge API during infinite scrolling. The exact user-reported stall has **not** been conclusively reproduced in a browser.
+- Branch: `main`; latest published commit: `bd25373 Release v1.2.66`.
+- Latest GitHub release/tag: `v1.2.66`. The release script updates and pushes both `main` and a new version tag.
+- **No unpublished local changes.** If `git status` shows changes, someone is mid-task; review before publishing.
+- Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `git diff --check`.
+- Live checks on 2026-11-20:
+  - Home landing and the shared YouTube post returned HTTP 200.
+  - Blogger feed `/feeds/posts/default?alt=json&max-results=500` returns 200 in under a second.
+  - Edge API `https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=500` returns **404** (and `max=6` also 404). `api/blogger-post` returned 400. Treat the Edge API as unavailable; the code falls back to Blogger directly.
 
-### Local fix awaiting review
+### Recently completed performance/UX work (published)
 
-- YouTube shortcode embeds now autoplay only on a single-post page (`body.item-view`). Listing/search/feed pages and infinite-scroll clones display a thumbnail and play button instead.
-- Only one YouTube iframe is kept active at a time; starting another removes the prior iframe.
-- YouTube thumbnails start with the smaller `hqdefault.jpg`, load lazily, try `sddefault.jpg` once if needed, and stop retrying if both fail.
-- Infinite scroll now marks the Edge API unavailable for the current page session after its first failed request and uses Blogger directly for subsequent feed/post requests.
-- These are local changes only. Do not describe the live site as already fixed until the user approves release and the CDN/browser checks pass.
+- YouTube shortcode embeds autoplay muted only on a single-post page (`body.item-view`). Listing/search pages and infinite-scroll clones render a poster with a play button (click to play).
+- Only one YouTube iframe is kept active at a time; starting another removes the previous iframe.
+- YouTube thumbnails use `hqdefault.jpg` with lazy loading, fall back to `sddefault.jpg` once, then hide.
+- Infinite scroll marks the Edge API unavailable for the rest of the page session after the first failed request, avoiding repeated 404/timeout calls.
+- YouTube shortcodes wrapped in other tags (e.g. inside an `h3` with `-webkit-line-clamp`) are now parsed, and the resulting embed is moved out of clipped wrappers.
+- Embed thumbnail sizing/visibility is forced with `!important` selectors that beat `22-post-image`'s body-image rules (16:9, no letterbox, play button above the poster).
 
 ## 2. Non-negotiable project rules
 
@@ -126,7 +116,7 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - Runs only on single-post pages, inserts related/other posts, and clones their Blogger markup.
 - The clone wrapper is `.jt-inf-post`; scripts, iframes, comments, and ad elements are removed from cloned HTML.
 - Turnstile was temporarily removed in release `v1.2.60`. A challenge was nevertheless observed in a later live browser session; its source was not conclusively identified. The current repository code should remain without the Turnstile gate unless the user asks otherwise.
-- The local unpublished circuit breaker described in Section 1 avoids retrying a failed Edge API for every subsequently loaded post.
+- A circuit breaker avoids retrying a failed Edge API for every subsequently loaded post.
 
 ### Contact page — `pages/contact.html`
 
@@ -149,15 +139,19 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - `v1.2.56–59`: YouTube shortcode thumbnails/player behavior, Referrer Policy, viewport autoplay, 16:9 sizing, and black-frame/thumbnail positioning fixes.
 - `v1.2.60`: Temporarily removed the infinite-scroll Turnstile gate. CDN purge was throttled, and a challenge was later still seen; complete live removal was not confirmed.
 - `v1.2.61`: Prevented autoplay in infinite-scroll clones to reduce browser load.
-- `v1.2.62`: Adjusted home carousel card width/gap/hover expansion and media ratio; translated Contact content to Korean and synchronized dark mode. Home CSS/JS and Contact HTML purges succeeded. Contact appearance was checked in a live screenshot; carousel interaction could not be verified because browser CDP timed out.
+- `v1.2.62`: Adjusted home carousel card width/gap/hover expansion and media ratio; translated Contact content to Korean and synchronized dark mode. Home CSS/JS and Contact HTML purges succeeded.
+- `v1.2.63`: Published the YouTube single-iframe/autoplay-on-post-only fix, lazy thumbnails, and the infinite-scroll Edge API circuit breaker.
+- `v1.2.64`: YouTube shortcode parsing made tag-tolerant (handles shortcodes wrapped in `<span>`/headings).
+- `v1.2.65`: Embeds inside clamped headings are moved out so they are not clipped.
+- `v1.2.66`: Fixed thumbnail letterboxing and play-button stacking against `22-post-image`'s `!important` body-image rules; poster now fills 16:9 with a clickable play button on listing/clone embeds.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Current site-stall investigation
+### Verification notes (2026-11-20, v1.2.63–66)
 
-- The site and home landing returned HTTP 200 in direct PowerShell requests, but the integrated browser connection timed out; no live visual proof of the reported stall was obtained.
-- The direct Blogger feed endpoint returned HTTP 200 in about 0.7s. The configured Edge feed API returned 404; the tested Edge post API returned 400.
-- The latest local change addresses probable resource amplification (multiple autoplay iframes on lists) and repeated Edge failures. It does not prove the initial page-load issue is fully resolved.
-- Once the user approves release, test the actual browser experience, particularly the home page, the shared YouTube post, and an infinite-scroll post. Inspect Console/Network and verify that listing pages do not create autoplay iframes and Edge errors are not repeated for each post.
+- A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with only one Edge 404 (now short-circuited).
+- Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; clicking starts the iframe.
+- The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.
+- Known data issue (not a widget bug): some Blogger post titles/labels literally contain `[youtube link="..."]`. Those need manual editing in Blogger; the widget cannot rewrite post titles.
 
 ## 7. Build, validation, release, and cache procedures
 
@@ -171,7 +165,7 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, first obtain explicit user approval. Choose a version greater than `1.2.62` and never reuse a tag:
+For a release, choose a version greater than `1.2.66` and never reuse a tag:
 
 ```powershell
 node scripts/release.mjs 1.2.63
@@ -196,8 +190,8 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- Reproduce the user's “site loading stops midway” symptom in a real browser and verify the current local fix after approval/deployment.
-- Determine why Turnstile/challenge behavior was still seen after the `v1.2.60` code removal (possible cache or separate challenge path; unconfirmed).
-- Verify home carousel hover/playback in-browser; earlier CDP attempts timed out.
-- Confirm actual resume PDF page count in print preview if that task resumes.
-- Keep current local work uncommitted and unpublished until the user reviews and approves it.
+- Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
+- The user's original “site loading stops midway” symptom was addressed by removing duplicate autoplay players and repeated Edge API failures, but it has not been formally re-confirmed as fully resolved by the user.
+- Clean up Blogger post titles/labels that contain raw `[youtube link="..."]` text (author data, requires Blogger admin access).
+- Resume print/PDF page count still needs a real print-preview check if that task resumes. Resume personal data in `pages/resume.html` must be replaced with the user's real information.
+- Blogger admin-only work remains with the user: search description, custom robots.txt, page titles, Search Console address change for `madomiad.blogspot.com`.
