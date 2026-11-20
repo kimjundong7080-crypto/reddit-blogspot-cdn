@@ -4,7 +4,7 @@ Last updated: 2026-11-20
 Latest published release: **v1.2.77**
 Current local package version: **1.2.77**
 
-This document is the handoff for the next AI or engineer. Release v1.2.77 is published and all changed assets are current at `@v1`.
+This document is the handoff for the next AI or engineer. Release v1.2.77 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
@@ -149,7 +149,7 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 ### YouTube and site UI releases
 
 - `v1.2.56–59`: YouTube shortcode thumbnails/player behavior, Referrer Policy, viewport autoplay, 16:9 sizing, and black-frame/thumbnail positioning fixes.
-- `v1.2.60`: Temporarily removed the infinite-scroll Turnstile gate. CDN purge was throttled, and a challenge was later still seen; complete live removal was not confirmed.
+- `v1.2.60`: Temporarily removed the infinite-scroll Turnstile gate. Turnstile remains disabled; v1.2.67 removed the leftover CSS, and no challenge was observed in the v1.2.76/77 live checks.
 - `v1.2.61`: Prevented autoplay in infinite-scroll clones to reduce browser load.
 - `v1.2.62`: Adjusted home carousel card width/gap/hover expansion and media ratio; translated Contact content to Korean and synchronized dark mode. Home CSS/JS and Contact HTML purges succeeded.
 - `v1.2.63`: Published the YouTube single-iframe/autoplay-on-post-only fix, lazy thumbnails, and the infinite-scroll Edge API circuit breaker.
@@ -251,7 +251,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 ## 8. Known open items
 
 - The `23-yt-posts.js@v1` purge completed on 2026-11-20; `@v1` reports **1.2.76**. The favicon links, click-to-play behavior, loop, and SEO meta are live.
-- Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
+- Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
 - `/p/resume.html` and `/p/contact-us.html` restored on 2026-11-20 as live Blogger Pages (HTTP 200) with page IDs `8369950385896197882` and `3994593479765014806`. The page body contains the inline jsDelivr iframe loader; if those pages are ever deleted again, recreate them with the same titles (`resume`, `contact-us`) and the loader content.
