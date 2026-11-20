@@ -1,16 +1,18 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.79**
-Current local package version: **1.2.79**
+Latest published release: **v1.2.80**
+Current local package version: **1.2.80**
 
-This document is the handoff for the next AI or engineer. Release v1.2.79 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.80 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `7a80b54 Release v1.2.79`.
-- Latest GitHub release/tag: `v1.2.79`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `6002f4b Release v1.2.80`.
+- Latest GitHub release/tag: `v1.2.80`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.80 is published.** Content:
+  - **Floating quick nav (`#jtQuickNav`) moved from bottom-center to the right edge, vertically centered**, so it no longer covers the `/search` page numbers. Buttons are 44px (icons 22px, 42px on ≤600px), the pill background is 50% transparent in both themes, and the border plus layered shadow were strengthened. Verified: nav rect never intersects the pager; right margin 14px, exact vertical center.
 - **v1.2.79 is published.** Content:
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
@@ -199,6 +201,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `/search` results switched from a single vertical list to a responsive grid: `repeat(4,minmax(0,1fr))` by default, 3 columns at ≤1100px, 2 at ≤900px, and 1 at ≤640px.
   - Cards are vertical (portrait thumbnail on top, title/snippet/meta below); thumbnail is full-width 16:9.
   - Verified live: desktop computed `179px 179px 179px 179px`, mobile (390px) `327px`, no horizontal overflow.
+- `v1.2.80`:
+  - `#jtQuickNav` moved from bottom-center to `right:14px; top:50%; transform:translateY(-50%)` with a vertical layout, so it cannot cover the centered `/search` pager.
+  - Buttons 36→44px (`svg` 22px; 42px/21px at ≤600px). Background alpha 0.5 in both themes; border `rgba(255,255,255,.6)` light / `.35` dark; layered shadow with an inset highlight.
+  - Verified live on `/search` at 640px viewport: nav 57×107 rect, exact vertical center, 0 intersections with the pager at 50px scroll steps.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)

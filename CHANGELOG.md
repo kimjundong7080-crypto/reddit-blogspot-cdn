@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-20 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.79**
+Latest published release: **v1.2.80**
 
-This is the consolidated English record for the work cycle that ended with v1.2.79.
+This is the consolidated English record for the work cycle that ended with v1.2.80.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -31,6 +31,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.77 | `9aa5b31` | Branded 404 page (recent posts, Home/Search buttons, noindex); infinite scroll skipped on `.status-msg-body` pages. |
 | v1.2.78 | `d7c76ae` | **Home mid-page freeze hardened.** Landing subtree is cloned after hero typing, which detached the reveal `IntersectionObserver` and left `#jt-about`/`.jt-cta` at `opacity:0`. Added a document-level reveal ticker (rAF + 15×800 ms re-check), idempotent re-init of carousel/typing/ceremony, and clone-safe "already typed" guards. |
 | v1.2.79 | `7a80b54` | **`/search` result cards are now responsive**: 4 columns on desktop → 3 at ≤1100px → 2 at ≤900px → 1 at ≤640px. Cards switched to a vertical layout (16:9 thumbnail on top, title/meta below). |
+| v1.2.80 | `6002f4b` | **Quick nav moved and restyled**: no longer bottom-center (was overlapping the `/search` page numbers); now a vertical pill fixed at the right edge, vertically centered. Buttons 36→44px (icons 22px), background 50% transparent (`rgba(255,255,255,.5)` / `rgba(10,14,17,.5)`), stronger border + layered shadow. Verified: no intersection with pager at any scroll position. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
