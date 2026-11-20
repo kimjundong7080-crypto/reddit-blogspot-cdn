@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.79 */
+/* Reddit-style Blogger YouTube post list — v1.2.80 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -400,27 +400,30 @@ html[data-theme="dark"] #ytPosts .yt-thumb:before{
 }
 html[data-theme="dark"] #ytPosts .yt-thumb-empty{background:linear-gradient(135deg,#252a31,#343b45)}
 
-/* ===== Bottom-center quick nav ===== */
+/* ===== Right-side floating quick nav (페이지 번호와 겹치지 않도록 우측 중앙) ===== */
 #jtQuickNav{
   position:fixed;
-  left:50%;
-  bottom:calc(14px + env(safe-area-inset-bottom,0px));
-  transform:translateX(-50%);
+  right:calc(14px + env(safe-area-inset-right,0px));
+  top:50%;
+  left:auto;
+  bottom:auto;
+  transform:translateY(-50%);
   z-index:99998;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:4px;
-  padding:5px;
-  border:1px solid rgba(255,255,255,.45);
+  gap:6px;
+  padding:6px;
+  border:1px solid rgba(255,255,255,.6);
   border-radius:999px;
-  background:rgba(255,255,255,.58);
+  background:rgba(255,255,255,.5);
   -webkit-backdrop-filter:blur(14px) saturate(1.2);
   backdrop-filter:blur(14px) saturate(1.2);
-  box-shadow:0 8px 26px rgba(0,0,0,.18);
+  box-shadow:0 10px 30px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.35);
 }
 #jtQuickNav .jt-qn-btn{
-  width:36px;
-  height:36px;
+  width:44px;
+  height:44px;
   padding:0;
   border:0;
   border-radius:50%;
@@ -435,12 +438,12 @@ html[data-theme="dark"] #ytPosts .yt-thumb-empty{background:linear-gradient(135d
   -webkit-tap-highlight-color:transparent;
 }
 #jtQuickNav .jt-qn-btn:hover{background:rgba(0,0,0,.08)}
-#jtQuickNav .jt-qn-btn svg{width:19px;height:19px;display:block}
+#jtQuickNav .jt-qn-btn svg{width:22px;height:22px;display:block}
 #jtQuickNav .jt-qn-btn.is-dim{opacity:.45}
 html[data-theme="dark"] #jtQuickNav{
-  background:rgba(10,14,17,.88);
-  border-color:rgba(255,255,255,.30);
-  box-shadow:0 8px 26px rgba(0,0,0,.55);
+  background:rgba(10,14,17,.5);
+  border-color:rgba(255,255,255,.35);
+  box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12);
 }
 html[data-theme="dark"] #jtQuickNav .jt-qn-btn{
   color:#ffffff;
@@ -449,8 +452,9 @@ html[data-theme="dark"] #jtQuickNav .jt-qn-btn{
 html[data-theme="dark"] #jtQuickNav .jt-qn-btn:hover{background:rgba(255,255,255,.18)}
 html[data-theme="dark"] #jtQuickNav .jt-qn-btn.is-dim{opacity:.72}
 @media screen and (max-width:600px){
-  #jtQuickNav{bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:4px}
-  #jtQuickNav .jt-qn-btn{width:34px;height:34px}
+  #jtQuickNav{right:calc(10px + env(safe-area-inset-right,0px));padding:5px;gap:5px}
+  #jtQuickNav .jt-qn-btn{width:42px;height:42px}
+  #jtQuickNav .jt-qn-btn svg{width:21px;height:21px}
 }
 
 /* ===== Home hero video ===== */
