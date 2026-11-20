@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.57 */
+/* Reddit-style Blogger YouTube post list — v1.2.58 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -702,13 +702,14 @@
       box.__jtYtMounted=1;
       var thumb=document.createElement('img');
       thumb.className='jt-yt-thumb';
-      thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
+      thumb.src='https://i.ytimg.com/vi/'+id+'/maxresdefault.jpg';
       thumb.alt='YouTube 동영상 썸네일';
       thumb.loading='eager';
       thumb.decoding='async';
       thumb.referrerPolicy='no-referrer';
       thumb.onerror=function(){
-        thumb.src='https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
+        if(thumb.dataset.fallback==='sd')thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
+        else{thumb.dataset.fallback='sd';thumb.src='https://i.ytimg.com/vi/'+id+'/sddefault.jpg';}
       };
       var play=document.createElement('button');
       play.type='button';
@@ -718,6 +719,40 @@
       play.addEventListener('click',function(){startPlayback(box,id,null);});
       box.appendChild(thumb);
       box.appendChild(play);
+      function schedule(observer){
+        if(box.__jtYtTimer||box.getAttribute('data-loaded'))return;
+        box.__jtYtTimer=setTimeout(function(){
+          box.__jtYtTimer=null;
+          var rect=box.getBoundingClientRect();
+          var height=window.innerHeight||document.documentElement.clientHeight;
+          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)startPlayback(box,id,observer);
+        },450);
+      }
+      function cancelTimer(){
+        if(box.__jtYtTimer){clearTimeout(box.__jtYtTimer);box.__jtYtTimer=null;}
+      }
+      if('IntersectionObserver' in window){
+        var observer=new IntersectionObserver(function(entries){
+          for(var i=0;i<entries.length;i++){
+            if(entries[i].target!==box)continue;
+            if(entries[i].isIntersecting&&entries[i].intersectionRatio>=0.25)schedule(observer);
+            else cancelTimer();
+          }
+        },{threshold:0.25});
+        box.__jtYtObserver=observer;
+        observer.observe(box);
+      }else{
+        var check=function(){
+          var rect=box.getBoundingClientRect();
+          var height=window.innerHeight||document.documentElement.clientHeight;
+          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)schedule(null);
+          else cancelTimer();
+        };
+        box.__jtYtFallback=check;
+        window.addEventListener('scroll',check,{passive:true});
+        window.addEventListener('resize',check);
+        check();
+      }
     }
     function run(){
       var bodies=document.querySelectorAll('.post-body');

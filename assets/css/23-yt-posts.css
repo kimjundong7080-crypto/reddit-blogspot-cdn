@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.57 */
+/* Reddit-style Blogger YouTube post list — v1.2.58 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -554,16 +554,16 @@ html.jt-home-page .jt-hero-sub{
 .post-body .markdown:last-child>*:last-child{margin-bottom:0}
 
 /* [youtube link="..."] responsive embed */
-.jt-yt-embed{display:block;position:relative;width:min(100%,820px);aspect-ratio:16/9;margin:22px auto;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.jt-yt-embed{display:block;position:relative;width:min(calc(100% - 96px),820px);aspect-ratio:16/9;margin:22px auto;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .jt-yt-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:2}
-.jt-yt-embed:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),transparent 60%)}
+.jt-yt-embed:before{content:"";position:absolute;inset:0;background:#000}
 .jt-yt-embed.ready:before{display:none}
-.jt-yt-embed img.jt-yt-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0}
+.jt-yt-embed img.jt-yt-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;z-index:1}
 .jt-yt-embed.ready img.jt-yt-thumb,.jt-yt-embed.ready button.jt-yt-play{display:none}
 .jt-yt-play{position:absolute;z-index:1;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;padding:0;border:1px solid rgba(255,255,255,.75);border-radius:50%;background:rgba(15,17,19,.72);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .jt-yt-play:hover{background:rgba(255,0,0,.82)}
 .jt-yt-play svg{width:28px;height:28px;margin-left:3px}
-@media only screen and (max-width:768px){.jt-yt-embed{border-radius:10px;margin:16px auto}}
+@media only screen and (max-width:768px){.jt-yt-embed{width:calc(100% - 32px);border-radius:10px;margin:16px auto}}
 
 /* 추천 글 사이드바 스크롤바 숨김 */
 body.rd3-layout .sidebar-container{
