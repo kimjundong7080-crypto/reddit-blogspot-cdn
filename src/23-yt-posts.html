@@ -1446,6 +1446,25 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
         check();
       }
     }
+    /* 숏코드가 제목(h1~h6)처럼 잘림(clamp) 스타일 안에 들어간 경우 임베드를 밖으로 꺼낸다 */
+    function unclipEmbed(box){
+      var h=box.parentNode;
+      while(h&&h!==document.body){
+        if(h.classList&&h.classList.contains('post-body'))return;
+        if(/^(H1|H2|H3|H4|H5|H6)$/.test(h.tagName))break;
+        h=h.parentNode;
+      }
+      if(!h||h===document.body)return;
+      if(!h.textContent.replace(/\s+/g,'')){
+        h.parentNode.insertBefore(box,h);
+        h.parentNode.removeChild(h);
+        return;
+      }
+      h.style.setProperty('max-height','none','important');
+      h.style.setProperty('overflow','visible','important');
+      h.style.setProperty('-webkit-line-clamp','unset','important');
+      h.style.setProperty('display','block','important');
+    }
     function run(){
       var bodies=document.querySelectorAll('.post-body');
       var paragraph=/<p>\s*\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]\s*<\/p>/gi;
@@ -1466,7 +1485,12 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
           if(!id)return full;
           found=true;return '<div class="jt-yt-embed" data-yt="'+id+'"></div>';
         });
-        if(found){body.innerHTML=html;body.setAttribute('data-yt-scanned','1');}
+        if(found){
+          body.innerHTML=html;
+          body.setAttribute('data-yt-scanned','1');
+          var em=body.querySelectorAll('.jt-yt-embed');
+          for(var e2=0;e2<em.length;e2++)unclipEmbed(em[e2]);
+        }
       }
       var boxes=document.querySelectorAll('.jt-yt-embed');
       for(var i=0;i<boxes.length;i++)mount(boxes[i]);
