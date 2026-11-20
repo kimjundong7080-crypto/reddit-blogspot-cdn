@@ -1,16 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.81**
-Current local package version: **1.2.81**
+Latest published release: **v1.2.82**
+Current local package version: **1.2.82**
 
-This document is the handoff for the next AI or engineer. Release v1.2.81 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.82 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `6483107 Release v1.2.81`.
-- Latest GitHub release/tag: `v1.2.81`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `d5b2114 Release v1.2.82`.
+- Latest GitHub release/tag: `v1.2.82`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.82 is published.** Content:
+  - **Left menu rail narrowed by 20%**: the effective left grid column is 220→**176px** at all desktop breakpoints (≥1240 and 1024–1239), `--rd3-left-w` 250→200px, and `#jtLeftToggle` `left` 220→176px. Verified live: rail 176px, center column +44px, labels unclipped, no horizontal overflow.
+  - Note: `#jtLeftToggle` is `position:fixed` from the viewport edge, so on wide screens (max-width 1360 centered) it does not sit flush against the rail's right edge. This is pre-existing behavior, not introduced by v1.2.82.
 - **v1.2.81 is published.** Content:
   - **Recommended-posts list (`#ytPosts`) scaled ~1.3×**: `.yt-item` 78→101px, thumbnail 122→159px, title 12.5→16px, meta 11→14px, gap/padding/radius adjusted. The JS measures item height, so the scroll step automatically becomes 103px. Verified live: 101px items, 159px thumbs, 16px titles; wheel advance still animates. Note: the list advances on wheel input only — there is no auto-timer.
 - **v1.2.80 is published.** Content:
@@ -211,6 +214,9 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `#ytPosts` list items scaled ~1.3×: `.yt-item` height/flex 78→101px, `.yt-thumb` 122→159px, title 12.5→16px, meta 11→14px, gap 9→12px, padding 6px 8px, radius 10px.
   - `measure()` in `23-yt-posts` derives the scroll step from the first item's height, so no JS change was needed (step becomes 103px with the 2px gap).
   - Live check on `/2026/11/blog-post.html` (after `cache:'reload'`): all 20 items 101px, thumb 159px, title 16px, meta 14px; wheel advance translates `-103px` with the 0.55s easing.
+- `v1.2.82`:
+  - Left rail 20% narrower: `@media (min-width:1240px)` grid `220px`→`176px`, `1024–1239` blocks `220px`→`176px`, `--rd3-left-w` 250→200px, `#jtLeftToggle` `left` 220→176px.
+  - Verified live on `/search` at a 1964px viewport: `.rd3-left` 176px, center 840px (was 796px), right 280px, total 1328+padding = 1360; menu labels 165/165 (no clipping), 0 horizontal overflow, toggle at x=176.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)
