@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.84**
+Latest published release: **v1.2.85**
 
-This is the consolidated English record for the work cycle that ended with v1.2.84.
+This is the consolidated English record for the work cycle that ended with v1.2.85.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -36,6 +36,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.82 | `d5b2114` | **Left menu rail narrowed 20%**: effective grid column 220→176px at every desktop breakpoint, `--rd3-left-w` 250→200px, and `#jtLeftToggle` `left` 220→176px. Verified live: rail 176px, center column +44px, labels unclipped, no horizontal overflow. |
 | v1.2.83 | `ba8073f` | **High-resolution YouTube thumbnails first**: `.jt-yt-thumb` now tries `maxresdefault.jpg` → `sddefault.jpg` → `hqdefault.jpg`. A 120px-wide placeholder (returned for videos without maxres) is detected and skipped. Verified: 1280×720 thumbnail, 16:9 filled, no letterbox. |
 | v1.2.84 | `235e45d` | **Hover preview requires an 0.8 s dwell**: `#ytPosts .yt-item` starts the muted YouTube iframe only after an 800 ms `setTimeout`; `mouseleave` clears the timer and removes the iframe. Verified live: 17 ms / 450 ms hovers inserted 0 iframes, a sustained hover created one `youtube-nocookie` iframe at 817 ms, exit removed it. |
+| v1.2.85 | `50183be` | **Wider recommended-post text column, smaller type**: right sidebar column 280→320px; `#ytPosts` thumbnail 159→124px, item 101→82px (centered), title 16→14px, meta 14→12px. Verified: text block 93→153.3px, item 82px, thumb 124×69.8px, no horizontal overflow. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
