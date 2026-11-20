@@ -1,26 +1,28 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.68**
-Current local package version: **1.2.68**
+Latest published release: **v1.2.69**
+Current local package version: **1.2.69**
 
-This document is the handoff for the next AI or engineer. Release v1.2.68 is published; one jsDelivr purge (`23-yt-posts.js@v1`) is still pending retry after throttling.
+This document is the handoff for the next AI or engineer. Release v1.2.69 is published; its changed assets were purged for both the version tag and `@v1`.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `bc658aa Release v1.2.68`.
-- Latest GitHub release/tag: `v1.2.68`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.68 is published.** Content:
-  - All v1.2.67 fixes (see below).
-  - `src/23-yt-posts.html`: static pages (`/p/resume.html`, `/p/contact-us.html`) are excluded from `item-view` SEO logic, removing the unnecessary `/feeds/posts/...?path=` 404 on those pages.
+- Branch: `main`; latest release commit: `623d9b2 Release v1.2.69`.
+- Latest GitHub release/tag: `v1.2.69`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.69 is published.** Content:
+  - All v1.2.67/v1.2.68 fixes (see below).
+  - `src/11-infinite.html` + `src/23-yt-posts.html`: infinite-scroll clones hid every iframe with `display:none !important`, including the YouTube player created on play. The player iframe now gets `class="jt-yt-frame"` and the clone hide rule excludes it, so click-to-play videos actually become visible.
+- **CDN purge status:** `11-infinite.css` and `23-yt-posts.js` were purged for both `@1.2.69` and `@v1`; `x-jsd-version` confirmed as `1.2.69`.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
-- **CDN purge status:** `23-yt-posts.js@1.2.68` purged. The `23-yt-posts.js@v1` purge was throttled again; retry `https://purge.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/js/23-yt-posts.js` after the throttle window. Fresh visitors already get the fixed home and static-page behavior from the current assets.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
   - Home landing: `.jt-landing` keeps `__jtReveal`, project card titles contain no raw shortcode, `#jt-projects` / `#jt-about` / `.jt-cta` reach `opacity:1` and `.is-in`, 0 console errors, no Turnstile/challenge requests.
-  - YouTube post: embed autoplays muted in the post view; infinite scroll appended 4 posts with no iframes inside clones; **0 Edge API requests** and 0 console errors.
-  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.68.
+  - YouTube post: embed autoplays muted in the post view (iframe visible at ~620×349); infinite scroll appended posts with no active iframes inside clones; **0 Edge API requests** and 0 console errors.
+  - Clone click-to-play: on `/2026/11/_1.html`, clicking the play button in a cloned vlog post produces a visible `iframe.jt-yt-frame` (652×367) and hides the poster; 0 console errors.
+  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.69.
+  - Home project data: the previously raw `[youtube ...]` title now shows the real YouTube title; no raw shortcode remains.
   - Blogger feed `/feeds/posts/default?alt=json&max-results=500` returns 200 in under a second.
   - Edge API remains **404**; treat it as unavailable.
 
@@ -156,16 +158,18 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - `v1.2.68`:
   - Restored `/p/resume.html` and `/p/contact-us.html` as live Blogger Pages (200) using an inline iframe loader in the page content; the theme's existing `.jt-static-page` CSS hides the Blogger page body and chrome.
   - `23-yt-posts` SEO: static pages are excluded from `item-view` logic, removing the `/feeds/posts/default?path=...` 404 console error.
+- `v1.2.69`:
+  - **Clone video “stuck” fixed.** `11-infinite` hid all clone iframes with `!important`; the clicked YouTube player was inserted but invisible. The player iframe now carries `.jt-yt-frame`, and the hide rule uses `iframe:not(.jt-yt-frame)`. Verified live on `/2026/11/_1.html`: iframe visible (652×367), `.ready`, poster hidden, console clean.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–68)
+### Verification notes (2026-11-20, v1.2.63–69)
 
 - A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors when `23-yt-posts.js` v1.2.68 is served.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
-- Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; clicking starts the iframe.
+- Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
 - The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.
-- Known data issue (not a widget bug): some Blogger post titles/labels literally contain `[youtube link="..."]`. Home landing cards now strip this text, but the Blogger post titles themselves still need manual editing.
+- The only raw `[youtube ...]` post title was fixed on 2026-11-20 through the Blogger API (post id `2698047383991785144`, now “Tam Otomatik Vidalama Makinası ve 3 Robotlu Montaj Hattı”); the URL stayed the same. `loadLandingProjects` still strips any future shortcode-like titles as a safety net.
 - Visitors with a browser cache of older `@v1` files may keep the old home behavior for up to seven days; a hard refresh clears it.
 
 ## 7. Build, validation, release, and cache procedures
@@ -209,5 +213,5 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 - The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
 - `/p/resume.html` and `/p/contact-us.html` restored on 2026-11-20 as live Blogger Pages (HTTP 200) with page IDs `8369950385896197882` and `3994593479765014806`. The page body contains the inline jsDelivr iframe loader; if those pages are ever deleted again, recreate them with the same titles (`resume`, `contact-us`) and the loader content.
-- Clean up Blogger post titles/labels that contain raw `[youtube link="..."]` text (author data, requires Blogger admin access).
+- No raw `[youtube ...]` post titles or labels remain as of 2026-11-20 (the one affected post was corrected through the Blogger API).
 - Blogger admin-only work remains with the user: search description, custom robots.txt, page titles, Search Console address change for `madomiad.blogspot.com`.
