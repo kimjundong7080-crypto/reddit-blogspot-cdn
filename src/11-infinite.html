@@ -216,6 +216,8 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
 
   ready(function(){
     if(!isPostView())return;
+    /* 404/정적 페이지 폴백에서는 무한스크롤을 실행하지 않는다. */
+    if(document.querySelector('.status-msg-body'))return;
 
     var edgeUnavailable=false;
     var current=document.querySelector('.post-outer-container');

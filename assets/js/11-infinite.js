@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.76 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.77 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -26,6 +26,8 @@
 
   ready(function(){
     if(!isPostView())return;
+    /* 404/정적 페이지 폴백에서는 무한스크롤을 실행하지 않는다. */
+    if(document.querySelector('.status-msg-body'))return;
 
     var edgeUnavailable=false;
     var current=document.querySelector('.post-outer-container');

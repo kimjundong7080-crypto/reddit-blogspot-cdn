@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.76 */
+/* Reddit-style Blogger YouTube post list — v1.2.77 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -1094,3 +1094,56 @@
     });
   })();
 })();
+
+  /* 404: 기본 Blogger 안내 대신 홈/검색/최근 글로 안내한다. */
+  (function(){
+    if(window.__jt404)return; window.__jt404=1;
+    if(!document.querySelector('.status-msg-body'))return;
+    var path=location.pathname;
+    if(path==='/search'||path.indexOf('/search/label/')===0)return;
+    if(path==='/p/home.html'||path==='/')return;
+    if(path==='/p/resume.html'||path==='/p/contact-us.html'||path==='/p/contact.html')return;
+    function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
+    function head(){return document.head||document.getElementsByTagName('head')[0];}
+    function setMeta(attr,key,value){
+      var m=head().querySelector('meta['+attr+'="'+key+'"]');
+      if(!m){m=document.createElement('meta');m.setAttribute(attr,key);head().appendChild(m);}
+      m.setAttribute('content',value);
+    }
+    ready(function(){
+      var box=document.querySelector('.status-msg-body');
+      if(!box)return;
+      box.innerHTML='<div class="jt-404">'
+        +'<p class="jt-404-code">404</p>'
+        +'<h1>페이지를 찾을 수 없습니다</h1>'
+        +'<p>주소가 변경되었거나 삭제된 페이지입니다. 아래에서 원하는 글을 찾아보세요.</p>'
+        +'<div class="jt-404-actions"><a class="jt-404-btn primary" href="/p/home.html">홈으로</a><a class="jt-404-btn" href="/search">글 검색</a></div>'
+        +'<ul class="jt-404-recent" aria-label="최근 글"></ul>'
+        +'</div>';
+      var title='페이지를 찾을 수 없음 | JUST TECH';
+      document.title=title;
+      setMeta('property','og:title',title);
+      setMeta('name','twitter:title',title);
+      setMeta('name','description','요청한 페이지를 찾을 수 없습니다. JUST TECH 홈이나 검색에서 원하는 글을 찾아보세요.');
+      setMeta('property','og:description','요청한 페이지를 찾을 수 없습니다. JUST TECH 홈이나 검색에서 원하는 글을 찾아보세요.');
+      setMeta('name','robots','noindex, follow');
+      var ul=box.querySelector('.jt-404-recent');
+      if(!ul)return;
+      fetch('/feeds/posts/default?alt=json&max-results=6',{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){
+          var entries=(j&&j.feed&&j.feed.entry)||[],shown=0;
+          for(var i=0;i<entries.length&&shown<3;i++){
+            var e=entries[i],title=(e.title&&e.title.$t||'').replace(/\s+/g,' ').trim();
+            if(!title||/\[youtube/i.test(title))continue;
+            var href='',links=e.link||[];
+            for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=links[k].href;break;}}
+            if(!href)continue;
+            var li=document.createElement('li'),a=document.createElement('a');
+            a.href=href;a.textContent=title;li.appendChild(a);ul.appendChild(li);shown++;
+          }
+          if(!shown)ul.style.display='none';
+        })
+        ['catch'](function(){ul.style.display='none';});
+    });
+  })();
