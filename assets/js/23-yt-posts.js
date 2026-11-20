@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.75 */
+/* Reddit-style Blogger YouTube post list — v1.2.76 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -666,7 +666,6 @@
 
   (function(){
     if(window.__jtYouTube)return; window.__jtYouTube=1;
-    var isPostView=!!(document.body&&document.body.classList.contains('item-view'));
     var activePlaybackBox=null;
     function ytId(value){
       value=String(value||'').trim();
@@ -740,43 +739,8 @@
       play.addEventListener('click',function(){startPlayback(box,id,null);});
       box.appendChild(thumb);
       box.appendChild(play);
-      if(box.closest('.jt-inf-post')||!isPostView){
-        return;
-      }
-      function schedule(observer){
-        if(box.__jtYtTimer||box.getAttribute('data-loaded'))return;
-        box.__jtYtTimer=setTimeout(function(){
-          box.__jtYtTimer=null;
-          var rect=box.getBoundingClientRect();
-          var height=window.innerHeight||document.documentElement.clientHeight;
-          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)startPlayback(box,id,observer);
-        },450);
-      }
-      function cancelTimer(){
-        if(box.__jtYtTimer){clearTimeout(box.__jtYtTimer);box.__jtYtTimer=null;}
-      }
-      if('IntersectionObserver' in window){
-        var observer=new IntersectionObserver(function(entries){
-          for(var i=0;i<entries.length;i++){
-            if(entries[i].target!==box)continue;
-            if(entries[i].isIntersecting&&entries[i].intersectionRatio>=0.25)schedule(observer);
-            else cancelTimer();
-          }
-        },{threshold:0.25});
-        box.__jtYtObserver=observer;
-        observer.observe(box);
-      }else{
-        var check=function(){
-          var rect=box.getBoundingClientRect();
-          var height=window.innerHeight||document.documentElement.clientHeight;
-          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)schedule(null);
-          else cancelTimer();
-        };
-        box.__jtYtFallback=check;
-        window.addEventListener('scroll',check,{passive:true});
-        window.addEventListener('resize',check);
-        check();
-      }
+      /* 단일 글에서도 자동재생하지 않고 포스터+재생 버튼을 유지한다.
+         자동재생이 차단되는 브라우저에서 검은 화면/멈춤으로 보이던 문제를 없앤다. */
     }
     /* 숏코드가 제목(h1~h6)처럼 잘림(clamp) 스타일 안에 들어간 경우 임베드를 밖으로 꺼낸다 */
     function unclipEmbed(box){
