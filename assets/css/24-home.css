@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.61 */
+/* Reddit-style Blogger home landing — v1.2.62 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -250,7 +250,8 @@ html.jt-home-page .jt-hz-features{
   background:var(--jt-soft);
 }
 html.jt-home-page .jt-hz-container{
-  max-width:1280px;
+  width:100%;
+  max-width:none;
   margin:0 auto;
 }
 html.jt-home-page .jt-hz-header{
@@ -269,15 +270,16 @@ html.jt-home-page .jt-hz-accent{
 html.jt-home-page .jt-hz-carousel{position:relative}
 html.jt-home-page .jt-hz-viewport{overflow:hidden}
 html.jt-home-page .jt-hz-track{
-  --jt-hz-gap:24px;
+  --jt-hz-gap:10px;
   display:flex;
+  width:100%;
   align-items:stretch;
   gap:var(--jt-hz-gap);
   transition:transform .45s cubic-bezier(.4,0,.2,1);
   will-change:transform;
 }
 html.jt-home-page .jt-hz-card{
-  flex:1 1 0;
+  flex:0 0 clamp(150px,14vw,180px);
   min-width:0;
   display:flex;
   flex-direction:column;
@@ -288,13 +290,13 @@ html.jt-home-page .jt-hz-card{
   transition:flex-grow .45s cubic-bezier(.4,0,.2,1),border-color .2s ease;
 }
 html.jt-home-page body .jt-hz-card:hover{
-  flex-grow:1;
+  flex-basis:280px;
   border-color:var(--jt-accent);
 }
 html.jt-home-page body .jt-hz-media{
   position:relative;
   width:100%;
-  aspect-ratio:1 / 2;
+  aspect-ratio:16 / 10;
   height:auto;
   min-height:0;
   background-color:#eef1ef;

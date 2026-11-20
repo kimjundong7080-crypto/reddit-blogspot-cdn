@@ -1,7 +1,7 @@
 # AGENTS.md — JUST TECH Blogger 운영 작업 지침 (인수인계 문서)
 
 이 문서는 **다른 AI/작업자가 이어서 작업할 때** 반드시 따라야 하는 규칙과 현재 상태를 정리한 문서입니다.
-최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.61**
+최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.62**
 
 ---
 
@@ -69,7 +69,7 @@ PowerShell 프로필 로딩 차단 경고(`running scripts is disabled`)는 매 
 | CDN 저장소 | https://github.com/kimjundong7080-crypto/reddit-blogspot-cdn |
 | CDN 방식 | jsDelivr + GitHub (`@v1` major alias) |
 | 엣지 API | https://reddit-blogspot-edge.pages.dev (`/api/blogger-feed`) |
-| 최신 태그 | **v1.2.61** |
+| 최신 태그 | **v1.2.62** |
 
 테마의 9개 URL은 모두 `@v1`이다. 새 `v1.x.y` 태그를 발행하면 테마 수정 없이 반영된다.
 
@@ -235,6 +235,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 | v1.2.59 | iframe 로드 전 썸네일을 최상단에 유지해 검은 전환 화면과 원본 썸네일 위치 이탈 방지 |
 | v1.2.60 | 무한스크롤 Turnstile 인증 게이트 임시 해제 |
 | v1.2.61 | 무한스크롤 복제 포스트의 유튜브 자동재생 차단, 썸네일·클릭 재생으로 전환 |
+| v1.2.62 | 홈 가로 캐러셀 카드 폭·간격·호버 확장과 Contact 한글화·다크모드 동기화 |
 
 ---
 
