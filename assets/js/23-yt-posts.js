@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.55 */
+/* Reddit-style Blogger YouTube post list — v1.2.56 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -357,6 +357,14 @@
         return String(category.term||'').trim().toLowerCase()==='cad';
       });
       if(!hasCad)return null;
+      var ytSource=(e.content&&e.content.$t)||(e.summary&&e.summary.$t)||'';
+      var ytMatch=ytSource.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/i);
+      var ytId=ytMatch?ytMatch[1]:((ytSource.match(/\[youtube\s+link\s*=\s*["']([^"']+)["']/i)||[])[1]||'');
+      if(ytId){
+        var ytLink=ytId;
+        var linkIdMatch=ytLink.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+        ytId=linkIdMatch?linkIdMatch[1]:(/^[A-Za-z0-9_-]{11}$/.test(ytLink)?ytLink:'');
+      }
       var links=e.link||[],href='';
       for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
       if(!href||seen[href])return null;
@@ -364,7 +372,7 @@
       var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
       var title=(e.title&&e.title.$t||'').trim()||cat||'게시물';
       var date=dateText(e.published&&e.published.$t);
-      var thumb=thumbUrl(e.media$thumbnail&&e.media$thumbnail.url||'');
+      var thumb=ytId?'https://i.ytimg.com/vi/'+ytId+'/default.jpg':thumbUrl(e.media$thumbnail&&e.media$thumbnail.url||'');
 
       var a=el('a','yt-item');
       a.href=href;
@@ -389,6 +397,24 @@
         img.src=thumb;
         box.appendChild(img);
         if(img.complete&&img.naturalWidth)loaded();
+        if(ytId){
+          a.addEventListener('mouseenter',function(){
+            if(a.classList.contains('is-yt-hover'))return;
+            a.classList.add('is-yt-hover');
+            var frame=document.createElement('iframe');
+            frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1';
+            frame.title=title+' 무음 미리보기';
+            frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture');
+            frame.setAttribute('allowfullscreen','');
+            frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+            box.appendChild(frame);
+          });
+          a.addEventListener('mouseleave',function(){
+            a.classList.remove('is-yt-hover');
+            var frames=box.querySelectorAll('iframe');
+            for(var fi=0;fi<frames.length;fi++)frames[fi].remove();
+          });
+        }
       }else{
         box.classList.add('yt-thumb-empty');
       }
@@ -652,59 +678,38 @@
       box.setAttribute('data-loaded','1');
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
-      if(box.__jtYtFallback){
-        window.removeEventListener('scroll',box.__jtYtFallback);
-        window.removeEventListener('resize',box.__jtYtFallback);
-        box.__jtYtFallback=null;
-      }
       var frame=document.createElement('iframe');
       frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
       frame.title='YouTube video';
       frame.setAttribute('frameborder','0');
       frame.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
       frame.setAttribute('allowfullscreen','');
+      frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
       frame.setAttribute('loading','lazy');
       box.appendChild(frame);box.classList.add('ready');
     }
     function mount(box){
       var id=box.getAttribute('data-yt');
-      if(!id||box.getAttribute('data-loaded')||box.__jtYtObserver||box.__jtYtTimer)return;
-      function cancelTimer(){
-        if(box.__jtYtTimer){clearTimeout(box.__jtYtTimer);box.__jtYtTimer=null;}
-      }
-      function schedule(observer){
-        if(box.__jtYtTimer||box.getAttribute('data-loaded'))return;
-        box.__jtYtTimer=setTimeout(function(){
-          box.__jtYtTimer=null;
-          var rect=box.getBoundingClientRect();
-          var height=window.innerHeight||document.documentElement.clientHeight;
-          var visible=rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth;
-          if(visible)startPlayback(box,id,observer);
-        },500);
-      }
-      if('IntersectionObserver' in window){
-        var observer=new IntersectionObserver(function(entries){
-          for(var i=0;i<entries.length;i++){
-            var entry=entries[i];
-            if(entry.target!==box)continue;
-            if(entry.isIntersecting&&entry.intersectionRatio>=0.25)schedule(observer);
-            else cancelTimer();
-          }
-        },{threshold:0.25});
-        box.__jtYtObserver=observer;
-        observer.observe(box);
-      }else{
-        var check=function(){
-          var rect=box.getBoundingClientRect();
-          var height=window.innerHeight||document.documentElement.clientHeight;
-          if(rect.bottom>0&&rect.top<height&&rect.right>0&&rect.left<window.innerWidth)schedule(null);
-          else cancelTimer();
-        };
-        box.__jtYtFallback=check;
-        window.addEventListener('scroll',check,{passive:true});
-        window.addEventListener('resize',check);
-        check();
-      }
+      if(!id||box.getAttribute('data-loaded')||box.__jtYtMounted)return;
+      box.__jtYtMounted=1;
+      var thumb=document.createElement('img');
+      thumb.className='jt-yt-thumb';
+      thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
+      thumb.alt='YouTube 동영상 썸네일';
+      thumb.loading='eager';
+      thumb.decoding='async';
+      thumb.referrerPolicy='no-referrer';
+      thumb.onerror=function(){
+        thumb.src='https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
+      };
+      var play=document.createElement('button');
+      play.type='button';
+      play.className='jt-yt-play';
+      play.setAttribute('aria-label','YouTube 동영상 재생');
+      play.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+      play.addEventListener('click',function(){startPlayback(box,id,null);});
+      box.appendChild(thumb);
+      box.appendChild(play);
     }
     function run(){
       var bodies=document.querySelectorAll('.post-body');

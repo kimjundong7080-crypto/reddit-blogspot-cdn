@@ -1,7 +1,7 @@
 # AGENTS.md — JUST TECH Blogger 운영 작업 지침 (인수인계 문서)
 
 이 문서는 **다른 AI/작업자가 이어서 작업할 때** 반드시 따라야 하는 규칙과 현재 상태를 정리한 문서입니다.
-최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.55**
+최종 업데이트: 2026-11-20 / 최신 릴리스: **v1.2.56**
 
 ---
 
@@ -69,7 +69,7 @@ PowerShell 프로필 로딩 차단 경고(`running scripts is disabled`)는 매 
 | CDN 저장소 | https://github.com/kimjundong7080-crypto/reddit-blogspot-cdn |
 | CDN 방식 | jsDelivr + GitHub (`@v1` major alias) |
 | 엣지 API | https://reddit-blogspot-edge.pages.dev (`/api/blogger-feed`) |
-| 최신 태그 | **v1.2.55** |
+| 최신 태그 | **v1.2.56** |
 
 테마의 9개 URL은 모두 `@v1`이다. 새 `v1.x.y` 태그를 발행하면 테마 수정 없이 반영된다.
 
@@ -229,6 +229,7 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 | v1.2.53 | 도메인 삭제 및 경력 순서를 오래된 이력부터 표시 |
 | v1.2.54 | 서명자 제거 및 날짜 자동 갱신 |
 | v1.2.55 | 이력서 사진·자기소개서 추가, 경력·자격·정렬·글자 및 인쇄 레이아웃 보강 |
+| v1.2.56 | 유튜브 숏코드 썸네일 우선 표시 및 클릭 재생·Referrer 정책 보강 |
 
 ---
 
@@ -254,3 +255,11 @@ $r.Headers['x-jsd-version']   # 새 버전인지 확인
 - GitHub `main`과 태그 `v1.2.55` 배포 완료(릴리스 커밋 `06ee25b24ce26c4e57061df0ad8ef6a85bcd7f47`). 로컬 브랜치는 `origin/main`과 동기화됐다.
 - jsDelivr `@v1`의 `pages/resume.html`, `pages/resume-photo.jpg` 캐시 purge가 모두 `throttled:false`로 완료됐다. 두 URL 모두 HTTP 200 및 `x-jsd-version: 1.2.55`를 확인했다.
 - 브라우저 캐시에 따라 방문자 화면은 최대 7일간 이전 내용일 수 있으므로 필요 시 강력 새로고침한다. 테마 XML은 열지 않는다.
+
+### v1.2.56 유튜브 숏코드 수정
+
+- 실제 문제 포스트: `https://www.techlifeworld.com/2026/11/youtube-linkhttpsyoutubelyfcrrulyn0.html`
+- 원인 진단: 숏코드 변환은 정상 동작했으나 기존 구현이 썸네일을 만들지 않고 iframe을 즉시 생성했다. 유효한 동영상 ID와 공개 썸네일은 확인되었으므로 유입 차단은 iframe 재생/Referrer 처리 문제로 판단한다.
+- 수정: `src/23-yt-posts.html`의 YouTube 섹션에 `hqdefault.jpg` 썸네일을 먼저 표시하고, 재생 버튼을 누른 뒤에만 `youtube-nocookie.com` iframe을 생성한다.
+- iframe에 `referrerpolicy="strict-origin-when-cross-origin"`을 추가했다.
+- 배포 상태: 소스 수정과 패키지 버전 v1.2.56 메타데이터는 준비됐으나, 샌드박스의 로컬 네트워크/Git 쓰기 차단으로 빌드 산출물 갱신, 커밋, 태그, 푸시, jsDelivr purge가 아직 완료되지 않았다.
