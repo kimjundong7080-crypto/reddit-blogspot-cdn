@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.72 */
+/* Reddit-style Blogger YouTube post list — v1.2.73 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -904,6 +904,14 @@
     function ogImage(){
       var m=head().querySelector('meta[property="og:image"]'),u=m&&(m.getAttribute('content')||'');
       if(u)return u;
+      var yt=document.querySelector('.jt-yt-embed[data-yt]');
+      var id=yt&&yt.getAttribute('data-yt');
+      if(!id){
+        var fr=document.querySelector('.post-body iframe[src*="youtube"]');
+        var mm=fr&&fr.src.match(/(?:embed\/|v=)([A-Za-z0-9_-]{11})/);
+        id=mm&&mm[1];
+      }
+      if(id)return 'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
       var img=document.querySelector('.post-body img, .jt-project-media img');
       return img&&img.src?img.src:ORIGIN+'/favicon.ico';
     }
@@ -970,6 +978,7 @@
       setMeta('name','twitter:description',initialDesc);
       fillMeta('property','og:type','article');
       fillMeta('name','twitter:title',headline);
+      if(!head().querySelector('meta[property="og:image"]'))setMeta('property','og:image',ogImage());
       if(!head().querySelector('meta[name="twitter:image"]'))setMeta('name','twitter:image',ogImage());
       function renderArticle(extra){
         extra=extra||{};
@@ -1012,10 +1021,26 @@
           });
         })['catch'](function(){});
     }else{
-      setMeta('name','description',FALLBACK_DESC);
-      setMeta('property','og:description',FALLBACK_DESC);
+      var path=location.pathname;
+      var pageTitle=document.title||SITE;
+      var pageDesc=path==='/p/about.html'
+        ? 'JUST TECH의 산업 자동화·로봇·생산설비 설계/제작 경험과 기술 아카이브를 소개합니다.'
+        : (path==='/p/contact-us.html'||path==='/p/contact.html')
+          ? '산업 자동화·로봇·조립·검사·포장 설비의 설계와 제작 상담 안내입니다.'
+          : FALLBACK_DESC;
+      setMeta('name','description',pageDesc);
+      setMeta('property','og:description',pageDesc);
+      setMeta('name','twitter:description',pageDesc);
+      setMeta('property','og:title',pageTitle);
+      fillMeta('name','twitter:title',pageTitle);
       fillMeta('property','og:type','website');
-      setMeta('name','twitter:description',FALLBACK_DESC);
+      var fallbackImage='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/home/poster-1.jpg';
+      if(!head().querySelector('meta[property="og:image"]'))setMeta('property','og:image',fallbackImage);
+      if(!head().querySelector('meta[name="twitter:image"]'))setMeta('name','twitter:image',fallbackImage);
+      if(isStaticPage&&!head().querySelector('meta[name="robots"]')){
+        var privatePage=path==='/p/resume.html'||path==='/p/contact-us.html'||path==='/p/contact.html';
+        setMeta('name','robots',privatePage?'noindex, follow':'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+      }
     }
   })();
 
