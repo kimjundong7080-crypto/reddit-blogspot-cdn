@@ -275,6 +275,15 @@
             opacity: 0.8;
         }
 
+        .contact-item a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
         /* 4. 스크롤 애니메이션 (Intersection Observer) */
         .reveal {
             opacity: 0;
@@ -370,7 +379,6 @@
         <!-- 히어로 섹션 (이미지 영역) -->
         <section class="hero-section reveal">
             <!-- 지연 로딩(Lazy Loading)이 적용된 이미지 -->
-            <!-- 실제 서비스 시에는 아래 src에 적절한 이미지 URL을 넣고, placeholder를 활용하세요 -->
             <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop" 
                  alt="비즈니스 웨비나 발표자 두 명" 
                  loading="lazy" 
@@ -409,7 +417,7 @@
                 <!-- 장소 정보 카드 -->
                 <div class="meta-item reveal delay-2">
                     <div class="meta-icon">
-                        <i class="ph ph-clock"></i>
+                        <i class="ph ph-map-pin"></i>
                     </div>
                     <div class="meta-content">
                         <h3>JUST TECH</h3>
@@ -425,12 +433,12 @@
             
             <div class="contact-info">
                 <div class="contact-item">
-                    <i class="ph ph-globe"></i>
-                    <span>123-456-7890</span>
+                    <i class="ph ph-phone"></i>
+                    <a href="tel:01043616611">010-4361-6611</a>
                 </div>
                 <div class="contact-item">
                     <i class="ph ph-envelope-simple"></i>
-                    <span>ssii@naver.com</span>
+                    <a href="mailto:ssii@naver.com">ssii@naver.com</a>
                 </div>
             </div>
         </footer>
