@@ -1,21 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.77**
-Current local package version: **1.2.77**
+Latest published release: **v1.2.78**
+Current local package version: **1.2.78**
 
-This document is the handoff for the next AI or engineer. Release v1.2.77 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.78 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `9aa5b31 Release v1.2.77`.
-- Latest GitHub release/tag: `v1.2.77`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.77 is published.** Content:
-  - All prior fixes (see below).
-  - Branded **404 page**: replaces Blogger's one-line message with a 404 panel, Home/Search buttons, and the three most recent posts; sets `noindex, follow` and a descriptive title/OG metadata.
-  - `11-infinite` now skips pages with `.status-msg-body`, so 404/static fallback pages no longer append infinite-scroll posts.
-- **CDN status:** `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **1.2.77** at both `@1.2.77` and `@v1`. Favicon assets live. No pending purge.
+- Branch: `main`; latest release commit: `d7c76ae Release v1.2.78`.
+- Latest GitHub release/tag: `v1.2.78`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.78 is published.** Content:
+  - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
+- **CDN status:** `24-home.js` is **1.2.78** at `@v1`; `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **1.2.77**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -191,6 +189,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Branded 404 panel replaces Blogger's default message: 404 code, Korean heading, Home/Search buttons, and up to three recent posts; title `페이지를 찾을 수 없음 | JUST TECH`, `robots=noindex, follow`, OG/Twitter title and description.
   - `11-infinite` skips pages containing `.status-msg-body`, so 404 and static fallback pages no longer append a stray infinite-scroll post below the message.
   - Live verification: 404 panel renders, recent posts populate, no `#jtInfiniteFeed`, correct title/robots; the new YouTube post still click-plays at 612×344 with loop; home first card/search unaffected.
+- `v1.2.78`:
+  - **Home mid-page freeze root cause (2nd).** After v1.2.67 removed the shortcode-driven `innerHTML` rewrite, a **clone of the `.jt-landing` subtree** still occurred after hero typing (the clone kept classes/styles but lost JS expandos such as `__jtReveal`). The reveal `IntersectionObserver` therefore kept watching detached nodes, so `#jt-projects` / `#jt-about` / `.jt-cta` could stay at `opacity:0` — the page appeared frozen from the middle.
+  - Fix: `revealTick()` + `bindRevealTicker()` reveal any `.jt-landing .jt-reveal:not(.is-in)` block that is in the viewport on scroll/resize and on a 15×800 ms re-check; `initLandingReveal()` no longer depends on the node-identity flag; carousel/hero-typing/service-ceremony init is re-run idempotently, with "already typed/cloned" guards that jump straight to the finished state instead of replaying.
+  - Verified live (fresh load after `cache:'reload'`): all five `.jt-reveal` blocks reach `is-in`/`opacity:1`, 0 hidden sections, carousel hover plays MP4, 0 console errors.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)
@@ -225,10 +227,10 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than `1.2.66` and never reuse a tag:
+For a release, choose a version greater than `1.2.78` and never reuse a tag:
 
 ```powershell
-node scripts/release.mjs 1.2.63
+node scripts/release.mjs 1.2.79
 ```
 
 `release.mjs` rebuilds assets, updates version references, commits the release, creates an annotated tag, and pushes `main` plus the tag. Review its staged file set and resulting release before running it. Commit messages include:
@@ -252,7 +254,8 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 - The `23-yt-posts.js@v1` purge completed on 2026-11-20; `@v1` reports **1.2.76**. The favicon links, click-to-play behavior, loop, and SEO meta are live.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
-- The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
+- The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
+- The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
 - `/p/resume.html` and `/p/contact-us.html` restored on 2026-11-20 as live Blogger Pages (HTTP 200) with page IDs `8369950385896197882` and `3994593479765014806`. The page body contains the inline jsDelivr iframe loader; if those pages are ever deleted again, recreate them with the same titles (`resume`, `contact-us`) and the loader content.
 - No raw `[youtube ...]` post titles or labels remain as of 2026-11-20 (the one affected post was corrected through the Blogger API).

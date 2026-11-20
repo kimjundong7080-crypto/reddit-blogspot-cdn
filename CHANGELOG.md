@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-20 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.77**
+Latest published release: **v1.2.78**
 
-This is the consolidated English record for the work cycle that ended with v1.2.77.
+This is the consolidated English record for the work cycle that ended with v1.2.78.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -29,6 +29,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.75 | `92a02dc` | Home feed cache key `jt-home-feed-v2` with a 5-minute TTL; new YouTube post published. |
 | v1.2.76 | `439d500` | **Definitive YouTube fix**: single-post autoplay removed; every embed is poster + play button, iframe created only on click, then loops. |
 | v1.2.77 | `9aa5b31` | Branded 404 page (recent posts, Home/Search buttons, noindex); infinite scroll skipped on `.status-msg-body` pages. |
+| v1.2.78 | `d7c76ae` | **Home mid-page freeze hardened.** Landing subtree is cloned after hero typing, which detached the reveal `IntersectionObserver` and left `#jt-about`/`.jt-cta` at `opacity:0`. Added a document-level reveal ticker (rAF + 15×800 ms re-check), idempotent re-init of carousel/typing/ceremony, and clone-safe "already typed" guards. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
@@ -48,6 +49,7 @@ Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 ## 4. Verification summary
 
 - Home: reveal animation stays attached; project/about/CTA sections reach `opacity:1`; no broken images; no horizontal overflow at 390/768/1440 px.
+- Home v1.2.78 re-check (fresh load after `cache:'reload'` of all nine CDN assets): after scrolling top→bottom, all five `.jt-reveal` blocks (`hero`, `#jt-services`, `#jt-projects`, `#jt-about`, `.jt-cta`) carry `is-in` with `opacity:1`; 0 sections remain hidden; carousel hover plays MP4 (`paused:false`, currentTime advancing); 0 console errors.
 - YouTube: every embed shows a poster + play button with **0 iframes** before click; clicking creates one iframe at 612×344, `loop=1&playlist` active, no site console errors.
 - Infinite scroll: appends posts, no autoplay inside clones, no Edge API requests, and no feed on 404 pages.
 - Static pages: resume/contact render, have `noindex, follow`, and load their photo/contact data correctly.
@@ -58,8 +60,7 @@ Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
 ## 5. Deployment and cache state
 
-- `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **v1.2.77** at both `@v1.2.77` and `@v1`.
-- `24-home.js` is **v1.2.75** at `@v1` (no later home changes).
+- `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **v1.2.77** at both `@v1.2.77` and `@v1`. `24-home.js` is **v1.2.78** at `@v1`.
 - All required jsDelivr purges completed. **No pending purge or scheduled wakeup remains.**
 - Working tree is clean.
 - Home feed now uses a 5-minute cache (`jt-home-feed-v2`); old browsers may need a hard refresh to receive v1.2.76/77 scripts, and `@v1` assets can remain cached for up to seven days.
