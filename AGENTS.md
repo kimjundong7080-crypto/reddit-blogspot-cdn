@@ -1,26 +1,26 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.75**
-Current local package version: **1.2.75**
+Latest published release: **v1.2.76**
+Current local package version: **1.2.76**
 
-This document is the handoff for the next AI or engineer. Release v1.2.75 is published; `24-home.js@v1` is current, and the `23-yt-posts.js@v1` purge is pending a throttled retry.
+This document is the handoff for the next AI or engineer. Release v1.2.76 is published and all changed assets are current at `@v1`.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `92a02dc Release v1.2.75`.
-- Latest GitHub release/tag: `v1.2.75`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.75 is published.** Content:
+- Branch: `main`; latest release commit: `439d500 Release v1.2.76`.
+- Latest GitHub release/tag: `v1.2.76`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.76 is published.** Content:
   - All prior fixes (see below).
-  - `src/24-home.html`: home feed cache key is now `jt-home-feed-v2` with a **5-minute** TTL (was `v1`/6 hours), so new posts appear on the landing quickly.
-  - New YouTube post published on 2026-11-21 KST: **“두산 협동로봇 솔루션적용: 스크류 체결”** at `https://www.techlifeworld.com/2026/11/blog-post.html` (post id `2105647337331496730`, video `4GL2ndz7etQ`). Body uses the `[youtube link="..."]` shortcode plus a short Korean description.
-- **CDN status:** favicon assets live; `24-home.js@v1` is confirmed **1.2.75**. `23-yt-posts.js@v1` is still **1.2.72**; its purge is throttled (~24 min) with a wakeup scheduled. Until it updates, the favicon head injection, single-post loop, and v1.2.73 SEO meta are not live for visitors.
+  - **Single-post YouTube autoplay removed.** Every embed (post, listing, clone) now shows the poster + play button and creates the iframe only on a user click. This eliminates the black/frozen player that appeared when the browser blocked or delayed autoplay; the player still uses `loop=1&playlist=<id>` after click.
+  - Home feed cache (`jt-home-feed-v2`, 5-minute TTL) and the new “두산 협동로봇 솔루션적용: 스크류 체결” post from v1.2.75 are included.
+- **CDN status:** `23-yt-posts.js` is **1.2.76** at both `@1.2.76` and `@v1`; `24-home.js` is **1.2.75** at `@v1`. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
   - Home landing: `.jt-landing` keeps `__jtReveal`, project card titles contain no raw shortcode, `#jt-projects` / `#jt-about` / `.jt-cta` reach `opacity:1` and `.is-in`, 0 console errors, no Turnstile/challenge requests.
-  - YouTube post: embed autoplays muted in the post view (iframe visible at ~620×349); infinite scroll appended posts with no active iframes inside clones; **0 Edge API requests** and 0 console errors.
+  - YouTube post: poster + play button in the post view; clicking creates the iframe (612×344) with `loop=1&playlist`; infinite scroll appended posts with no active iframes inside clones; **0 Edge API requests** and 0 console errors.
   - Clone click-to-play: on `/2026/11/_1.html`, clicking the play button in a cloned vlog post produces a visible `iframe.jt-yt-frame` (652×367) and hides the poster; 0 console errors.
   - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.71. Contact shows `010-4361-6611` (`tel:01043616611`) and `ssii@naver.com` (`mailto:`); resume photo loads at 413px natural width.
   - `/p/about.html`: title `About | JUST TECH`, no `/feeds/posts/...?path=` 404, 0 console errors.
@@ -31,7 +31,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.75 is pub
 
 ### Recently completed performance/UX work (published)
 
-- YouTube shortcode embeds autoplay muted only on a single-post page (`body.item-view`). Listing/search pages and infinite-scroll clones render a poster with a play button (click to play).
+- All YouTube shortcode embeds (post, listing, search, infinite-scroll clone) use a poster + play button; the iframe is created only on click. Single-post autoplay was removed in v1.2.76 to avoid black/frozen players when autoplay is blocked.
 - Only one YouTube iframe is kept active at a time; starting another removes the previous iframe.
 - YouTube thumbnails use `hqdefault.jpg` with lazy loading, fall back to `sddefault.jpg` once, then hide.
 - Infinite scroll marks the Edge API unavailable for the rest of the page session after the first failed request, avoiding repeated 404/timeout calls.
@@ -116,7 +116,7 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 
 - Supports `[youtube link="..."]`, Markdown `[md]`, and `[rede]`/`[rade]` folded sections.
 - YouTube video ID `lyFcrrULyN0` is valid; YouTube oEmbed and its thumbnail have been checked previously.
-- Listing and infinite-scroll embeds use click-to-play; single-post embeds may autoplay muted after entering the viewport.
+- Every embed uses click-to-play; the iframe is only created after a user click (autoplay removed in v1.2.76).
 - Search uses client-side filtering/pagination after loading Blogger feed data.
 - SEO code sets canonical, Open Graph/Twitter metadata, and JSON-LD. Blogger-host redirects/canonical handling are in this file.
 - `/p/resume.html` and `/p/contact-us.html` fetch static HTML from jsDelivr and render it via iframe `srcdoc`. jsDelivr may serve these page files as `text/plain`, so test them through Blogger, not by opening the raw CDN URL directly.
@@ -183,18 +183,23 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Home feed cache key bumped to `jt-home-feed-v2` and TTL reduced to 5 minutes so new posts reach the landing quickly.
   - New post “두산 협동로봇 솔루션적용: 스크류 체결” (`/2026/11/blog-post.html`, post id `2105647337331496730`, YouTube `4GL2ndz7etQ`) published via the Blogger API with the shortcode and a Korean description; label `CAD`.
   - Fresh browser verification: the new post is the first home project card (poster + correct title), all 4 cards have images (0 broken), and the search result list starts with the new post. Post page: embed iframe visible (620×349), no raw shortcode, infinite scroll appends posts.
+- `v1.2.76`:
+  - **YouTube play reliability fix.** Removed single-post autoplay entirely; `mount()` now leaves the poster + play button in place and the iframe is created only on click. This is the definitive fix for the black/frozen player seen when a browser blocks or delays autoplay. The clicked player keeps `loop=1&playlist=<id>`.
+  - Live verification (fresh Chrome): before click 0 iframes with a visible 480px thumbnail and play button; after click 1 iframe, `ready`, 612×344, playing; 0 console errors. Home first card/search first result/new-post SEO meta all verified.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–75)
+### Verification notes (2026-11-20, v1.2.63–76)
 
-- A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
+- A YouTube post loads with a poster + play button; clicking creates the iframe and plays with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
 - Search and monthly archive titles are now descriptive (`검색 | JUST TECH`, `2026년 11월 아카이브 | JUST TECH`) after v1.2.72.
 - v1.2.73 SEO meta verified locally: search/archive `og:title` descriptive; About `robots=index, follow`; resume/contact `robots=noindex, follow`; vlog post `og:image=https://i.ytimg.com/vi/opVMctYiY6s/hqdefault.jpg`.
 - v1.2.74 favicon verified locally: head contains SVG/32/16/ICO/apple-touch icon links, `theme-color=#1f7a5c`, 0 console errors; favicon assets are HTTP 200 on jsDelivr.
-- v1.2.74 loop fix verified in the embed URL: `...&loop=1&playlist=lyFcrrULyN0...` on the single-post player.
+- v1.2.74 loop fix verified in the embed URL: `...&loop=1&playlist=lyFcrrULyN0...`; v1.2.76 now applies it after a click (no autoplay).
 - v1.2.75 fresh-context check: new post “두산 협동로봇 솔루션적용: 스크류 체결” is first on the home project cards with `poster-1.jpg`, no broken images, and first in search results. The post page renders the 4GL2ndz7etQ player at 620×349 with no raw shortcode.
 - Home stale-cache caveat: the old 6-hour `jt-home-feed-v1` cache may keep the previous project cards for up to 6 hours on browsers that had loaded the old `24-home.js`; a hard refresh loads the v2/5-minute cache immediately.
+- v1.2.76 live check (fresh Chrome): the new post shows a poster (480px thumbnail) + play button with 0 iframes; clicking plays the 4GL2ndz7etQ video at 612×344 with `loop=1&playlist` and 0 console errors. Home first card, search first result, favicon links/theme-color, and the SEO meta on About/resume/contact/vlog all verified.
+- The YouTube player may emit its own `compute-pressure` Permissions-Policy message after playback starts; it comes from the YouTube iframe, not this site.
 - `/p/resume.html`, `/p/contact-us.html`, `/p/about.html` all have page-specific descriptions and a poster OG image fallback after v1.2.73.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
@@ -239,7 +244,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- **Pending:** `23-yt-posts.js@v1` purge (currently throttled ~24 min) is still required to deliver v1.2.73 SEO meta, v1.2.74 favicon links + theme-color + single-post loop. A wakeup is scheduled; after it succeeds, confirm `x-jsd-version=1.2.75`, the favicon links/`theme-color`, the loop URL on the new post, the SEO meta, and 0 console errors, then remove this item.
+- The `23-yt-posts.js@v1` purge completed on 2026-11-20; `@v1` reports **1.2.76**. The favicon links, click-to-play behavior, loop, and SEO meta are live.
 - Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
