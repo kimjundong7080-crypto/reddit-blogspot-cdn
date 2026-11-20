@@ -640,10 +640,14 @@ html.jt-search-app #blog-pager{display:none !important}
 }
 #jtSearchApp .jt-sp-chip small{font-size:11px;font-weight:500;opacity:.75;margin-left:4px}
 #jtSearchApp .jt-sp-status{margin:0 0 14px;font-size:13px;opacity:.7}
-#jtSearchApp .jt-sp-list{display:flex;flex-direction:column;gap:14px}
+#jtSearchApp .jt-sp-list{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
 #jtSearchApp .jt-sp-item{
-  display:flex;gap:16px;align-items:flex-start;
-  padding:14px;border:1px solid rgba(0,0,0,.1);border-radius:14px;
+  display:flex;flex-direction:column;gap:12px;align-items:stretch;
+  padding:12px;border:1px solid rgba(0,0,0,.1);border-radius:14px;
   background:rgba(0,0,0,.015);color:inherit !important;text-decoration:none !important;
   transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
 }
@@ -653,18 +657,18 @@ html.jt-search-app #blog-pager{display:none !important}
   transform:translateY(-2px);
 }
 #jtSearchApp .jt-sp-thumb{
-  flex:0 0 200px;width:200px;aspect-ratio:16/9;
+  flex:none;width:100%;aspect-ratio:16/9;
   border-radius:10px;overflow:hidden;background:rgba(0,0,0,.06);
 }
 #jtSearchApp .jt-sp-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 #jtSearchApp .jt-sp-thumb.is-empty{display:none}
 #jtSearchApp .jt-sp-body{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 auto}
-#jtSearchApp .jt-sp-title{font-size:17px;font-weight:700;line-height:1.4;word-break:keep-all}
+#jtSearchApp .jt-sp-title{font-size:15px;font-weight:700;line-height:1.4;word-break:keep-all}
 #jtSearchApp .jt-sp-snip{
-  font-size:14px;line-height:1.65;opacity:.72;
+  font-size:13px;line-height:1.6;opacity:.72;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-#jtSearchApp .jt-sp-meta{font-size:12px;opacity:.55;margin-top:2px}
+#jtSearchApp .jt-sp-meta{font-size:11.5px;opacity:.55;margin-top:2px}
 #jtSearchApp .jt-sp-empty{padding:44px 0;text-align:center;font-size:14px;opacity:.7}
 #jtSearchApp .jt-sp-pager{
   display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
@@ -691,12 +695,18 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-item,
 html[data-theme="dark"] #jtSearchApp .jt-sp-pg{border-color:rgba(255,255,255,.16)}
 html[data-theme="dark"] #jtSearchApp .jt-sp-item{background:rgba(255,255,255,.03)}
 html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.08)}
+@media screen and (max-width:1100px){
+  #jtSearchApp .jt-sp-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media screen and (max-width:900px){
+  #jtSearchApp .jt-sp-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media screen and (max-width:640px){
   #jtSearchApp{padding:4px 12px 40px}
-  #jtSearchApp .jt-sp-item{gap:12px;padding:12px}
-  #jtSearchApp .jt-sp-thumb{flex:0 0 118px;width:118px}
-  #jtSearchApp .jt-sp-title{font-size:15px}
-  #jtSearchApp .jt-sp-snip{display:none}
+  #jtSearchApp .jt-sp-list{grid-template-columns:1fr;gap:14px}
+  #jtSearchApp .jt-sp-item{padding:12px}
+  #jtSearchApp .jt-sp-title{font-size:16px}
+  #jtSearchApp .jt-sp-snip{font-size:13.5px}
   #jtSearchApp .jt-sp-pg{min-width:34px;height:34px;font-size:13px}
 }
 </style>
