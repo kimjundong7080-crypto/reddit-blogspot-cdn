@@ -1,20 +1,20 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.72**
-Current local package version: **1.2.72**
+Latest published release: **v1.2.73**
+Current local package version: **1.2.73**
 
-This document is the handoff for the next AI or engineer. Release v1.2.72 is published; its changed assets were purged for both the version tag and `@v1`.
+This document is the handoff for the next AI or engineer. Release v1.2.73 is published; `23-yt-posts.js@1.2.73` is purged, but the `@v1` purge is pending a throttled retry.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `53b0dee Release v1.2.72`.
-- Latest GitHub release/tag: `v1.2.72`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.72 is published.** Content:
+- Branch: `main`; latest release commit: `46a0529 Release v1.2.73`.
+- Latest GitHub release/tag: `v1.2.73`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.73 is published.** Content:
   - All prior fixes (see below).
-  - `src/23-yt-posts.html`: `/search` now titles as `검색 | JUST TECH` and monthly archives as `YYYY년 M월 아카이브 | JUST TECH` (previously both kept the Blogger blog name, e.g. `madomi`).
-- **CDN purge status:** `23-yt-posts.js` was purged for both `@1.2.72` and `@v1`; `x-jsd-version` confirmed as `1.2.72`.
+  - `src/23-yt-posts.html` SEO: static pages get their own descriptions and `og:title`/`twitter:title`; About is `index, follow` while resume/contact are `noindex, follow`; search/archive inherit the descriptive page title in OG/Twitter; YouTube-only posts get the video thumbnail as `og:image`/`twitter:image`; static pages use the home poster as the OG image fallback.
+- **CDN purge status:** `23-yt-posts.js@1.2.73` purged. The `@v1` purge was throttled (~42 min); a wakeup is scheduled to retry and verify. Until then, `@v1` still serves 1.2.72.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -170,13 +170,19 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Resume photo uses an absolute jsDelivr `src`, removing the initial `/p/resume-photo.jpg` 404 inside `srcdoc`.
 - `v1.2.72`:
   - Search/archive titles now use `검색 | JUST TECH` and `YYYY년 M월 아카이브 | JUST TECH` instead of the Blogger blog name. Verified live: search title `검색 | JUST TECH`, archive title `2026년 11월 아카이브 | JUST TECH`, 0 console errors.
+- `v1.2.73`:
+  - SEO metadata for non-item pages: `og:title`/`twitter:title` now match the descriptive title on search/archive/static pages; About/Contact get page-specific descriptions; About is indexable while resume/contact are `noindex, follow`.
+  - `ogImage()` now falls back to the YouTube thumbnail (`i.ytimg.com/vi/<id>/hqdefault.jpg`) for video-only posts, and item pages set `og:image` when Blogger did not provide one.
+  - Static pages use `assets/img/home/poster-1.jpg` as the OG/Twitter image fallback.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–72)
+### Verification notes (2026-11-20, v1.2.63–73)
 
 - A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
 - Search and monthly archive titles are now descriptive (`검색 | JUST TECH`, `2026년 11월 아카이브 | JUST TECH`) after v1.2.72.
+- v1.2.73 SEO meta verified locally: search/archive `og:title` descriptive; About `robots=index, follow`; resume/contact `robots=noindex, follow`; vlog post `og:image=https://i.ytimg.com/vi/opVMctYiY6s/hqdefault.jpg`.
+- `/p/resume.html`, `/p/contact-us.html`, `/p/about.html` all have page-specific descriptions and a poster OG image fallback after v1.2.73.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
 - The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.
@@ -220,6 +226,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
+- **Pending:** `23-yt-posts.js@v1` purge for v1.2.73 is throttled until roughly 16:08Z. A wakeup is scheduled; after it succeeds, confirm `x-jsd-version=1.2.73` and the SEO meta changes live, then remove this item.
 - Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
