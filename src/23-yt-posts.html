@@ -1115,18 +1115,25 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
         box.appendChild(img);
         if(img.complete&&img.naturalWidth)loaded();
         if(ytId){
+          /* 0.8초 이상 머문 경우에만 미리보기 자동재생 (스쳐 지나가는 호버는 무시) */
+          var hoverTimer=null;
           a.addEventListener('mouseenter',function(){
-            if(a.classList.contains('is-yt-hover'))return;
-            a.classList.add('is-yt-hover');
-            var frame=document.createElement('iframe');
-            frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1';
-            frame.title=title+' 무음 미리보기';
-            frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture');
-            frame.setAttribute('allowfullscreen','');
-            frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-            box.appendChild(frame);
+            if(a.classList.contains('is-yt-hover')||hoverTimer)return;
+            hoverTimer=setTimeout(function(){
+              hoverTimer=null;
+              if(a.classList.contains('is-yt-hover'))return;
+              a.classList.add('is-yt-hover');
+              var frame=document.createElement('iframe');
+              frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1';
+              frame.title=title+' 무음 미리보기';
+              frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture');
+              frame.setAttribute('allowfullscreen','');
+              frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+              box.appendChild(frame);
+            },800);
           });
           a.addEventListener('mouseleave',function(){
+            if(hoverTimer){clearTimeout(hoverTimer);hoverTimer=null;}
             a.classList.remove('is-yt-hover');
             var frames=box.querySelectorAll('iframe');
             for(var fi=0;fi<frames.length;fi++)frames[fi].remove();
