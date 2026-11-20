@@ -1,10 +1,10 @@
-/* Reddit-style Blogger home landing — v1.2.74 */
+/* Reddit-style Blogger home landing — v1.2.75 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   if(location.pathname!=='/p/home.html')return;
   document.documentElement.classList.add('jt-home-page');
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
-  var HOME_FEED_KEY='jt-home-feed-v1',HOME_FEED_TTL=21600000;
+  var HOME_FEED_KEY='jt-home-feed-v2',HOME_FEED_TTL=300000;
   function readHomeCache(allowStale){
     try{
       var raw=localStorage.getItem(HOME_FEED_KEY);
