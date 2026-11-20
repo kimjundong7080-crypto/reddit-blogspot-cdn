@@ -1378,6 +1378,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
       var frame=document.createElement('iframe');
+      frame.className='jt-yt-frame';
       frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
       frame.title='YouTube video';
       frame.setAttribute('frameborder','0');

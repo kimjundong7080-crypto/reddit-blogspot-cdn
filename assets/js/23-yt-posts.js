@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.68 */
+/* Reddit-style Blogger YouTube post list — v1.2.69 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -690,6 +690,7 @@
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
       var frame=document.createElement('iframe');
+      frame.className='jt-yt-frame';
       frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
       frame.title='YouTube video';
       frame.setAttribute('frameborder','0');
