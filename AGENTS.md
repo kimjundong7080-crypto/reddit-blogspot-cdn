@@ -1,27 +1,32 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.69**
-Current local package version: **1.2.69**
+Latest published release: **v1.2.71**
+Current local package version: **1.2.71**
 
-This document is the handoff for the next AI or engineer. Release v1.2.69 is published; its changed assets were purged for both the version tag and `@v1`.
+This document is the handoff for the next AI or engineer. Release v1.2.71 is published; its changed assets were purged for both the version tag and `@v1`.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `623d9b2 Release v1.2.69`.
-- Latest GitHub release/tag: `v1.2.69`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.69 is published.** Content:
-  - All v1.2.67/v1.2.68 fixes (see below).
-  - `src/11-infinite.html` + `src/23-yt-posts.html`: infinite-scroll clones hid every iframe with `display:none !important`, including the YouTube player created on play. The player iframe now gets `class="jt-yt-frame"` and the clone hide rule excludes it, so click-to-play videos actually become visible.
-- **CDN purge status:** `11-infinite.css` and `23-yt-posts.js` were purged for both `@1.2.69` and `@v1`; `x-jsd-version` confirmed as `1.2.69`.
+- Branch: `main`; latest release commit: `853d5e5 Release v1.2.71`.
+- Latest GitHub release/tag: `v1.2.71`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.71 is published.** Content:
+  - All prior fixes (see below).
+  - `pages/contact.html` (v1.2.70): real phone `010-4361-6611` as a `tel:` link, `mailto:` email link, correct phone/map-pin icons; removed the placeholder comment.
+  - `src/23-yt-posts.html`: any `/p/*.html` page (not just resume/contact) is excluded from `item-view` SEO logic, removing the About page `/feeds/posts/...?path=` 404; static pages still get the `| JUST TECH` title suffix.
+  - `src/24-home.html`: project cards without a Blogger thumbnail now use a home poster fallback, so no broken/empty images.
+  - `pages/resume.html`: resume photo `src` is the absolute jsDelivr URL, avoiding the initial `/p/resume-photo.jpg` 404 inside the `srcdoc` iframe.
+- **CDN purge status:** `23-yt-posts.js`, `24-home.js`, `pages/resume.html`, and `pages/contact.html` were purged for both the release tag and `@v1`; `x-jsd-version` confirmed as `1.2.71`.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
   - Home landing: `.jt-landing` keeps `__jtReveal`, project card titles contain no raw shortcode, `#jt-projects` / `#jt-about` / `.jt-cta` reach `opacity:1` and `.is-in`, 0 console errors, no Turnstile/challenge requests.
   - YouTube post: embed autoplays muted in the post view (iframe visible at ~620×349); infinite scroll appended posts with no active iframes inside clones; **0 Edge API requests** and 0 console errors.
   - Clone click-to-play: on `/2026/11/_1.html`, clicking the play button in a cloned vlog post produces a visible `iframe.jt-yt-frame` (652×367) and hides the poster; 0 console errors.
-  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.69.
+  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.71. Contact shows `010-4361-6611` (`tel:01043616611`) and `ssii@naver.com` (`mailto:`); resume photo loads at 413px natural width.
+  - `/p/about.html`: title `About | JUST TECH`, no `/feeds/posts/...?path=` 404, 0 console errors.
+  - Home project cards: 0 broken images; cards without a Blogger thumbnail use `poster-N.jpg`; 0 console errors.
   - Home project data: the previously raw `[youtube ...]` title now shows the real YouTube title; no raw shortcode remains.
   - Blogger feed `/feeds/posts/default?alt=json&max-results=500` returns 200 in under a second.
   - Edge API remains **404**; treat it as unavailable.
@@ -160,12 +165,18 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `23-yt-posts` SEO: static pages are excluded from `item-view` logic, removing the `/feeds/posts/default?path=...` 404 console error.
 - `v1.2.69`:
   - **Clone video “stuck” fixed.** `11-infinite` hid all clone iframes with `!important`; the clicked YouTube player was inserted but invisible. The player iframe now carries `.jt-yt-frame`, and the hide rule uses `iframe:not(.jt-yt-frame)`. Verified live on `/2026/11/_1.html`: iframe visible (652×367), `.ready`, poster hidden, console clean.
+- `v1.2.70`:
+  - `pages/contact.html`: replaced the `123-456-7890` placeholder with the real `010-4361-6611` (`tel:`), made the email a `mailto:` link, fixed the phone/map icons.
+- `v1.2.71`:
+  - Generalized static-page detection to every `/p/*.html` page (except home), removing the About page feed 404 while keeping `| JUST TECH` in the title.
+  - Home project cards without a feed thumbnail now fall back to `assets/img/home/poster-N.jpg` (no broken images).
+  - Resume photo uses an absolute jsDelivr `src`, removing the initial `/p/resume-photo.jpg` 404 inside `srcdoc`.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–69)
+### Verification notes (2026-11-20, v1.2.63–71)
 
 - A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
-- `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors when `23-yt-posts.js` v1.2.68 is served.
+- `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
 - The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.

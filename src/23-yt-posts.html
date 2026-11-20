@@ -1601,7 +1601,9 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
       el.textContent=JSON.stringify(data);
     }
     var isHome=location.pathname==='/p/home.html'||location.pathname==='/';
-    /* 정적 페이지(/p/resume.html, /p/contact-us.html)는 posts 피드에 없으므로
+    var isSearchPage=location.pathname==='/search';
+    var isArchivePage=/^\/\d{4}\/\d{2}\/?$/.test(location.pathname);
+    /* 정적 페이지(/p/*.html)는 posts 피드에 없으므로
        item-view 로 취급하지 않는다. (불필요한 feeds/posts 404 방지) */
     var isStaticPage=!!(document.documentElement&&document.documentElement.classList.contains('jt-static-page'))
       ||(/^\/p\/[^/]+\.html$/.test(location.pathname)&&location.pathname!=='/p/home.html');
@@ -1610,12 +1612,15 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
     var headline=rawTitle.replace(/\s*\|\s*JUST TECH$/,'')||SITE;
     if(isHome){
       document.title=HOME_TITLE;
+    }else if(isSearchPage){
+      document.title='검색 | '+SITE;
+    }else if(isArchivePage){
+      var am=location.pathname.match(/(\d{4})\/(\d{2})/);
+      document.title=(am?am[1]+'년 '+parseInt(am[2],10)+'월 아카이브':'아카이브')+' | '+SITE;
     }else if((isItem||isStaticPage)&&rawTitle&&rawTitle.indexOf(SITE)<0){
       document.title=rawTitle+' | '+SITE;
     }
     if(!head().querySelector('meta[name="robots"]')){
-      var isSearchPage=location.pathname==='/search';
-      var isArchivePage=/^\/\d{4}\/\d{2}\/?$/.test(location.pathname);
       if(isSearchPage||isArchivePage)fillMeta('name','robots','noindex, follow');
     }
     if(!head().querySelector('meta[name="robots"]')&&(isItem||isHome)){
