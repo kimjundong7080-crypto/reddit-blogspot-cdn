@@ -1,27 +1,27 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.66**
-Current local package version: **1.2.66**
+Latest published release: **v1.2.67**
+Current local package version: **1.2.67**
 
-This document is the handoff for the next AI or engineer. The working tree is clean and everything described below is published and purged.
+This document is the handoff for the next AI or engineer. Release v1.2.67 is published; one jsDelivr purge (`23-yt-posts.js@v1`) is still pending retry after throttling.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest published commit: `bd25373 Release v1.2.66`.
-- Latest GitHub release/tag: `v1.2.66`. The release script updates and pushes both `main` and a new version tag.
-- **Unpublished local changes are pending user review** (not committed/released):
+- Branch: `main`; latest release commit: `dfd3d42 Release v1.2.67`.
+- Latest GitHub release/tag: `v1.2.67`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.67 is published.** Content:
   - `src/11-infinite.html`: Blogger feed/post is called directly first; Edge API is only a fallback (removes the per-post `api/blogger-feed ... 404` request). Unused Turnstile CSS removed, so Turnstile stays temporarily disabled.
-  - `src/23-yt-posts.html`: YouTube shortcode parsing now skips any `.post-body` that contains `.jt-landing` (home landing).
-  - `src/24-home.html`: Home project-card titles strip raw `[youtube ...]` text; landing reveal re-attaches if the landing DOM is ever rebuilt.
-  - Rebuilt assets are up to date at `1.2.66`; local build checks pass. Publish as a higher version only after approval.
-- Otherwise no unpublished local changes. If `git status` shows anything else, someone is mid-task; review before publishing.
-- Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `git diff --check`.
-- Live checks on 2026-11-20:
-  - Home landing and the shared YouTube post returned HTTP 200.
+  - `src/23-yt-posts.html`: YouTube shortcode parsing skips any `.post-body` that contains `.jt-landing` (home landing).
+  - `src/24-home.html`: Home project-card titles strip raw `[youtube ...]` text; landing reveal re-attaches if the landing DOM is rebuilt.
+- **CDN purge status:** `11-infinite.js/css`, `24-home.js`, and `23-yt-posts.js@1.2.67` purged successfully. The `23-yt-posts.js@v1` purge was throttled; retry `https://purge.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/js/23-yt-posts.js` after the throttle window. Fresh visitors already get the fixed home behavior from `24-home.js` alone.
+- Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
+- Live checks on 2026-11-20 (fresh isolated browser context):
+  - Home landing: `.jt-landing` keeps `__jtReveal`, project card titles contain no raw shortcode, `#jt-projects` / `#jt-about` / `.jt-cta` reach `opacity:1` and `.is-in`, 0 console errors, no Turnstile/challenge requests.
+  - YouTube post: embed autoplays muted in the post view; infinite scroll appended 4 posts with no iframes inside clones; **0 Edge API requests** and 0 console errors.
   - Blogger feed `/feeds/posts/default?alt=json&max-results=500` returns 200 in under a second.
-  - Edge API `https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=500` returns **404** (and `max=6` also 404). `api/blogger-post` returned 400. Treat the Edge API as unavailable; the code falls back to Blogger directly. The pending local change in `11-infinite.html` now tries Blogger first so the 404 is no longer requested on every post view.
+  - Edge API remains **404**; treat it as unavailable.
 
 ### Recently completed performance/UX work (published)
 
@@ -149,17 +149,18 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - `v1.2.64`: YouTube shortcode parsing made tag-tolerant (handles shortcodes wrapped in `<span>`/headings).
 - `v1.2.65`: Embeds inside clamped headings are moved out so they are not clipped.
 - `v1.2.66`: Fixed thumbnail letterboxing and play-button stacking against `22-post-image`'s `!important` body-image rules; poster now fills 16:9 with a clickable play button on listing/clone embeds.
-- Pending local (unreleased):
-  - Infinite scroll queries Blogger directly first and uses Edge only as a fallback; unused Turnstile CSS removed (Turnstile temporarily disabled, no gate in code). Verified with the local asset served in place: 0 console errors, 5 posts appended, no autoplay inside clones.
-  - **Home mid-page stall fixed.** Root cause: a project card title contained the raw `[youtube link="..."]` text from post data; `23-yt-posts` treated it as a shortcode and rewrote the whole home `.post-body` via `innerHTML`, recreating `.jt-landing` and detaching the reveal `IntersectionObserver`. `#jt-projects`, `#jt-about`, and `.jt-cta` stayed at `opacity:0`, so the page appeared frozen from the middle. Fix: skip `.post-body` containing `.jt-landing` in shortcode parsing, strip `[youtube ...]` from home project titles, and re-bind reveal if the landing is rebuilt. Verified in a browser with local assets: same landing node kept, project/about sections reach `opacity:1`/`.is-in`, no raw shortcode, 0 console errors.
+- `v1.2.67`:
+  - Infinite scroll queries Blogger directly first and uses Edge only as a fallback; unused Turnstile CSS removed (Turnstile temporarily disabled, no gate in code). Verified: 0 Edge requests, 4 posts appended, no autoplay inside clones.
+  - **Home mid-page stall fixed.** Root cause: a project card title contained the raw `[youtube link="..."]` text from post data; `23-yt-posts` treated it as a shortcode and rewrote the whole home `.post-body` via `innerHTML`, recreating `.jt-landing` and detaching the reveal `IntersectionObserver`. `#jt-projects`, `#jt-about`, and `.jt-cta` stayed at `opacity:0`, so the page appeared frozen from the middle. Fix: skip `.post-body` containing `.jt-landing` in shortcode parsing, strip `[youtube ...]` from home project titles, and re-bind reveal if the landing is rebuilt. Verified in a fresh browser context: same landing node kept, project/about/CTA sections reach `opacity:1`/`.is-in`, no raw shortcode, 0 console errors.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–66)
+### Verification notes (2026-11-20, v1.2.63–67)
 
-- A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with only one Edge 404 (now short-circuited).
+- A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; clicking starts the iframe.
 - The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.
-- Known data issue (not a widget bug): some Blogger post titles/labels literally contain `[youtube link="..."]`. Those need manual editing in Blogger; the widget cannot rewrite post titles.
+- Known data issue (not a widget bug): some Blogger post titles/labels literally contain `[youtube link="..."]`. Home landing cards now strip this text, but the Blogger post titles themselves still need manual editing.
+- Visitors with a browser cache of older `@v1` files may keep the old home behavior for up to seven days; a hard refresh clears it.
 
 ## 7. Build, validation, release, and cache procedures
 
@@ -199,8 +200,8 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 ## 8. Known open items
 
 - Turnstile/challenge behavior was still observed after the `v1.2.60` code removal; the source was never conclusively identified (possible cache or a separate challenge path). Do not re-enable the gate without a user request.
-- The user's original “site loading stops midway” symptom was addressed by removing duplicate autoplay players and repeated Edge API failures, but it has not been formally re-confirmed as fully resolved by the user.
+- The home “loading stops midway” symptom is resolved in v1.2.67: the reveal observer stays attached and the middle/CTA sections become visible. Fresh browser contexts verified; cached visitors may need a hard refresh.
 - Resume print layout verified on 2026-11-20 with a real A4 PDF render: **3 pages**, no clipped forced breaks beyond `.career-section` / `.self-intro-section`. Printable output uses the real resume data; re-check if content length changes.
-- `/p/resume.html` and `/p/contact-us.html` currently return **HTTP 404** because the Blogger Pages themselves are missing (only About/Home remain in `/feeds/pages`). The theme still renders both via the jsDelivr `srcdoc` fallback, and values/contact content look correct, but the 404 status is bad for SEO. Restore/republish the Blogger Pages from Trash (or create them again) when admin access is available.
+- `/p/resume.html` and `/p/contact-us.html` currently return **HTTP 404** because the Blogger Pages themselves are missing (only About/Home remain in `/feeds/pages`). The theme still renders both via the jsDelivr `srcdoc` fallback, and values/contact content look correct, but the 404 status is bad for SEO. Restore/republish the Blogger Pages from Trash (or create them again) when admin access is available. No Blogger API credentials exist in this workspace, so this needs the Blogger admin UI or explicit approval to use the external API tool folder.
 - Clean up Blogger post titles/labels that contain raw `[youtube link="..."]` text (author data, requires Blogger admin access).
 - Blogger admin-only work remains with the user: search description, custom robots.txt, page titles, Search Console address change for `madomiad.blogspot.com`.
