@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-20 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.78**
+Latest published release: **v1.2.79**
 
-This is the consolidated English record for the work cycle that ended with v1.2.78.
+This is the consolidated English record for the work cycle that ended with v1.2.79.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -30,6 +30,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.76 | `439d500` | **Definitive YouTube fix**: single-post autoplay removed; every embed is poster + play button, iframe created only on click, then loops. |
 | v1.2.77 | `9aa5b31` | Branded 404 page (recent posts, Home/Search buttons, noindex); infinite scroll skipped on `.status-msg-body` pages. |
 | v1.2.78 | `d7c76ae` | **Home mid-page freeze hardened.** Landing subtree is cloned after hero typing, which detached the reveal `IntersectionObserver` and left `#jt-about`/`.jt-cta` at `opacity:0`. Added a document-level reveal ticker (rAF + 15×800 ms re-check), idempotent re-init of carousel/typing/ceremony, and clone-safe "already typed" guards. |
+| v1.2.79 | `7a80b54` | **`/search` result cards are now responsive**: 4 columns on desktop → 3 at ≤1100px → 2 at ≤900px → 1 at ≤640px. Cards switched to a vertical layout (16:9 thumbnail on top, title/meta below). |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
@@ -60,7 +61,7 @@ Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
 ## 5. Deployment and cache state
 
-- `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **v1.2.77** at both `@v1.2.77` and `@v1`. `24-home.js` is **v1.2.78** at `@v1`.
+- `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **v1.2.77** at `@v1.2.77`; `23-yt-posts.css` is now **v1.2.79** (search grid). `24-home.js` is **v1.2.78** at `@v1`.
 - All required jsDelivr purges completed. **No pending purge or scheduled wakeup remains.**
 - Working tree is clean.
 - Home feed now uses a 5-minute cache (`jt-home-feed-v2`); old browsers may need a hard refresh to receive v1.2.76/77 scripts, and `@v1` assets can remain cached for up to seven days.
