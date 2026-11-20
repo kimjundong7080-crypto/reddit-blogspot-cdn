@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.82 */
+/* Reddit-style Blogger YouTube post list — v1.2.83 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -717,8 +717,9 @@
       var thumb=document.createElement('img');
       thumb.className='jt-yt-thumb';
       var thumbSources=[
-        'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg',
-        'https://i.ytimg.com/vi/'+id+'/sddefault.jpg'
+        'https://i.ytimg.com/vi/'+id+'/maxresdefault.jpg',
+        'https://i.ytimg.com/vi/'+id+'/sddefault.jpg',
+        'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg'
       ];
       var thumbSourceIndex=0;
       thumb.src=thumbSources[thumbSourceIndex];
@@ -726,6 +727,13 @@
       thumb.loading='lazy';
       thumb.decoding='async';
       thumb.referrerPolicy='no-referrer';
+      /* maxres가 없는 영상은 120×90 회색 이미지가 200으로 오므로 크기로 판별해 다음 해상도로 넘어간다. */
+      thumb.onload=function(){
+        if(thumbSourceIndex<thumbSources.length-1&&thumb.naturalWidth<=120){
+          thumbSourceIndex++;
+          thumb.src=thumbSources[thumbSourceIndex];
+        }
+      };
       thumb.onerror=function(){
         thumbSourceIndex++;
         if(thumbSourceIndex<thumbSources.length)thumb.src=thumbSources[thumbSourceIndex];
