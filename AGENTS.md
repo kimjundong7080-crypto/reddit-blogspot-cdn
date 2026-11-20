@@ -1,23 +1,20 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.71**
-Current local package version: **1.2.71**
+Latest published release: **v1.2.72**
+Current local package version: **1.2.72**
 
-This document is the handoff for the next AI or engineer. Release v1.2.71 is published; its changed assets were purged for both the version tag and `@v1`.
+This document is the handoff for the next AI or engineer. Release v1.2.72 is published; its changed assets were purged for both the version tag and `@v1`.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `853d5e5 Release v1.2.71`.
-- Latest GitHub release/tag: `v1.2.71`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.71 is published.** Content:
+- Branch: `main`; latest release commit: `53b0dee Release v1.2.72`.
+- Latest GitHub release/tag: `v1.2.72`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.72 is published.** Content:
   - All prior fixes (see below).
-  - `pages/contact.html` (v1.2.70): real phone `010-4361-6611` as a `tel:` link, `mailto:` email link, correct phone/map-pin icons; removed the placeholder comment.
-  - `src/23-yt-posts.html`: any `/p/*.html` page (not just resume/contact) is excluded from `item-view` SEO logic, removing the About page `/feeds/posts/...?path=` 404; static pages still get the `| JUST TECH` title suffix.
-  - `src/24-home.html`: project cards without a Blogger thumbnail now use a home poster fallback, so no broken/empty images.
-  - `pages/resume.html`: resume photo `src` is the absolute jsDelivr URL, avoiding the initial `/p/resume-photo.jpg` 404 inside the `srcdoc` iframe.
-- **CDN purge status:** `23-yt-posts.js`, `24-home.js`, `pages/resume.html`, and `pages/contact.html` were purged for both the release tag and `@v1`; `x-jsd-version` confirmed as `1.2.71`.
+  - `src/23-yt-posts.html`: `/search` now titles as `검색 | JUST TECH` and monthly archives as `YYYY년 M월 아카이브 | JUST TECH` (previously both kept the Blogger blog name, e.g. `madomi`).
+- **CDN purge status:** `23-yt-posts.js` was purged for both `@1.2.72` and `@v1`; `x-jsd-version` confirmed as `1.2.72`.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -171,12 +168,15 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Generalized static-page detection to every `/p/*.html` page (except home), removing the About page feed 404 while keeping `| JUST TECH` in the title.
   - Home project cards without a feed thumbnail now fall back to `assets/img/home/poster-N.jpg` (no broken images).
   - Resume photo uses an absolute jsDelivr `src`, removing the initial `/p/resume-photo.jpg` 404 inside `srcdoc`.
+- `v1.2.72`:
+  - Search/archive titles now use `검색 | JUST TECH` and `YYYY년 M월 아카이브 | JUST TECH` instead of the Blogger blog name. Verified live: search title `검색 | JUST TECH`, archive title `2026년 11월 아카이브 | JUST TECH`, 0 console errors.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–71)
+### Verification notes (2026-11-20, v1.2.63–72)
 
 - A YouTube post loaded, autoplayed muted in the post view, and infinite scroll appended further posts with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
+- Search and monthly archive titles are now descriptive (`검색 | JUST TECH`, `2026년 11월 아카이브 | JUST TECH`) after v1.2.72.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
 - The `vlog` post's embed is no longer clipped and no raw `[youtube ...]` text remains in its body.
