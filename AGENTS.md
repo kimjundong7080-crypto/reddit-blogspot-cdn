@@ -1,16 +1,18 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-20
-Latest published release: **v1.2.80**
-Current local package version: **1.2.80**
+Latest published release: **v1.2.81**
+Current local package version: **1.2.81**
 
-This document is the handoff for the next AI or engineer. Release v1.2.80 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.81 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `6002f4b Release v1.2.80`.
-- Latest GitHub release/tag: `v1.2.80`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `6483107 Release v1.2.81`.
+- Latest GitHub release/tag: `v1.2.81`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.81 is published.** Content:
+  - **Recommended-posts list (`#ytPosts`) scaled ~1.3×**: `.yt-item` 78→101px, thumbnail 122→159px, title 12.5→16px, meta 11→14px, gap/padding/radius adjusted. The JS measures item height, so the scroll step automatically becomes 103px. Verified live: 101px items, 159px thumbs, 16px titles; wheel advance still animates. Note: the list advances on wheel input only — there is no auto-timer.
 - **v1.2.80 is published.** Content:
   - **Floating quick nav (`#jtQuickNav`) moved from bottom-center to the right edge, vertically centered**, so it no longer covers the `/search` page numbers. Buttons are 44px (icons 22px, 42px on ≤600px), the pill background is 50% transparent in both themes, and the border plus layered shadow were strengthened. Verified: nav rect never intersects the pager; right margin 14px, exact vertical center.
 - **v1.2.79 is published.** Content:
@@ -205,6 +207,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `#jtQuickNav` moved from bottom-center to `right:14px; top:50%; transform:translateY(-50%)` with a vertical layout, so it cannot cover the centered `/search` pager.
   - Buttons 36→44px (`svg` 22px; 42px/21px at ≤600px). Background alpha 0.5 in both themes; border `rgba(255,255,255,.6)` light / `.35` dark; layered shadow with an inset highlight.
   - Verified live on `/search` at 640px viewport: nav 57×107 rect, exact vertical center, 0 intersections with the pager at 50px scroll steps.
+- `v1.2.81`:
+  - `#ytPosts` list items scaled ~1.3×: `.yt-item` height/flex 78→101px, `.yt-thumb` 122→159px, title 12.5→16px, meta 11→14px, gap 9→12px, padding 6px 8px, radius 10px.
+  - `measure()` in `23-yt-posts` derives the scroll step from the first item's height, so no JS change was needed (step becomes 103px with the 2px gap).
+  - Live check on `/2026/11/blog-post.html` (after `cache:'reload'`): all 20 items 101px, thumb 159px, title 16px, meta 14px; wheel advance translates `-103px` with the 0.55s easing.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)
