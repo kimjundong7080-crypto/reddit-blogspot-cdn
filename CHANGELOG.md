@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.88**
+Latest published release: **v1.2.90**
 
-This is the consolidated English record for the work cycle that ended with v1.2.88.
+This is the consolidated English record for the work cycle that ended with v1.2.90.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -40,6 +40,8 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.86 | `0402ee7` | **`/search` top space**: `#jtSearchApp` padding-top 4→32px so the label chips no longer sit flush against the content above. Verified: padding-top 32px, ~31px gap, no overflow. |
 | v1.2.87 | `0588aef` | **`/search` mobile top space**: the `≤640px` override for `#jtSearchApp` padding-top 4→24px. Verified: `@v1` serves 1.2.87 with the mobile rule present. |
 | v1.2.88 | `6df1995` | **`/search` card titles on one line**: `.jt-sp-title` now uses `white-space:nowrap; overflow:hidden; text-overflow:ellipsis`. Verified: 20/20 titles 21px tall, 6 ellipsized, uniform 180×171px cards, no horizontal overflow. |
+| v1.2.89 | `28fb549` | **Quick nav + theme button docked beside the recommended posts**: `dockQuickControls()` positions both fixed elements 10px right of `#ytPosts`. Bug: used `window.innerWidth`, so both overlapped the list by 6px. |
+| v1.2.90 | `3a07a44` | **Docking offset fixed**: measurement now uses `document.documentElement.clientWidth` (scrollbar excluded). Verified: +9px gap to `#ytPosts`, 0.3px alignment between the two controls, no overlap, stable after scrolling. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
