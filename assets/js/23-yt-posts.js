@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.93 */
+/* Reddit-style Blogger YouTube post list — v1.2.94 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -49,6 +49,7 @@
     if(document.getElementById('jtQuickNav'))return;
     var nav=document.createElement('nav');
     nav.id='jtQuickNav';
+    nav.setAttribute('class','');
     nav.setAttribute('aria-label','빠른 이동');
     var home=document.createElement('a');
     home.className='jt-qn-btn';
@@ -1155,6 +1156,61 @@
           staticHost().innerHTML='<p style="padding:32px;text-align:center">'+page.label+' 페이지를 불러오지 못했습니다. <a href="'+FILE_URL+'">원본 열기</a></p>';
         });
     });
+  })();
+
+  /* contact iframe auto-fit runaway guard:
+     inner body min-height:100vh + 100vh-tracking height + resize->fit feedback
+     made the frame grow forever ("page keeps scrolling down"). Neutralize the
+     viewport-based min-height, top-align content, and set a stable height. */
+  (function(){
+    if(location.pathname.indexOf('/p/contact')!==0)return;
+    var host=document.getElementById('jtStaticHost');
+    if(!host)return;
+    function applyStyle(doc){
+      if(!doc)return false;
+      var s=doc.getElementById('jtContactFit');
+      if(!s){
+        var head=doc.head||doc.documentElement;
+        if(!head)return false;
+        s=doc.createElement('style');
+        s.id='jtContactFit';
+        s.textContent='html,body{height:auto !important;min-height:0 !important}body{align-items:flex-start !important;padding:24px !important;box-sizing:border-box}';
+        head.appendChild(s);
+        return true;
+      }
+      return false;
+    }
+    function fit(frame){
+      try{
+        var doc=frame.contentDocument;
+        if(!doc||!doc.documentElement)return;
+        applyStyle(doc);
+        var body=doc.body;
+        var h=body?Math.max(body.scrollHeight,body.getBoundingClientRect().height):0;
+        if(!h||h<200)h=doc.documentElement.scrollHeight;
+        if(h>200){
+          var next=Math.ceil(h+8);
+          if(Math.abs((parseFloat(frame.style.height)||0)-next)>1)frame.style.height=next+'px';
+        }
+      }catch(e){}
+    }
+    function bind(frame){
+      if(!frame||frame.__jtContactFit)return;
+      frame.__jtContactFit=1;
+      var run=function(){fit(frame);};
+      frame.addEventListener('load',function(){
+        run();
+        [100,350,800,1500,3000].forEach(function(d){setTimeout(run,d);});
+      });
+      [120,400,900].forEach(function(d){setTimeout(run,d);});
+    }
+    function scan(){
+      var frames=host.querySelectorAll('iframe');
+      for(var i=0;i<frames.length;i++)bind(frames[i]);
+    }
+    scan();
+    if(window.MutationObserver)new MutationObserver(scan).observe(host,{childList:true,subtree:true});
+    var n=0,iv=setInterval(function(){scan();if(++n>=12)clearInterval(iv);},500);
   })();
 })();
 
