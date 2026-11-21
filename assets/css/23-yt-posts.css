@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.85 */
+/* Reddit-style Blogger YouTube post list — v1.2.86 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -622,7 +622,7 @@ html.jt-search-app #blog-pager{display:none !important}
 #jtSearchApp{
   max-width:920px;
   margin:0 auto;
-  padding:4px 16px 48px;
+  padding:32px 16px 48px;
   font-family:inherit;
   color:inherit;
 }
