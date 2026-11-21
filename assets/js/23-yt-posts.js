@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.89 */
+/* Reddit-style Blogger YouTube post list — v1.2.90 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -80,7 +80,8 @@
     var toggle=document.getElementById('jtThemeToggle');
     if(!nav)return;
     var ref=document.getElementById('ytPosts')||document.querySelector('.sidebar-container');
-    var vw=window.innerWidth||document.documentElement.clientWidth;
+    /* fixed 요소의 right는 스크롤바를 제외한 폭 기준이므로 clientWidth를 쓴다 */
+    var vw=document.documentElement.clientWidth||window.innerWidth;
     function reset(){nav.style.right='';if(toggle)toggle.style.right='';}
     if(!ref||vw<1240){reset();return;}
     var r=ref.getBoundingClientRect();
