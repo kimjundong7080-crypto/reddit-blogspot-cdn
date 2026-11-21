@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.88 */
+/* Reddit-style Blogger YouTube post list — v1.2.89 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -73,6 +73,33 @@
     document.body.appendChild(nav);
     window.addEventListener('scroll',sync,{passive:true});
     sync();
+  }
+  /* 퀵내비·테마 버튼을 추천·인기글 오른쪽에 붙인다 (좁은 화면은 기존 우측 고정 유지) */
+  function dockQuickControls(){
+    var nav=document.getElementById('jtQuickNav');
+    var toggle=document.getElementById('jtThemeToggle');
+    if(!nav)return;
+    var ref=document.getElementById('ytPosts')||document.querySelector('.sidebar-container');
+    var vw=window.innerWidth||document.documentElement.clientWidth;
+    function reset(){nav.style.right='';if(toggle)toggle.style.right='';}
+    if(!ref||vw<1240){reset();return;}
+    var r=ref.getBoundingClientRect();
+    if(!r.width){reset();return;}
+    var left=r.right+10;
+    var navGap=vw-left-(nav.offsetWidth||56);
+    if(navGap>=8)nav.style.right=Math.round(navGap)+'px';else nav.style.right='';
+    if(toggle){
+      var tGap=vw-left-(toggle.offsetWidth||42);
+      if(tGap>=8)toggle.style.right=Math.round(tGap)+'px';else toggle.style.right='';
+    }
+  }
+  function bindDockControls(){
+    if(window.__jtDockBound)return;
+    window.__jtDockBound=1;
+    window.addEventListener('resize',dockQuickControls);
+    window.addEventListener('load',dockQuickControls);
+    var n=0;
+    var iv=setInterval(function(){dockQuickControls();if(++n>=10)clearInterval(iv);},500);
   }
   function lazyPostImages(scope){
     var imgs=(scope||document).querySelectorAll('.post-body img');
@@ -334,6 +361,8 @@
   ready(function(){
     initTheme();
     initQuickNav();
+    dockQuickControls();
+    bindDockControls();
     initSearchApp();
     if(location.pathname==='/p/home.html')return;
     setTimeout(watchPostImages,800);
