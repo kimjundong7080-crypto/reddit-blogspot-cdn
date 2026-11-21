@@ -1,17 +1,22 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.96**
-Current local package version: **1.2.96**
+Latest published release: **v1.2.100**
+Current local package version: **1.2.100**
 
-This document is the handoff for the next AI or engineer. Release v1.2.96 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.100 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `db13aec Release v1.2.96`.
-- Latest GitHub release/tag: `v1.2.96`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `fc5746a Release v1.2.100`.
+- Latest GitHub release/tag: `v1.2.100`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.100 is published.** Content (domain-specific; techlifeworld.com behavior unchanged):
+  - `shutupquick.com` and `deepstronglove.com` no longer use the `/p/home.html` landing. The home screen and the Home button resolve through `/`, fetch the newest post (`/feeds/posts/default?alt=json&max-results=1`), and `location.replace` to it. If the feed is empty (e.g. shutupquick), the blog listing stays.
+  - `/p/home.html` on those two hosts redirects to the newest post (or `/` when empty). `24-home` skips rendering the landing on both hosts.
+  - The left-menu fallback and PageList filter now hide `/p/home.html`, `/p/about.html`, `/p/contact-us.html` (and `/p/contact.html`) on those two hosts only. `techlifeworld.com` keeps Home/About/Contact and the landing.
+  - Verified live: deepstronglove `/` → `/2026/11/fdsfds.html`; its rail shows only Home + All posts; shutupquick `/` stays (0 posts) with the same two links; techlifeworld `/` still → `/p/home.html` with landing and all four links.
 - **v1.2.96 is published.** Content:
   - **Contact page trimmed**: the "김준동" name tag, the consultation-hours card (평일 09:00–18:00), and the address (대구광역시 달서구) were removed.
   - **Phone/email anti-crawl + click-to-reveal**: no plaintext phone/email/mailto/tel remains in `pages/contact.html`. Each contact is a blurred placeholder (`filter:blur(4px)`) whose value is XOR+base64 encoded in JS and decoded only on a human click; the first click reveals the text, the next opens `tel:`/`mailto:`. The "상담 문의하기" button also builds its mailto from the encoded value.

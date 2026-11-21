@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.100 */
+/* Reddit-style Blogger YouTube post list — v1.2.101 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -395,11 +395,54 @@
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
   }
+  function initExpanders(){
+    if(!JT_NO_LANDING)return;
+    if(!document.body.classList.contains('item-view'))return;
+    var LIMIT=900;
+    function apply(b){
+      if(b.__jtExpand)return;
+      if(b.querySelector('.jt-landing'))return;
+      if(b.getBoundingClientRect().height<LIMIT)return;
+      b.__jtExpand=1;
+      b.classList.add('jt-expandable');
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='jt-expand-btn';
+      btn.textContent='더보기';
+      btn.setAttribute('aria-expanded','false');
+      btn.addEventListener('click',function(){
+        var open=b.classList.toggle('is-open');
+        btn.textContent=open?'접기':'더보기';
+        btn.setAttribute('aria-expanded',open?'true':'false');
+        if(!open){
+          var top=b.getBoundingClientRect().top+window.pageYOffset-16;
+          window.scrollTo({top:top,behavior:'smooth'});
+        }
+      });
+      if(b.parentNode)b.parentNode.insertBefore(btn,b.nextSibling);
+    }
+    function scan(){
+      var bodies=document.querySelectorAll('.post-body.entry-content');
+      for(var i=0;i<bodies.length;i++)apply(bodies[i]);
+    }
+    scan();
+    setTimeout(scan,600);
+    setTimeout(scan,1600);
+    window.addEventListener('load',scan);
+    if(window.MutationObserver){
+      var timer=0;
+      new MutationObserver(function(){
+        if(timer)return;
+        timer=setTimeout(function(){timer=0;scan();},250);
+      }).observe(document.body,{childList:true,subtree:true});
+    }
+  }
   ready(function(){
     initTheme();
     initQuickNav();
     dockQuickControls();
     bindDockControls();
+    initExpanders();
     initSearchApp();
     if(location.pathname==='/p/home.html')return;
     setTimeout(watchPostImages,800);

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.100 */
+/* Reddit-style Blogger YouTube post list — v1.2.101 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -756,3 +756,12 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
   #jtSearchApp .jt-sp-snip{font-size:13.5px}
   #jtSearchApp .jt-sp-pg{min-width:34px;height:34px;font-size:13px}
 }
+/* 긴 글 접기/더보기 (shutupquick.com / deepstronglove.com 전용, JS가 클래스 부여) */
+.post-body.jt-expandable{position:relative;max-height:900px;overflow:hidden}
+.post-body.jt-expandable.is-open{max-height:none;overflow:visible}
+.post-body.jt-expandable:not(.is-open)::after{content:'';position:absolute;left:0;right:0;bottom:0;height:60px;pointer-events:none;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.92))}
+html[data-theme="dark"] .post-body.jt-expandable:not(.is-open)::after{background:linear-gradient(rgba(16,20,18,0),rgba(16,20,18,.92))}
+.jt-expand-btn{display:block;margin:16px auto 4px;padding:10px 28px;border:1px solid rgba(0,0,0,.16);border-radius:999px;background:#fff;color:#111;font:700 14px/1 inherit;letter-spacing:.2px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:transform .15s ease,box-shadow .15s ease}
+.jt-expand-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.16)}
+.jt-expand-btn:active{transform:translateY(0)}
+html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-color:rgba(255,255,255,.22);box-shadow:0 6px 18px rgba(0,0,0,.4)}
