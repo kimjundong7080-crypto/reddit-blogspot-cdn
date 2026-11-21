@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.105 */
+/* Reddit-style Blogger YouTube post list — v1.2.106 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -15,6 +15,16 @@
   function jtSaveLatest(href){
     if(!href)return;
     try{localStorage.setItem(JT_LATEST_KEY,JSON.stringify({href:href,t:Date.now()}));}catch(e){}
+  }
+  function jtApplyLatestLinks(href){
+    if(!JT_NO_LANDING||!href)return;
+    var q=document.querySelector('#jtQuickNav .jt-qn-btn');
+    if(q)q.href=href;
+    var as=document.querySelectorAll('.rd3-nav a');
+    for(var i=0;i<as.length;i++){
+      var a=as[i],t=(a.textContent||'').trim().toLowerCase();
+      if(a.getAttribute('href')==='/'||t==='home')a.href=href;
+    }
   }
   function jtEntryHref(e){
     var links=(e&&e.link)||[];
@@ -107,6 +117,7 @@
     };
     nav.appendChild(home);nav.appendChild(top);
     document.body.appendChild(nav);
+    jtApplyLatestLinks(jtReadLatest());
     window.addEventListener('scroll',sync,{passive:true});
     sync();
   }
@@ -658,7 +669,11 @@
           if(cb)cb();
           return;
         }
-        if(nextStart===1&&entries[0])jtSaveLatest(jtEntryHref(entries[0]));
+        if(nextStart===1&&entries[0]){
+          var latestHref=jtEntryHref(entries[0]);
+          jtSaveLatest(latestHref);
+          jtApplyLatestLinks(latestHref);
+        }
         nextStart+=entries.length;
         entries.sort(function(a,b){return entryScore(b)-entryScore(a);});
         addEntries(entries,function(added){
