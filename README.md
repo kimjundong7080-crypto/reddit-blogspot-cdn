@@ -30,28 +30,29 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 ```bash
 npm run build                  # package.json 버전으로 생성
 npm run check                  # 생성물이 최신인지 검사
-npm run release -- 1.0.5       # 빌드 + 커밋 + 태그 + push
+npm run release -- 1.2.97      # 빌드 + 커밋 + 태그 + push
 ```
 
-릴리스 태그는 `v1.0.5` 형식입니다. GitHub Actions(`.github/workflows/verify.yml`)가 push/PR마다 생성물이 소스와 일치하는지 검사합니다.
+릴리스 태그는 `v1.2.97` 형식입니다. GitHub Actions(`.github/workflows/verify.yml`)가 push/PR마다 생성물이 소스와 일치하는지 검사합니다.
 
 ## jsDelivr (version pin)
 
 ```html
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.96/assets/css/21-three-column.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.97/assets/css/21-three-column.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.96/assets/js/21-three-column.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.97/assets/js/21-three-column.js"
   defer></script>
 
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.96/assets/css/11-infinite.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.97/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.96/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.97/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.2.96`처럼 버전을 고정하세요. 21·11 모두 **v1.2.96** 기준입니다.
+> `@main` 대신 `@v1.2.97`처럼 버전을 고정하세요. 21·11 모두 **v1.2.97** 기준입니다.
+> `@v1` 별칭은 2026-11-21 실측 기준 9개 에셋 모두 **v1.2.96 본문**을 서빙합니다(버전 주석 1줄 제외). 변경이 없었던 파일은 `x-jsd-version` 헤더만 이전 릴리스 값으로 남아 있습니다(예: `24-home.js` 1.2.92, `11-infinite.css` 1.2.88).
 
 ## Blogger 설치
 

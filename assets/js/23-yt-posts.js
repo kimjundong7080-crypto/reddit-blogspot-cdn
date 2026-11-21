@@ -1,10 +1,12 @@
-/* Reddit-style Blogger YouTube post list — v1.2.96 */
+/* Reddit-style Blogger YouTube post list — v1.2.97 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
-  if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
+  /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com에서는 리다이렉트하지 않고 일반 블로그 화면을 쓴다. */
+  var JT_NO_LANDING=/(^|\.)shutupquick\.com$/i.test(location.hostname);
+  if(location.pathname==='/p/home.html'&&!JT_NO_LANDING)document.documentElement.classList.add('jt-home-page');
   if(location.pathname==='/'&&!window.__jtHomeRedirect){
     window.__jtHomeRedirect=1;
-    location.replace('/p/home.html');
+    if(!JT_NO_LANDING)location.replace('/p/home.html');
     return;
   }
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}

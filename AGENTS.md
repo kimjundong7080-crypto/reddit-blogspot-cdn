@@ -62,7 +62,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.96 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.96**, `23-yt-posts.css` **1.2.96**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`, measured 2026-11-21):** the alias serves the **v1.2.96** body of all nine assets and of `pages/contact.html` (the only line that differs from the `@v1.2.96` tag is the version comment). The `x-jsd-version` response header still reports the last release that changed each file, so it lags for unchanged assets: `23-yt-posts.js` / `23-yt-posts.css` **1.2.95**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.92**, `24-home.css` **1.2.85**, `21-three-column.css` **1.2.92**, `21-three-column.js` **1.2.85**, `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -325,10 +325,10 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than `1.2.78` and never reuse a tag:
+For a release, choose a version greater than the current latest tag (`v1.2.96`) and never reuse a tag:
 
 ```powershell
-node scripts/release.mjs 1.2.79
+node scripts/release.mjs 1.2.97
 ```
 
 `release.mjs` rebuilds assets, updates version references, commits the release, creates an annotated tag, and pushes `main` plus the tag. Review its staged file set and resulting release before running it. Commit messages include:
@@ -350,7 +350,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.96**, `23-yt-posts.css` **1.2.96**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
+- No purge is pending. `@v1` serves the v1.2.96 body of all nine assets (verified 2026-11-21 against the `@v1.2.96` tag); only the `x-jsd-version` header still reports the last release that changed each file (list in §1). Favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.

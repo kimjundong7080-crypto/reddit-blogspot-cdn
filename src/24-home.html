@@ -894,6 +894,8 @@ html.jt-home-page #footer{display:none!important}
 //<![CDATA[
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
+  /* 홈 랜딩은 techlifeworld.com 전용 — shutupquick.com에서는 렌더링하지 않는다. */
+  if(/(^|\.)shutupquick\.com$/i.test(location.hostname))return;
   if(location.pathname!=='/p/home.html')return;
   document.documentElement.classList.add('jt-home-page');
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
