@@ -1,16 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.85**
-Current local package version: **1.2.85**
+Latest published release: **v1.2.87**
+Current local package version: **1.2.87**
 
-This document is the handoff for the next AI or engineer. Release v1.2.85 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.87 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `50183be Release v1.2.85`.
-- Latest GitHub release/tag: `v1.2.85`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `0588aef Release v1.2.87`.
+- Latest GitHub release/tag: `v1.2.87`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.87 is published.** Content:
+  - **`/search` top spacing**: `#jtSearchApp` top padding 4→**32px** on desktop (v1.2.86) and 4→**24px** inside the ≤640px block (v1.2.87), so the label chips are separated from the content above.
+  - Verified live: `padding-top:32px`, `.jt-sp-bar` starts at y=32 with a ~31px gap above it, no horizontal overflow (scrollWidth = clientWidth).
 - **v1.2.85 is published.** Content:
   - **Wider recommended-post text column with smaller type**: the right sidebar grid column is 280→**320px** (`--rd3-right-w`, the ≥1240px grid, and the collapsed-rail grid). In `#ytPosts`, the thumbnail is 159→**124px**, gap 12→10px, item height 101→**82px** (vertically centered), title 16→**14px**, meta 14→**12px**.
   - Verified live: `.yt-item` 82px tall / 303.3px wide, `.yt-thumb` 124px (69.8px tall, 16:9), title 14px with a **153.3px** text block (was ~93px), meta 12px, grid `176px 800px 320px`, no horizontal overflow (scrollWidth = clientWidth).
@@ -31,7 +34,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.85 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status:** `23-yt-posts.css`/`23-yt-posts.js` are **1.2.85** at `@v1`; `21-three-column.css` is **1.2.85**; `24-home.js` is **1.2.78**; `11-infinite.js` is **1.2.77**. Favicon assets live. No pending purge.
+- **CDN status:** `23-yt-posts.css`/`23-yt-posts.js` are **1.2.87** at `@v1`; `21-three-column.css` is **1.2.85**; `24-home.js` is **1.2.78**; `11-infinite.js` is **1.2.77**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -239,6 +242,9 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Type reduced: `.yt-title` 16→14px (line-height 1.36), `.yt-meta` 14→12px. The clamp stays at 2 lines.
   - Verified live after a hard reload: item 82×(303.3)px, thumb 124×69.8px, title 14px with a 153.3px text block, meta 12px, grid `176px 800px 320px`, scrollWidth == clientWidth (no horizontal overflow).
   - Reminder: jsDelivr `@v1` keeps a 7-day edge cache; visitors may need Ctrl+F5 after a release. Purge both the tagged path and the `@v1` path.
+- `v1.2.86` / `v1.2.87`:
+  - `/search` gets top breathing room: `#jtSearchApp` padding-top 4→32px on desktop (v1.2.86) and the `@media (max-width:640px)` override 4→24px (v1.2.87).
+  - Verified live: computed `padding-top:32px`, `.jt-sp-bar` top at 32px with ~31px of clearance above, no horizontal overflow.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)

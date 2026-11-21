@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.85**
+Latest published release: **v1.2.87**
 
-This is the consolidated English record for the work cycle that ended with v1.2.85.
+This is the consolidated English record for the work cycle that ended with v1.2.87.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -37,6 +37,8 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.83 | `ba8073f` | **High-resolution YouTube thumbnails first**: `.jt-yt-thumb` now tries `maxresdefault.jpg` → `sddefault.jpg` → `hqdefault.jpg`. A 120px-wide placeholder (returned for videos without maxres) is detected and skipped. Verified: 1280×720 thumbnail, 16:9 filled, no letterbox. |
 | v1.2.84 | `235e45d` | **Hover preview requires an 0.8 s dwell**: `#ytPosts .yt-item` starts the muted YouTube iframe only after an 800 ms `setTimeout`; `mouseleave` clears the timer and removes the iframe. Verified live: 17 ms / 450 ms hovers inserted 0 iframes, a sustained hover created one `youtube-nocookie` iframe at 817 ms, exit removed it. |
 | v1.2.85 | `50183be` | **Wider recommended-post text column, smaller type**: right sidebar column 280→320px; `#ytPosts` thumbnail 159→124px, item 101→82px (centered), title 16→14px, meta 14→12px. Verified: text block 93→153.3px, item 82px, thumb 124×69.8px, no horizontal overflow. |
+| v1.2.86 | `0402ee7` | **`/search` top space**: `#jtSearchApp` padding-top 4→32px so the label chips no longer sit flush against the content above. Verified: padding-top 32px, ~31px gap, no overflow. |
+| v1.2.87 | `0588aef` | **`/search` mobile top space**: the `≤640px` override for `#jtSearchApp` padding-top 4→24px. Verified: `@v1` serves 1.2.87 with the mobile rule present. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
