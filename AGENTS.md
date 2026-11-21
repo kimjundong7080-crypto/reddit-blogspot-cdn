@@ -8,7 +8,8 @@ This document is the handoff for the next AI or engineer. Release v1.2.92 is pub
 
 ## 1. Current status — read first
 
-- Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
+- Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
+- Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
 - Branch: `main`; latest release commit: `28d0df8 Release v1.2.92`.
 - Latest GitHub release/tag: `v1.2.92`. The release script updates and pushes both `main` and a new version tag.
 - **v1.2.92 is published.** Content:
