@@ -44,7 +44,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.90 | `3a07a44` | **Docking offset fixed**: measurement now uses `document.documentElement.clientWidth` (scrollbar excluded). Verified: +9px gap to `#ytPosts`, 0.3px alignment between the two controls, no overlap, stable after scrolling. |
 | v1.2.91 | `9c73c0f` | **`/search` YouTube thumbnails**: posts without a `media$thumbnail` fall back to `i.ytimg.com/vi/<id>/mqdefault.jpg`, and snippets are stripped of `[youtube ...]`/`[md]`/`[rede]` markers. Verified: 320×180 thumbnail rendered, 0 raw shortcodes on the page, 0 console errors. |
 
-Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
+Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
 ## 3. Blogger data operations
 
@@ -73,7 +73,7 @@ Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
 ## 5. Deployment and cache state
 
-- `23-yt-posts.js`, `23-yt-posts.css`, and `11-infinite.js` are **v1.2.77** at `@v1.2.77`; `23-yt-posts.css` is now **v1.2.79** (search grid). `24-home.js` is **v1.2.78** at `@v1`.
+- `@v1` currently serves: `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets are live.
 - All required jsDelivr purges completed. **No pending purge or scheduled wakeup remains.**
 - Working tree is clean.
 - Home feed now uses a 5-minute cache (`jt-home-feed-v2`); old browsers may need a hard refresh to receive v1.2.76/77 scripts, and `@v1` assets can remain cached for up to seven days.

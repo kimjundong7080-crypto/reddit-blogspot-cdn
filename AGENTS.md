@@ -46,14 +46,14 @@ This document is the handoff for the next AI or engineer. Release v1.2.91 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status:** `23-yt-posts.css` is **1.2.88** and `23-yt-posts.js` is **1.2.91** at `@v1`; `21-three-column.css` is **1.2.85**; `24-home.js` is **1.2.78**; `11-infinite.js` is **1.2.77**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
   - Home landing: `.jt-landing` keeps `__jtReveal`, project card titles contain no raw shortcode, `#jt-projects` / `#jt-about` / `.jt-cta` reach `opacity:1` and `.is-in`, 0 console errors, no Turnstile/challenge requests.
   - YouTube post: poster + play button in the post view; clicking creates the iframe (612×344) with `loop=1&playlist`; infinite scroll appended posts with no active iframes inside clones; **0 Edge API requests** and 0 console errors.
   - Clone click-to-play: on `/2026/11/_1.html`, clicking the play button in a cloned vlog post produces a visible `iframe.jt-yt-frame` (652×367) and hides the poster; 0 console errors.
-  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors** with `23-yt-posts.js` v1.2.71. Contact shows `010-4361-6611` (`tel:01043616611`) and `ssii@naver.com` (`mailto:`); resume photo loads at 413px natural width.
+  - `/p/resume.html` and `/p/contact-us.html`: HTTP 200, iframe `srcdoc` mounted, resume/contact text present, `post-outer-container` hidden, titles set, and **0 console errors**. Contact shows `010-4361-6611` (`tel:01043616611`) and `ssii@naver.com` (`mailto:`); resume photo loads at 413px natural width.
   - `/p/about.html`: title `About | JUST TECH`, no `/feeds/posts/...?path=` 404, 0 console errors.
   - Home project cards: 0 broken images; cards without a Blogger thumbnail use `poster-N.jpg`; 0 console errors.
   - Home project data: the previously raw `[youtube ...]` title now shows the real YouTube title; no raw shortcode remains.
@@ -270,7 +270,9 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - Verified live: the shortcode-only post now shows a 320×180 thumbnail, no `is-empty`, 3 YouTube cards load, 0 `[youtube` occurrences on the page, 0 console errors.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
-### Verification notes (2026-11-20, v1.2.63–77)
+### Verification notes (2026-11-20/21, v1.2.63–91)
+
+- v1.2.78–91 live checks are recorded in §1: home reveal ticker, `/search` responsive grid/spacing/single-line titles, high-resolution and fallback YouTube thumbnails, 0.8 s hover preview, recommended-list sizing, left-rail width, and quick-nav/theme-button docking.
 
 - A YouTube post loads with a poster + play button; clicking creates the iframe and plays with **no Edge API requests** after v1.2.67.
 - `/p/resume.html` and `/p/contact-us.html` return 200 and render the resume/contact iframes with 0 console errors; `/p/about.html` also has no feed 404 after v1.2.71.
@@ -327,7 +329,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- The `23-yt-posts.js@v1` purge completed on 2026-11-20; `@v1` reports **1.2.76**. The favicon links, click-to-play behavior, loop, and SEO meta are live.
+- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.
