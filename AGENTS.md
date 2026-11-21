@@ -1,16 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.91**
-Current local package version: **1.2.91**
+Latest published release: **v1.2.92**
+Current local package version: **1.2.92**
 
-This document is the handoff for the next AI or engineer. Release v1.2.91 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.92 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `9c73c0f Release v1.2.91`.
-- Latest GitHub release/tag: `v1.2.91`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `28d0df8 Release v1.2.92`.
+- Latest GitHub release/tag: `v1.2.92`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.92 is published.** Content:
+  - **Infinite-scroll freeze fixed.** Post fetches now time out after 10 s (feed 12 s), the dead Edge API fallback is disabled, and a per-candidate 15 s watchdog skips a stalled URL. A hung request can no longer leave the “Loading more posts…” spinner running forever.
+  - Verified live: normal scroll appended 11 posts with 0 errors; forcing `/2026/11/blog-post.html` to hang produced the loader at ~1 s and recovery at ~10.1 s, after which the next post appended and the loader hid.
 - **v1.2.91 is published.** Content:
   - **`/search` cards show YouTube thumbnails**: when a post has no `media$thumbnail`, `normalize()` extracts the video id from the feed content/summary (`youtu.be`, `?v=`, `/embed/`, `/shorts/`, `/live/`) and uses `https://i.ytimg.com/vi/<id>/mqdefault.jpg` (16:9, 320×180). Snippets run through `cleanSnip()` so `[youtube ...]`, `[md]` and `[rede]` markers no longer appear.
   - Verified live: the "Tam Otomatik Vidalama…" card renders an `i.ytimg.com/.../mqdefault.jpg` image (naturalWidth 320, no `is-empty`), 3 YouTube cards all load, 0 cards contain `[youtube`, 0 console errors.
@@ -46,7 +49,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.91 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.92**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -264,6 +267,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `dockQuickControls()` + `bindDockControls()` dock `#jtQuickNav` and `#jtThemeToggle` to the right of `#ytPosts` (fallback `.sidebar-container`): both get an inline `right` so their left edge is 10px past the widget's right edge. Only at ≥1240px and when the resulting gap is ≥8px; on narrower screens or missing widgets the inline value is cleared and the CSS defaults apply.
   - v1.2.89 used `window.innerWidth`, which includes the scrollbar, so fixed `right` resolved against `clientWidth` and both controls overlapped the list by 6px. v1.2.90 switched to `document.documentElement.clientWidth`.
   - Verified live: gap +9px, nav/toggle left edges aligned within 0.3px, no overlap, viewport-safe, stable after scrolling.
+- `v1.2.92`:
+  - **Infinite-scroll “Loading more posts…” freeze fixed.** Root cause: `fetchPostText` had no timeout and fell back to the dead Edge API; a stalled request left `cache[u]` null, so `loadNext` polled forever while the loader stayed visible.
+  - Fix: `withTimeout` (post 10 s, feed 12 s), `CFG.useEdge=false` (Edge is confirmed 404), a 15 s per-URL watchdog that marks a stalled candidate as failed and advances, and a try/catch around `build()` so an exception cannot strand `busy=true`.
+  - Verified live: normal scroll appended 11 posts with 0 console errors; a forced hang on `/2026/11/blog-post.html` showed the loader at ~1 s and recovered at ~10.1 s, appending the next post and hiding the loader.
 - `v1.2.91`:
   - `/search` cards use the YouTube video thumbnail when the feed has no `media$thumbnail`: `ytVideoId()` extracts the id from the post content/summary and the card uses `i.ytimg.com/vi/<id>/mqdefault.jpg` (16:9 320×180).
   - `cleanSnip()` strips `[youtube ...]`, `[md]` and `[rede]` markers from card snippets, so raw shortcodes no longer appear.
@@ -285,6 +292,7 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 - v1.2.76 live check (fresh Chrome): the new post shows a poster (480px thumbnail) + play button with 0 iframes; clicking plays the 4GL2ndz7etQ video at 612×344 with `loop=1&playlist` and 0 console errors. Home first card, search first result, favicon links/theme-color, and the SEO meta on About/resume/contact/vlog all verified.
 - The YouTube player may emit its own `compute-pressure` Permissions-Policy message after playback starts; it comes from the YouTube iframe, not this site.
 - v1.2.77 404 check: `/this-page-does-not-exist-xyz` shows the branded panel with the three newest posts, `noindex, follow`, no infinite feed, and only the expected 404 network console message.
+- v1.2.92 infinite-scroll check: normal scroll on `/2026/11/_1.html` appended 11 posts with the loader hidden each time; a forced hang on the first candidate recovered in ~10.1 s, skipped it, appended the next post, and hid the loader with 0 console errors.
 - `/p/resume.html`, `/p/contact-us.html`, `/p/about.html` all have page-specific descriptions and a poster OG image fallback after v1.2.73.
 - Blogger Pages API probe confirmed `<script>` is preserved in page content; the restored pages use an inline loader instead of relying on the 404 fallback.
 - Infinite-scroll clone embeds show a 16:9 poster and a clickable 64px play button; after v1.2.69 clicking shows the player iframe (previously it stayed hidden by the clone iframe rule).
@@ -329,7 +337,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
+- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.92**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.

@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.91**
+Latest published release: **v1.2.92**
 
-This is the consolidated English record for the work cycle that ended with v1.2.91.
+This is the consolidated English record for the work cycle that ended with v1.2.92.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -43,6 +43,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.89 | `28fb549` | **Quick nav + theme button docked beside the recommended posts**: `dockQuickControls()` positions both fixed elements 10px right of `#ytPosts`. Bug: used `window.innerWidth`, so both overlapped the list by 6px. |
 | v1.2.90 | `3a07a44` | **Docking offset fixed**: measurement now uses `document.documentElement.clientWidth` (scrollbar excluded). Verified: +9px gap to `#ytPosts`, 0.3px alignment between the two controls, no overlap, stable after scrolling. |
 | v1.2.91 | `9c73c0f` | **`/search` YouTube thumbnails**: posts without a `media$thumbnail` fall back to `i.ytimg.com/vi/<id>/mqdefault.jpg`, and snippets are stripped of `[youtube ...]`/`[md]`/`[rede]` markers. Verified: 320×180 thumbnail rendered, 0 raw shortcodes on the page, 0 console errors. |
+| v1.2.92 | `28d0df8` | **Infinite-scroll freeze fixed**: post fetches time out after 10 s (feed 12 s), the dead Edge API fallback is disabled, a 15 s per-URL watchdog skips stalled candidates, and `build()` errors cannot strand `busy=true`. A forced hang recovered in ~10.1 s and appended the next post. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
@@ -64,7 +65,7 @@ Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccd
 - Home: reveal animation stays attached; project/about/CTA sections reach `opacity:1`; no broken images; no horizontal overflow at 390/768/1440 px.
 - Home v1.2.78 re-check (fresh load after `cache:'reload'` of all nine CDN assets): after scrolling top→bottom, all five `.jt-reveal` blocks (`hero`, `#jt-services`, `#jt-projects`, `#jt-about`, `.jt-cta`) carry `is-in` with `opacity:1`; 0 sections remain hidden; carousel hover plays MP4 (`paused:false`, currentTime advancing); 0 console errors.
 - YouTube: every embed shows a poster + play button with **0 iframes** before click; clicking creates one iframe at 612×344, `loop=1&playlist` active, no site console errors.
-- Infinite scroll: appends posts, no autoplay inside clones, no Edge API requests, and no feed on 404 pages.
+- Infinite scroll: appends posts, no autoplay inside clones, no Edge API requests, and no feed on 404 pages. Stalled post fetches are skipped after ~10 s, so the loader no longer spins forever.
 - Static pages: resume/contact render, have `noindex, follow`, and load their photo/contact data correctly.
 - 404: branded panel, three recent posts, `noindex, follow`, no stray infinite-scroll post; the only console error is the expected 404 resource.
 - Favicon: SVG/16/32/ICO + apple-touch links injected on every page; assets return HTTP 200; `theme-color` is `#1f7a5c`.
@@ -73,7 +74,7 @@ Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccd
 
 ## 5. Deployment and cache state
 
-- `@v1` currently serves: `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.77**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets are live.
+- `@v1` currently serves: `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.88**, `11-infinite.js` **1.2.92**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets are live.
 - All required jsDelivr purges completed. **No pending purge or scheduled wakeup remains.**
 - Working tree is clean.
 - Home feed now uses a 5-minute cache (`jt-home-feed-v2`); old browsers may need a hard refresh to receive v1.2.76/77 scripts, and `@v1` assets can remain cached for up to seven days.
