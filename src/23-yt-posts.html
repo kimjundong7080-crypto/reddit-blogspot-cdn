@@ -1241,12 +1241,41 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       }).observe(document.body,{childList:true,subtree:true});
     }
   }
+  /* 본문 이미지의 원본 새창/확대 링크(앵커)를 제거한다. */
+  function guardImageClicks(){
+    var imgs=document.querySelectorAll('.post-body img, .jt-inf-post img');
+    for(var i=0;i<imgs.length;i++){
+      var img=imgs[i],a=img.parentNode;
+      while(a&&a!==document.body&&a.tagName!=='A')a=a.parentNode;
+      if(!a||a===document.body)continue;
+      if(a.closest&&a.closest('.jt-landing'))continue;
+      if(a.className&&/(^|\s)(jt-|yt-)/.test(a.className))continue;
+      if(a.classList.contains('jt-yt-poster')||a.classList.contains('jt-yt-thumb')||a.querySelector('iframe,video'))continue;
+      var href=a.getAttribute('href')||'';
+      if(!/\.(jpe?g|png|gif|webp|avif)(\?|$)/i.test(href)&&href.indexOf('blogger.googleusercontent.com')<0&&href.indexOf('.r2.dev')<0)continue;
+      if(a.parentNode)a.parentNode.replaceChild(img,a);
+    }
+  }
+  function initImageClickGuard(){
+    guardImageClicks();
+    setTimeout(guardImageClicks,800);
+    setTimeout(guardImageClicks,2000);
+    window.addEventListener('load',guardImageClicks);
+    if(window.MutationObserver){
+      var t=0;
+      new MutationObserver(function(){
+        if(t)return;
+        t=setTimeout(function(){t=0;guardImageClicks();},300);
+      }).observe(document.body,{childList:true,subtree:true});
+    }
+  }
   ready(function(){
     initTheme();
     initQuickNav();
     dockQuickControls();
     bindDockControls();
     initExpanders();
+    initImageClickGuard();
     initSearchApp();
     if(location.pathname==='/p/home.html')return;
     setTimeout(watchPostImages,800);
