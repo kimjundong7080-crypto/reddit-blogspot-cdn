@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.86 */
+/* Reddit-style Blogger YouTube post list — v1.2.87 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -706,7 +706,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
   #jtSearchApp .jt-sp-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media screen and (max-width:640px){
-  #jtSearchApp{padding:4px 12px 40px}
+  #jtSearchApp{padding:24px 12px 40px}
   #jtSearchApp .jt-sp-list{grid-template-columns:1fr;gap:14px}
   #jtSearchApp .jt-sp-item{padding:12px}
   #jtSearchApp .jt-sp-title{font-size:16px}
