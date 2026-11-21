@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.90 */
+/* Reddit-style Blogger YouTube post list — v1.2.91 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   if(location.pathname==='/p/home.html')document.documentElement.classList.add('jt-home-page');
@@ -178,6 +178,20 @@
         .replace(/\s+/g,' ')
         .trim();
     }
+    /* 유튜브 숏코드/링크에서 영상 ID 추출 */
+    function ytVideoId(s){
+      var m=String(s||'').match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+      return m?m[1]:'';
+    }
+    /* 카드 요약문에서 숏코드/마크다운 표식을 제거 */
+    function cleanSnip(s){
+      return plain(s)
+        .replace(/\[youtube[^\]]*\]/gi,' ')
+        .replace(/\[\/?md\]/gi,' ')
+        .replace(/\[\/?rede?\]/gi,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
     function cut(s,n){return s.length>n?s.slice(0,n-1).trim()+'…':s;}
     function bigThumb(u){
       if(!u)return '';
@@ -192,13 +206,17 @@
         var t=String(c.term||'').trim();
         if(t&&cats.indexOf(t)===-1)cats.push(t);
       });
+      var raw=(e.content&&e.content.$t)||(e.summary&&e.summary.$t)||'';
+      var mediaThumb=(e.media$thumbnail&&e.media$thumbnail.url)||'';
+      /* 썸네일이 없는 유튜브 글은 영상 썸네일(mqdefault, 16:9)을 사용한다 */
+      var vid=ytVideoId(raw);
       return {
         href:href,
         title:plain(e.title&&e.title.$t)||'게시물',
-        snip:cut(plain(e.summary&&e.summary.$t),140),
+        snip:cut(cleanSnip(raw)||cleanSnip(e.summary&&e.summary.$t),140),
         cats:cats,
         date:dateText(e.published&&e.published.$t),
-        thumb:bigThumb((e.media$thumbnail&&e.media$thumbnail.url)||'')
+        thumb:mediaThumb?bigThumb(mediaThumb):(vid?'https://i.ytimg.com/vi/'+vid+'/mqdefault.jpg':'')
       };
     }
 
