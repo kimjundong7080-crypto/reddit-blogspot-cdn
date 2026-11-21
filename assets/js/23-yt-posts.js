@@ -1,15 +1,28 @@
-/* Reddit-style Blogger YouTube post list — v1.2.98 */
+/* Reddit-style Blogger YouTube post list — v1.2.99 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
-     홈에서 바로 블로그 글 목록을 보여주고 /p/home.html 링크는 제거한다. */
+     홈/홈버튼을 가장 최신 글로 보낸다. (techlifeworld.com 동작은 변경하지 않음) */
   var JT_NO_LANDING=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
-  if(JT_NO_LANDING&&location.pathname==='/p/home.html'){location.replace('/');return;}
+  if(JT_NO_LANDING&&(location.pathname==='/'||location.pathname==='/p/home.html')){
+    var latestFallback=location.pathname==='/p/home.html'?'/':null;
+    var latestTimer=setTimeout(function(){if(latestFallback)location.replace(latestFallback);},8000);
+    fetch('/feeds/posts/default?alt=json&max-results=1',{cache:'no-store'})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        clearTimeout(latestTimer);
+        var e=j.feed&&j.feed.entry&&j.feed.entry[0],href='';
+        if(e&&e.link){for(var i=0;i<e.link.length;i++){if(e.link[i].rel==='alternate'){href=e.link[i].href;break;}}}
+        if(href)location.replace(href);
+        else if(latestFallback)location.replace(latestFallback);
+      })
+      ['catch'](function(){clearTimeout(latestTimer);if(latestFallback)location.replace(latestFallback);});
+    if(location.pathname==='/p/home.html')return;
+  }
   if(location.pathname==='/p/home.html'&&!JT_NO_LANDING)document.documentElement.classList.add('jt-home-page');
   if(location.pathname==='/'&&!window.__jtHomeRedirect){
     window.__jtHomeRedirect=1;
-    if(!JT_NO_LANDING)location.replace('/p/home.html');
-    return;
+    if(!JT_NO_LANDING){location.replace('/p/home.html');return;}
   }
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
   function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
