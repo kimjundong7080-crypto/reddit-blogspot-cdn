@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.2.97 */
+/* Reddit-style Blogger 3-column layout — v1.2.98 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -28,10 +28,13 @@
   }
   function pageLinks(){
     var out=[],seen={};
+    var noLanding=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
+    var hidden={'/p/home.html':1,'/p/about.html':1,'/p/contact-us.html':1,'/p/contact.html':1};
     var nodes=document.querySelectorAll('.centered-top-secondline .PageList a, .PageList a');
     for(var i=0;i<nodes.length;i++){
       var a=nodes[i],t=(a.textContent||'').trim(),h=a.getAttribute('href')||'';
       if(!t||!h||seen[h])continue;
+      if(noLanding){try{if(hidden[new URL(h,location.href).pathname])continue;}catch(e){}}
       seen[h]=1;out.push({t:t,h:h});
     }
     return out;

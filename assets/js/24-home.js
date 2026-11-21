@@ -1,8 +1,8 @@
-/* Reddit-style Blogger home landing — v1.2.97 */
+/* Reddit-style Blogger home landing — v1.2.98 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
-  /* 홈 랜딩은 techlifeworld.com 전용 — shutupquick.com에서는 렌더링하지 않는다. */
-  if(/(^|\.)shutupquick\.com$/i.test(location.hostname))return;
+  /* 홈 랜딩은 techlifeworld.com 전용 — shutupquick.com / deepstronglove.com에서는 렌더링하지 않는다. */
+  if(/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname))return;
   if(location.pathname!=='/p/home.html')return;
   document.documentElement.classList.add('jt-home-page');
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}

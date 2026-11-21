@@ -761,8 +761,10 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
 //<![CDATA[
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
-  /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com에서는 리다이렉트하지 않고 일반 블로그 화면을 쓴다. */
-  var JT_NO_LANDING=/(^|\.)shutupquick\.com$/i.test(location.hostname);
+  /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
+     홈에서 바로 블로그 글 목록을 보여주고 /p/home.html 링크는 제거한다. */
+  var JT_NO_LANDING=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
+  if(JT_NO_LANDING&&location.pathname==='/p/home.html'){location.replace('/');return;}
   if(location.pathname==='/p/home.html'&&!JT_NO_LANDING)document.documentElement.classList.add('jt-home-page');
   if(location.pathname==='/'&&!window.__jtHomeRedirect){
     window.__jtHomeRedirect=1;
@@ -1998,7 +2000,7 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
         +'<p class="jt-404-code">404</p>'
         +'<h1>페이지를 찾을 수 없습니다</h1>'
         +'<p>주소가 변경되었거나 삭제된 페이지입니다. 아래에서 원하는 글을 찾아보세요.</p>'
-        +'<div class="jt-404-actions"><a class="jt-404-btn primary" href="/p/home.html">홈으로</a><a class="jt-404-btn" href="/search">글 검색</a></div>'
+        +'<div class="jt-404-actions"><a class="jt-404-btn primary" href="/">홈으로</a><a class="jt-404-btn" href="/search">글 검색</a></div>'
         +'<ul class="jt-404-recent" aria-label="최근 글"></ul>'
         +'</div>';
       var title='페이지를 찾을 수 없음 | JUST TECH';
