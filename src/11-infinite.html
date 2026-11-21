@@ -197,7 +197,7 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     max:   0,        /* 0 = 피드 끝까지 */
     feedMax: 500,    /* 현재 글을 찾을 최근 피드 수 */
     edgeBase: 'https://reddit-blogspot-edge.pages.dev',
-    useEdge: true    /* 실패하면 Blogger 직접 호출로 자동 폴백 */
+    useEdge: false    /* Edge API는 404 확인됨. 실패 시 멈추지 않도록 직접 호출만 사용 */
   };
   /* ============================================================= */
 
@@ -246,7 +246,7 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     /* 임시 해제: 무한 스크롤 Turnstile 게이트를 사용하지 않음 */
     /* ===================================================== */
 
-    var cand=[], cache={}, ptr=-1, appended=0, done=false, randomMode=false, booted=false, busy=false, fails=0;
+    var cand=[], cache={}, waiting={}, ptr=-1, appended=0, done=false, randomMode=false, booted=false, busy=false, fails=0;
     var seen={}; seen[curPath]=1;
 
     function showEnd(msg){
@@ -288,6 +288,12 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     function edgePath(path){
       return CFG.edgeBase.replace(/\/$/, '') + path;
     }
+    function withTimeout(promise,ms){
+      return new Promise(function(resolve,reject){
+        var timer=setTimeout(function(){reject(new Error('timeout'));},ms);
+        promise.then(function(v){clearTimeout(timer);resolve(v);},function(e){clearTimeout(timer);reject(e);});
+      });
+    }
     function directFeed(){
       return fetch('/feeds/posts/default?alt=json&max-results='+CFG.feedMax)
         .then(function(r){if(!r.ok)throw 0;return r.json();});
@@ -295,23 +301,23 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
     /* Blogger 직접 호출을 우선하고, 실패할 때만 Edge API를 보조로 사용한다.
        Edge API가 404인 상태에서 매 글마다 실패 요청을 보내지 않도록 순서를 뒤집었다. */
     function fetchFeed(){
-      return directFeed()['catch'](function(){
+      return withTimeout(directFeed()['catch'](function(){
         if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
         return fetch(edgePath('/api/blogger-feed?max='+CFG.feedMax))
           .then(function(r){if(!r.ok)throw 0;return r.json();})
           ['catch'](function(){edgeUnavailable=true;throw 0;});
-      });
+      }),12000);
     }
     function directPost(u){
       return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});
     }
     function fetchPostText(u){
-      return directPost(u)['catch'](function(){
+      return withTimeout(directPost(u)['catch'](function(){
         if(!CFG.useEdge||!CFG.edgeBase||edgeUnavailable)throw 0;
         return fetch(edgePath('/api/blogger-post?url='+encodeURIComponent(u)))
           .then(function(r){if(!r.ok)throw 0;return r.text();})
           ['catch'](function(){edgeUnavailable=true;throw 0;});
-      });
+      }),10000);
     }
 
     function fetchPage(u){
@@ -411,10 +417,20 @@ html[data-theme="dark"] #jtInfiniteFeed .jt-inf-post .jt-inf-fold-btn:hover{
         if(!u||pathKey(u)===curPath||seen[pathKey(u)]){ptr++;setTimeout(attempt,20);return;}
         var c=cache[u];
         if(c===undefined)preload();
-        if(c===undefined||c===null){setTimeout(attempt,150);return;}
+        if(c===undefined||c===null){
+          /* fetch가 끝나지 않아도 로더가 영원히 멈추지 않도록 15초 워치독 */
+          if(!waiting[u])waiting[u]=Date.now();
+          if(Date.now()-waiting[u]>15000){
+            delete waiting[u];cache[u]='fail';fails++;ptr++;setTimeout(attempt,20);return;
+          }
+          setTimeout(attempt,150);return;
+        }
+        delete waiting[u];
         if(c==='fail'||typeof c!=='object'){fails++;ptr++;setTimeout(attempt,20);return;}
 
-        ptr++;fails=0;build(c,u);busy=false;loader.classList.remove('on');preload();
+        ptr++;fails=0;
+        try{build(c,u);}catch(e){fails++;setTimeout(attempt,20);return;}
+        busy=false;loader.classList.remove('on');preload();
       })();
     }
 
