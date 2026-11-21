@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.94 */
+/* Reddit-style Blogger YouTube post list — v1.2.95 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -345,7 +345,6 @@ html.jt-static-page .sidebar-wrapper,
 html.jt-static-page .post-sidebar,
 html.jt-static-page .post-outer-container,
 html.jt-static-page #ytPosts{display:none !important}
-html:not(.jt-static-page) > body.container.item-view.version-1-3-3 > #jtQuickNav{display:none !important}
 html.jt-static-page:not(.jt-resume-page) #jtQuickNav{
   display:flex !important;
   flex-direction:row !important;
