@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.90**
+Latest published release: **v1.2.91**
 
-This is the consolidated English record for the work cycle that ended with v1.2.90.
+This is the consolidated English record for the work cycle that ended with v1.2.91.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -42,6 +42,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.88 | `6df1995` | **`/search` card titles on one line**: `.jt-sp-title` now uses `white-space:nowrap; overflow:hidden; text-overflow:ellipsis`. Verified: 20/20 titles 21px tall, 6 ellipsized, uniform 180×171px cards, no horizontal overflow. |
 | v1.2.89 | `28fb549` | **Quick nav + theme button docked beside the recommended posts**: `dockQuickControls()` positions both fixed elements 10px right of `#ytPosts`. Bug: used `window.innerWidth`, so both overlapped the list by 6px. |
 | v1.2.90 | `3a07a44` | **Docking offset fixed**: measurement now uses `document.documentElement.clientWidth` (scrollbar excluded). Verified: +9px gap to `#ytPosts`, 0.3px alignment between the two controls, no overlap, stable after scrolling. |
+| v1.2.91 | `9c73c0f` | **`/search` YouTube thumbnails**: posts without a `media$thumbnail` fall back to `i.ytimg.com/vi/<id>/mqdefault.jpg`, and snippets are stripped of `[youtube ...]`/`[md]`/`[rede]` markers. Verified: 320×180 thumbnail rendered, 0 raw shortcodes on the page, 0 console errors. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 

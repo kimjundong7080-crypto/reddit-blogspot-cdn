@@ -1,16 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.90**
-Current local package version: **1.2.90**
+Latest published release: **v1.2.91**
+Current local package version: **1.2.91**
 
-This document is the handoff for the next AI or engineer. Release v1.2.90 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.91 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\15-2_블로그 스팟(레딧 )\blo\reddit-blogspot-cdn`
-- Branch: `main`; latest release commit: `3a07a44 Release v1.2.90`.
-- Latest GitHub release/tag: `v1.2.90`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `9c73c0f Release v1.2.91`.
+- Latest GitHub release/tag: `v1.2.91`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.91 is published.** Content:
+  - **`/search` cards show YouTube thumbnails**: when a post has no `media$thumbnail`, `normalize()` extracts the video id from the feed content/summary (`youtu.be`, `?v=`, `/embed/`, `/shorts/`, `/live/`) and uses `https://i.ytimg.com/vi/<id>/mqdefault.jpg` (16:9, 320×180). Snippets run through `cleanSnip()` so `[youtube ...]`, `[md]` and `[rede]` markers no longer appear.
+  - Verified live: the "Tam Otomatik Vidalama…" card renders an `i.ytimg.com/.../mqdefault.jpg` image (naturalWidth 320, no `is-empty`), 3 YouTube cards all load, 0 cards contain `[youtube`, 0 console errors.
 - **v1.2.90 is published.** Content:
   - **Quick nav and theme button docked to the right of the recommended-posts widget**: `dockQuickControls()` measures `#ytPosts` (fallback `.sidebar-container`) and sets both fixed elements' inline `right` so their left edge is 10px past the widget's right edge. Applies only at ≥1240px with an 8px minimum gap; otherwise the CSS defaults (right edge of the viewport, 14px/18px) remain.
   - v1.2.89 shipped the same feature but used `window.innerWidth`, which includes the scrollbar and pushed both controls 6px over the list. v1.2.90 uses `document.documentElement.clientWidth`.
@@ -43,7 +46,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.90 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status:** `23-yt-posts.css` is **1.2.88** and `23-yt-posts.js` is **1.2.90** at `@v1`; `21-three-column.css` is **1.2.85**; `24-home.js` is **1.2.78**; `11-infinite.js` is **1.2.77**. Favicon assets live. No pending purge.
+- **CDN status:** `23-yt-posts.css` is **1.2.88** and `23-yt-posts.js` is **1.2.91** at `@v1`; `21-three-column.css` is **1.2.85**; `24-home.js` is **1.2.78**; `11-infinite.js` is **1.2.77**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -261,6 +264,10 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
   - `dockQuickControls()` + `bindDockControls()` dock `#jtQuickNav` and `#jtThemeToggle` to the right of `#ytPosts` (fallback `.sidebar-container`): both get an inline `right` so their left edge is 10px past the widget's right edge. Only at ≥1240px and when the resulting gap is ≥8px; on narrower screens or missing widgets the inline value is cleared and the CSS defaults apply.
   - v1.2.89 used `window.innerWidth`, which includes the scrollbar, so fixed `right` resolved against `clientWidth` and both controls overlapped the list by 6px. v1.2.90 switched to `document.documentElement.clientWidth`.
   - Verified live: gap +9px, nav/toggle left edges aligned within 0.3px, no overlap, viewport-safe, stable after scrolling.
+- `v1.2.91`:
+  - `/search` cards use the YouTube video thumbnail when the feed has no `media$thumbnail`: `ytVideoId()` extracts the id from the post content/summary and the card uses `i.ytimg.com/vi/<id>/mqdefault.jpg` (16:9 320×180).
+  - `cleanSnip()` strips `[youtube ...]`, `[md]` and `[rede]` markers from card snippets, so raw shortcodes no longer appear.
+  - Verified live: the shortcode-only post now shows a 320×180 thumbnail, no `is-empty`, 3 YouTube cards load, 0 `[youtube` occurrences on the page, 0 console errors.
 - Earlier R2 static hosting proposal was explicitly cancelled. Continue using GitHub/jsDelivr.
 
 ### Verification notes (2026-11-20, v1.2.63–77)
