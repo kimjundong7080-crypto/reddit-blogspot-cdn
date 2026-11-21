@@ -773,16 +773,34 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
      홈/홈버튼을 가장 최신 글로 보낸다. (techlifeworld.com 동작은 변경하지 않음) */
   var JT_NO_LANDING=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
+  var JT_LATEST_KEY='jt-latest-post';
+  function jtReadLatest(){
+    try{
+      var o=JSON.parse(localStorage.getItem(JT_LATEST_KEY)||'null');
+      if(o&&o.href&&Date.now()-o.t<600000)return o.href;
+    }catch(e){}
+    return '';
+  }
+  function jtSaveLatest(href){
+    if(!href)return;
+    try{localStorage.setItem(JT_LATEST_KEY,JSON.stringify({href:href,t:Date.now()}));}catch(e){}
+  }
+  function jtEntryHref(e){
+    var links=(e&&e.link)||[];
+    for(var i=0;i<links.length;i++){if(links[i].rel==='alternate')return https(links[i].href);}
+    return '';
+  }
   if(JT_NO_LANDING&&(location.pathname==='/'||location.pathname==='/p/home.html')){
+    var cachedLatest=jtReadLatest();
+    if(cachedLatest){location.replace(cachedLatest);return;}
     var latestFallback=location.pathname==='/p/home.html'?'/':null;
     var latestTimer=setTimeout(function(){if(latestFallback)location.replace(latestFallback);},8000);
     fetch('/feeds/posts/default?alt=json&max-results=1',{cache:'no-store'})
       .then(function(r){return r.json();})
       .then(function(j){
         clearTimeout(latestTimer);
-        var e=j.feed&&j.feed.entry&&j.feed.entry[0],href='';
-        if(e&&e.link){for(var i=0;i<e.link.length;i++){if(e.link[i].rel==='alternate'){href=e.link[i].href;break;}}}
-        if(href)location.replace(href);
+        var e=j.feed&&j.feed.entry&&j.feed.entry[0],href=jtEntryHref(e);
+        if(href){jtSaveLatest(href);location.replace(href);}
         else if(latestFallback)location.replace(latestFallback);
       })
       ['catch'](function(){clearTimeout(latestTimer);if(latestFallback)location.replace(latestFallback);});
@@ -839,7 +857,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
     nav.setAttribute('aria-label','빠른 이동');
     var home=document.createElement('a');
     home.className='jt-qn-btn';
-    home.href='/';
+    home.href=JT_NO_LANDING?(jtReadLatest()||'/'):'/';
     home.title='홈';
     home.setAttribute('aria-label','홈');
     home.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>';
@@ -1409,6 +1427,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
           if(cb)cb();
           return;
         }
+        if(nextStart===1&&entries[0])jtSaveLatest(jtEntryHref(entries[0]));
         nextStart+=entries.length;
         entries.sort(function(a,b){return entryScore(b)-entryScore(a);});
         addEntries(entries,function(added){

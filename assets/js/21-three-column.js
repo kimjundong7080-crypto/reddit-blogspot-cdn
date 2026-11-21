@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.2.104 */
+/* Reddit-style Blogger 3-column layout — v1.2.105 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -62,6 +62,18 @@
     }
     if(!links.some(function(x){return x.h==='/'||x.t.toLowerCase()==='home';})){
       links.unshift({t:'Home',h:'/'});
+    }
+    if(/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname)){
+      var cachedLatest='';
+      try{
+        var o=JSON.parse(localStorage.getItem('jt-latest-post')||'null');
+        if(o&&o.href&&Date.now()-o.t<600000)cachedLatest=o.href;
+      }catch(e){}
+      if(cachedLatest){
+        links.forEach(function(l){
+          if(l.h==='/'||String(l.t).toLowerCase()==='home')l.h=cachedLatest;
+        });
+      }
     }
 
     var nav='';
