@@ -1,17 +1,26 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.101**
-Current local package version: **1.2.101**
+Latest published release: **v1.2.108**
+Current local package version: **1.2.108**
 
-This document is the handoff for the next AI or engineer. Release v1.2.101 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.108 is published and all changed assets are current at `@v1` once the pending JS purge completes. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `b66397c Release v1.2.101`.
-- Latest GitHub release/tag: `v1.2.101`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `19dc992 Release v1.2.108`.
+- Latest GitHub release/tag: `v1.2.108`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.108 is published.** Content:
+  - **Search thumbnails fixed for R2 images**: `/search` fetched `/feeds/posts/summary`, which strips post content (and every `<img>`), so `firstImage()` never saw the R2 URLs. It now fetches `/feeds/posts/default?alt=json&max-results=150`; verified with the 1.2.108 script that `청소` (1600px), `fdsfds` (1199px), and `test37` (1199px) R2 thumbnails render. `4325reff` has only a `[이미지: ...]` placeholder in its content and no real image.
+  - **CDN caveat:** at handoff time `@v1` still served the **1.2.105** JS body because the `@v1` JS purge was throttled; the switch to 1.2.108 was scheduled. CSS already serves 1.2.108.
+- **v1.2.107 is published.** Content: `guardImageClicks()` unwraps image anchors so a post-image click no longer opens the original/new window or the Blogger lightbox; skips landing, YouTube poster/thumb, and `jt-*`/`yt-*` anchors; re-runs on mutations and clones.
+- **v1.2.106 is published.** Content: after the first feed batch, `jtApplyLatestLinks()` points the quick-nav and rail Home links at the newest post immediately.
+- **v1.2.105 is published.** Content: the two domains cache the newest post URL in `localStorage` for 10 minutes; `/` and `/p/home.html` use it for an instant redirect, and the Home button/rail link use it.
+- **v1.2.104 is published.** Content: related-post recommendations: `loadRelatedContext()` reads DOM labels plus the path feed (`/feeds/posts/default?alt=json&path=<path>`, 2.5 s timeout), scores by label overlap ×5 and title-token overlap ×2 (CAD/YouTube +1), excludes the current post, and sorts each batch by relevance.
+- **v1.2.103 is published.** Content: first-pass content-image thumbnails for `/search` plus initial related-post scoring.
+- **v1.2.102 is published.** Content: the collapsed expander's 120px bottom gap now uses `backdrop-filter: blur(6px)` with a masked gradient, so the cut-off text is blurred rather than only faded.
 - **v1.2.101 is published.** Content (two domains only; techlifeworld.com unchanged):
   - **Long-post “더보기” expander** on `shutupquick.com` / `deepstronglove.com` item views: a `.post-body.entry-content` taller than 900px gets `jt-expandable` (max-height 900px + fade) and a `더보기` button after it; clicking toggles `is-open`, the height, and the label `더보기`/`접기`. It also runs for infinite-scroll clones via a debounced MutationObserver and does not touch short posts.
   - Verified live on deepstronglove: short body 514px → 0 buttons; after appending a 2200px block the body clamps to 900px with a visible `더보기`; open → `max-height:none`/`접기`; close → 900px/`더보기`. On techlifeworld the same 2756px body gets no button.
@@ -70,7 +79,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.101 is pu
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`, measured 2026-11-21):** `23-yt-posts.js` / `23-yt-posts.css` **1.2.101**, `21-three-column.js` **1.2.100**, `24-home.js` **1.2.100**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.css` **1.2.85**, `21-three-column.css` **1.2.85**, `22-post-image.css` **1.2.85**, `pages/contact.html` **1.2.96**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`, measured 2026-11-21):** `23-yt-posts.css` **1.2.108**, `21-three-column.js` **1.2.106**, `24-home.js` **1.2.106**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.css` **1.2.85**, `21-three-column.css` **1.2.85**, `22-post-image.css` **1.2.85**, `pages/contact.html` **1.2.96**, but `23-yt-posts.js` is still cached at **1.2.105**. The `@v1` JS purge hit jsDelivr throttling (reset ~16:05 UTC); a wakeup is scheduled to purge and verify. s-maxage is 12 h, so the purge is required.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -333,7 +342,7 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than the current latest tag (`v1.2.96`) and never reuse a tag:
+For a release, choose a version greater than the current latest tag (`v1.2.108`) and never reuse a tag:
 
 ```powershell
 node scripts/release.mjs 1.2.97
@@ -358,7 +367,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- No purge is pending. `@v1` serves the v1.2.96 body of all nine assets (verified 2026-11-21 against the `@v1.2.96` tag); only the `x-jsd-version` header still reports the last release that changed each file (list in §1). Favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
+- **Pending purge:** `@v1/assets/js/23-yt-posts.js` is still the 1.2.105 body (12 h s-maxage) because the purge API was throttled. A wakeup is scheduled for ~16:07 UTC to purge and verify 1.2.108 (search R2 thumbnails, image-click guard, related posts, blurred expander). The CSS already serves 1.2.108. All other assets and `pages/contact.html` are current.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.

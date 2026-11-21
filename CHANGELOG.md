@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.101**
+Latest published release: **v1.2.108**
 
-This is the consolidated English record for the work cycle that ended with v1.2.101.
+This is the consolidated English record for the work cycle that ended with v1.2.108.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -53,6 +53,13 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.99 | `a17c414` | **Home → newest post**: on the two domains `/` and `/p/home.html` read `/feeds/posts/default?alt=json&max-results=1` and redirect to the newest post (fallback `/` when empty). |
 | v1.2.100 | `fc5746a` | **Menu fallback filter**: the hardcoded Home/All posts/About/Contact fallback is filtered too, so About/Contact links disappear on the two domains. |
 | v1.2.101 | `b66397c` | **Long-post expander on the two domains**: post bodies over 900px clamp with a fade and a `더보기` button; clicking toggles `is-open`/`접기` and restores full height. Applies to infinite-scroll clones via MutationObserver; short posts and techlifeworld.com are unaffected. Verified live: 514px post → no button; 2200px block → 900px clamp + button; open → none; techlifeworld 2756px body → 0 buttons. |
+| v1.2.102 | `07c9ece` | **Blurred cut-off area**: the collapsed expander's bottom gap grows to 120px and uses `backdrop-filter: blur(6px)` with a masked gradient (light/dark variants), so the clipped text is blurred rather than only faded. |
+| v1.2.103 | `1b7e5ec` | **Search thumbnails from post content and related-post scoring (first pass)**: `normalize()` falls back to the first `<img>` in the feed content, and the recommended list starts using the current post's labels/title. |
+| v1.2.104 | `43c94be` | **Related-post recommendations**: `loadRelatedContext()` reads DOM labels plus `/feeds/posts/default?alt=json&path=<path>` (2.5 s timeout), scores entries by label overlap ×5 and title-token overlap ×2 (CAD/YouTube +1), excludes the current post, and sorts each feed batch by score before rendering. |
+| v1.2.105 | `7fa1d78` | **Cached latest-post routing**: the two domains cache the newest post URL in `localStorage` for 10 minutes; `/` and `/p/home.html` use the cache for an instant redirect, and the Home quick-nav button points at it. The rail also rewrites its Home link from the cache. |
+| v1.2.106 | `91c95b1` | **Home-link sync**: after the first feed batch resolves, `jtApplyLatestLinks()` updates the quick-nav and rail Home links to the newest post immediately (not only on the next page load). |
+| v1.2.107 | `ac59bf4` | **Image click guard**: `guardImageClicks()` unwraps `<a>` elements around post images (Blogger Google/R2/plain image URLs) while skipping landing, YouTube poster/thumb, and `jt-*`/`yt-*` anchors, so clicking an image no longer opens the original in a new window or the Blogger lightbox. Re-runs on load and on DOM mutations, including infinite-scroll clones. |
+| v1.2.108 | `19dc992` | **Search thumbnails fixed for R2 images**: `/search` was reading `/feeds/posts/summary`, which omits post content and therefore all `<img>` tags. It now reads `/feeds/posts/default?alt=json&max-results=150`, so `firstImage()` finds R2 URLs. Verified with the v1.2.108 script: `청소` (1600px), `fdsfds` (1199px), and `test37` (1199px) thumbnails load; one post (`4325reff`) has only a `[이미지: ...]` text placeholder and no real image. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
