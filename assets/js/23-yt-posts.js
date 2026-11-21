@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.107 */
+/* Reddit-style Blogger YouTube post list — v1.2.108 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -397,7 +397,8 @@
       renderPager(total);
     }
 
-    fetch('/feeds/posts/summary?alt=json&max-results=150',{credentials:'same-origin'})
+    /* summary 피드에는 본문 이미지가 없어 썸네일이 비므로 default(전체) 피드를 사용한다. */
+    fetch('/feeds/posts/default?alt=json&max-results=150',{credentials:'same-origin'})
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       ['catch'](function(){
         return fetch('https://reddit-blogspot-edge.pages.dev/api/blogger-feed?max=150')
