@@ -1,17 +1,20 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.100**
-Current local package version: **1.2.100**
+Latest published release: **v1.2.101**
+Current local package version: **1.2.101**
 
-This document is the handoff for the next AI or engineer. Release v1.2.100 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.101 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `fc5746a Release v1.2.100`.
-- Latest GitHub release/tag: `v1.2.100`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `b66397c Release v1.2.101`.
+- Latest GitHub release/tag: `v1.2.101`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.101 is published.** Content (two domains only; techlifeworld.com unchanged):
+  - **Long-post “더보기” expander** on `shutupquick.com` / `deepstronglove.com` item views: a `.post-body.entry-content` taller than 900px gets `jt-expandable` (max-height 900px + fade) and a `더보기` button after it; clicking toggles `is-open`, the height, and the label `더보기`/`접기`. It also runs for infinite-scroll clones via a debounced MutationObserver and does not touch short posts.
+  - Verified live on deepstronglove: short body 514px → 0 buttons; after appending a 2200px block the body clamps to 900px with a visible `더보기`; open → `max-height:none`/`접기`; close → 900px/`더보기`. On techlifeworld the same 2756px body gets no button.
 - **v1.2.100 is published.** Content (domain-specific; techlifeworld.com behavior unchanged):
   - `shutupquick.com` and `deepstronglove.com` no longer use the `/p/home.html` landing. The home screen and the Home button resolve through `/`, fetch the newest post (`/feeds/posts/default?alt=json&max-results=1`), and `location.replace` to it. If the feed is empty (e.g. shutupquick), the blog listing stays.
   - `/p/home.html` on those two hosts redirects to the newest post (or `/` when empty). `24-home` skips rendering the landing on both hosts.
@@ -67,7 +70,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.100 is pu
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`, measured 2026-11-21):** the alias serves the **v1.2.96** body of all nine assets and of `pages/contact.html` (the only line that differs from the `@v1.2.96` tag is the version comment). The `x-jsd-version` response header still reports the last release that changed each file, so it lags for unchanged assets: `23-yt-posts.js` / `23-yt-posts.css` **1.2.95**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.92**, `24-home.css` **1.2.85**, `21-three-column.css` **1.2.92**, `21-three-column.js` **1.2.85**, `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`, measured 2026-11-21):** `23-yt-posts.js` / `23-yt-posts.css` **1.2.101**, `21-three-column.js` **1.2.100**, `24-home.js` **1.2.100**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.css` **1.2.85**, `21-three-column.css` **1.2.85**, `22-post-image.css` **1.2.85**, `pages/contact.html` **1.2.96**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):

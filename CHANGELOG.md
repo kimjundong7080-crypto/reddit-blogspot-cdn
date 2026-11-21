@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.96**
+Latest published release: **v1.2.101**
 
-This is the consolidated English record for the work cycle that ended with v1.2.96.
+This is the consolidated English record for the work cycle that ended with v1.2.101.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -48,6 +48,11 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.94 | `c1c605c` | **Contact auto-scroll root cause fixed**: the iframe body's `min-height:100vh` plus resize-driven refit made the frame grow ~240px/0.5 s forever. `23-yt-posts` injects `min-height:0`/top alignment and sets a stable height. Also briefly hid `#jtQuickNav` on all `item-view` pages (reverted in v1.2.95). |
 | v1.2.95 | `03b12e0` | **Contact quick nav + stable live fix**: `#jtQuickNav` on `/p/contact-us.html` is horizontal, centered at the bottom (14px), and has `class=""`; post pages keep the original right-edge nav. Verified live: iframe 950px constant for 8+ s, `scrollY` 0, no height growth, nav centered/bottom. |
 | v1.2.96 | `db13aec` | **Contact page trimmed and contact details protected**: removed the `김준동` tag, consultation hours, and address. Phone/email are now blurred placeholders with no plaintext/`tel:`/`mailto:` in the source; values are XOR+base64 encoded and decoded on click (first click reveals, next dials/mails). Verified live: no plaintext before click, correct reveal after, iframe stable. |
+| v1.2.97 | `3d1a7cb` | Release bookkeeping for the contact/privacy work (no functional change beyond version bumps). |
+| v1.2.98 | `12b7407` | **Two-domain routing**: `shutupquick.com` / `deepstronglove.com` skip the `/p/home.html` landing, and their left menu drops Home/About/Contact page links; techlifeworld.com unchanged. |
+| v1.2.99 | `a17c414` | **Home → newest post**: on the two domains `/` and `/p/home.html` read `/feeds/posts/default?alt=json&max-results=1` and redirect to the newest post (fallback `/` when empty). |
+| v1.2.100 | `fc5746a` | **Menu fallback filter**: the hardcoded Home/All posts/About/Contact fallback is filtered too, so About/Contact links disappear on the two domains. |
+| v1.2.101 | `b66397c` | **Long-post expander on the two domains**: post bodies over 900px clamp with a fade and a `더보기` button; clicking toggles `is-open`/`접기` and restores full height. Applies to infinite-scroll clones via MutationObserver; short posts and techlifeworld.com are unaffected. Verified live: 514px post → no button; 2200px block → 900px clamp + button; open → none; techlifeworld 2756px body → 0 buttons. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
