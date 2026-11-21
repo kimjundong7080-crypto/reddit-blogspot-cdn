@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.108**
+Latest published release: **v1.2.109**
 
-This is the consolidated English record for the work cycle that ended with v1.2.108.
+This is the consolidated English record for the work cycle that ended with v1.2.109.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -60,6 +60,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.106 | `91c95b1` | **Home-link sync**: after the first feed batch resolves, `jtApplyLatestLinks()` updates the quick-nav and rail Home links to the newest post immediately (not only on the next page load). |
 | v1.2.107 | `ac59bf4` | **Image click guard**: `guardImageClicks()` unwraps `<a>` elements around post images (Blogger Google/R2/plain image URLs) while skipping landing, YouTube poster/thumb, and `jt-*`/`yt-*` anchors, so clicking an image no longer opens the original in a new window or the Blogger lightbox. Re-runs on load and on DOM mutations, including infinite-scroll clones. |
 | v1.2.108 | `19dc992` | **Search thumbnails fixed for R2 images**: `/search` was reading `/feeds/posts/summary`, which omits post content and therefore all `<img>` tags. It now reads `/feeds/posts/default?alt=json&max-results=150`, so `firstImage()` finds R2 URLs. Verified with the v1.2.108 script: `청소` (1600px), `fdsfds` (1199px), and `test37` (1199px) thumbnails load; one post (`4325reff`) has only a `[이미지: ...]` text placeholder and no real image. |
+| v1.2.109 | `f91c5b9` | **Domain-aware branding**: `src/23-yt-posts.html` picks SEO/site strings from a `BRAND` table by `location.hostname` — `techlifeworld.com` → JUST TECH, `shutupquick.com` → 삶의 지혜, `deepstronglove.com` → 일상의 즐거움 — covering `SITE`, home/item/about/contact descriptions, `alternateName`, static-page titles, and the 404 title/description (exposed as `window.__jtBrand`). `SELF_ORIGIN` now feeds JSON-LD `@id`/`url`, the canonical fallback and the favicon fallback so other domains no longer point at techlifeworld (`ORIGIN` is kept only for the `.blogspot.com` redirect). Dead code removed: never-called `initHomeHero()` and its unused `html.jt-home-page .jt-hero*` CSS (90 lines). Verified: brand selection per host, build/`--check`/`node --check`, and `@v1` serving 1.2.109 after purge. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
