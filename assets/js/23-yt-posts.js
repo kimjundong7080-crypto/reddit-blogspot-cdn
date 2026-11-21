@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.103 */
+/* Reddit-style Blogger YouTube post list — v1.2.104 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -501,6 +501,20 @@
       return Promise.race([base,timeout]).then(function(){return {labels:labels,tokens:tokens};});
     }
 
+    function entryScore(e){
+      var cats=e.category||[],s=0;
+      for(var i=0;i<cats.length;i++){
+        var term=String(cats[i].term||'').trim().toLowerCase();
+        if(relatedCtx.labels.indexOf(term)>=0)s+=5;
+        if(term==='cad')s+=1;
+      }
+      var t=String((e.title&&e.title.$t)||'').toLowerCase();
+      if(t){for(var k=0;k<relatedCtx.tokens.length;k++){if(t.indexOf(relatedCtx.tokens[k])>=0)s+=2;}}
+      var src=(e.content&&e.content.$t)||(e.summary&&e.summary.$t)||t||'';
+      if(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)/i.test(src))s+=1;
+      return s;
+    }
+
     function makeItem(e){
       var categories=e.category||[];
       var catLower=[];
@@ -518,14 +532,6 @@
       for(var k=0;k<links.length;k++){if(links[k].rel==='alternate'){href=https(links[k].href);break;}}
       if(!href||seen[href])return null;
       if(href.split('#')[0]===location.href.split('#')[0])return null;
-      /* 현재 글과 라벨이 겹치거나 제목 단어가 겹치면 유사 글로 포함 */
-      var rel=0;
-      for(var li=0;li<catLower.length;li++){if(relatedCtx.labels.indexOf(catLower[li])>=0)rel+=5;}
-      var entryTitle=String((e.title&&e.title.$t)||'').toLowerCase();
-      if(entryTitle){
-        for(var ti=0;ti<relatedCtx.tokens.length;ti++){if(entryTitle.indexOf(relatedCtx.tokens[ti])>=0)rel+=2;}
-      }
-      if(!hasCad&&!ytId&&rel<=0)return null;
       seen[href]=1;
       var cat=(e.category&&e.category[0]&&e.category[0].term)||'';
       var title=(e.title&&e.title.$t||'').trim()||cat||'게시물';
@@ -635,6 +641,7 @@
           return;
         }
         nextStart+=entries.length;
+        entries.sort(function(a,b){return entryScore(b)-entryScore(a);});
         addEntries(entries,function(added){
           loading=false;
           if(cb)cb();
