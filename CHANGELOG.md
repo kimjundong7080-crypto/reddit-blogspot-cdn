@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.87**
+Latest published release: **v1.2.88**
 
-This is the consolidated English record for the work cycle that ended with v1.2.87.
+This is the consolidated English record for the work cycle that ended with v1.2.88.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -39,6 +39,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.85 | `50183be` | **Wider recommended-post text column, smaller type**: right sidebar column 280→320px; `#ytPosts` thumbnail 159→124px, item 101→82px (centered), title 16→14px, meta 14→12px. Verified: text block 93→153.3px, item 82px, thumb 124×69.8px, no horizontal overflow. |
 | v1.2.86 | `0402ee7` | **`/search` top space**: `#jtSearchApp` padding-top 4→32px so the label chips no longer sit flush against the content above. Verified: padding-top 32px, ~31px gap, no overflow. |
 | v1.2.87 | `0588aef` | **`/search` mobile top space**: the `≤640px` override for `#jtSearchApp` padding-top 4→24px. Verified: `@v1` serves 1.2.87 with the mobile rule present. |
+| v1.2.88 | `6df1995` | **`/search` card titles on one line**: `.jt-sp-title` now uses `white-space:nowrap; overflow:hidden; text-overflow:ellipsis`. Verified: 20/20 titles 21px tall, 6 ellipsized, uniform 180×171px cards, no horizontal overflow. |
 
 Documentation commits: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`.
 
