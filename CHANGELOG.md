@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.92**
+Latest published release: **v1.2.93**
 
-This is the consolidated English record for the work cycle that ended with v1.2.92.
+This is the consolidated English record for the work cycle that ended with v1.2.93.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -44,6 +44,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.90 | `3a07a44` | **Docking offset fixed**: measurement now uses `document.documentElement.clientWidth` (scrollbar excluded). Verified: +9px gap to `#ytPosts`, 0.3px alignment between the two controls, no overlap, stable after scrolling. |
 | v1.2.91 | `9c73c0f` | **`/search` YouTube thumbnails**: posts without a `media$thumbnail` fall back to `i.ytimg.com/vi/<id>/mqdefault.jpg`, and snippets are stripped of `[youtube ...]`/`[md]`/`[rede]` markers. Verified: 320×180 thumbnail rendered, 0 raw shortcodes on the page, 0 console errors. |
 | v1.2.92 | `28d0df8` | **Infinite-scroll freeze fixed**: post fetches time out after 10 s (feed 12 s), the dead Edge API fallback is disabled, a 15 s per-URL watchdog skips stalled candidates, and `build()` errors cannot strand `busy=true`. A forced hang recovered in ~10.1 s and appended the next post. |
+| v1.2.93 | `c8d592d` | **Contact/static pages cleaned up**: the left rail, its toggle, the right sidebar (`#ytPosts`), and the floating quick nav are hidden; the grid becomes a full-width block. `11-infinite` also hard-skips `html.jt-static-page`. Verified live: all side elements `display:none`, no horizontal overflow, no infinite feed. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
