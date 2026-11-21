@@ -335,6 +335,41 @@ html.jt-static-page #jtStaticHost iframe{
   background:#fff;
   box-shadow:0 12px 34px rgba(0,0,0,.14);
 }
+/* 정적 페이지: 좌우 위젯(좌측 메뉴 레일, 우측 사이드바, 퀵내비) 제거 + 1열 전체 폭 */
+html.jt-static-page #rd3Left,
+html.jt-static-page .rd3-left,
+html.jt-static-page #jtLeftToggle,
+html.jt-static-page body.rd3-layout .sidebar-container,
+html.jt-static-page body.rd3-layout .sidebar-container.sidebar-invisible,
+html.jt-static-page .sidebar-wrapper,
+html.jt-static-page .post-sidebar,
+html.jt-static-page .post-outer-container,
+html.jt-static-page #ytPosts,
+html.jt-static-page #jtQuickNav{display:none !important}
+html.jt-static-page body.rd3-layout .main_content_container{
+  display:block !important;
+  width:100% !important;
+  max-width:1280px !important;
+  margin:0 auto !important;
+  padding:0 16px !important;
+}
+html.jt-static-page body.rd3-layout .main_content_container > .page,
+html.jt-static-page body.rd3-layout .page,
+html.jt-static-page body.rd3-layout .page_body{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 auto !important;
+}
+html.jt-static-page body.rd3-layout .post-content.container,
+html.jt-static-page body.rd3-layout .post-outer{
+  width:100% !important;
+  max-width:none !important;
+}
+html.jt-static-page body.rd3-layout .post-body-container{
+  margin-left:0 !important;
+  margin-right:0 !important;
+  max-width:none !important;
+}
 html.jt-static-page.jt-resume-page body{overflow-x:hidden !important;margin:0 !important}
 html.jt-static-page.jt-resume-page .header-outer,
 html.jt-static-page.jt-resume-page .header-wrapper,

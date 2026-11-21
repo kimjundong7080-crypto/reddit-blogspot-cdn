@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.92 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.93 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -18,6 +18,7 @@
   function pathKey(u){try{return new URL(u,location.href).pathname;}catch(e){return (u||'').split('?')[0].split('#')[0];}}
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
   function isPostView(){
+    if(document.documentElement.classList.contains('jt-static-page'))return false;
     if(document.body.classList.contains('feed-view'))return false;
     if(location.pathname==='/'||location.pathname==='')return false;
     if(location.pathname.indexOf('/p/')===0)return false;
@@ -27,6 +28,7 @@
   ready(function(){
     if(!isPostView())return;
     /* 404/정적 페이지 폴백에서는 무한스크롤을 실행하지 않는다. */
+    if(document.documentElement.classList.contains('jt-static-page'))return;
     if(document.querySelector('.status-msg-body'))return;
 
     var edgeUnavailable=false;
