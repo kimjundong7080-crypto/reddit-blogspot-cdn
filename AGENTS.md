@@ -1,17 +1,21 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-21
-Latest published release: **v1.2.93**
-Current local package version: **1.2.93**
+Latest published release: **v1.2.95**
+Current local package version: **1.2.95**
 
-This document is the handoff for the next AI or engineer. Release v1.2.93 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.95 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `c8d592d Release v1.2.93`.
-- Latest GitHub release/tag: `v1.2.93`. The release script updates and pushes both `main` and a new version tag.
+- Branch: `main`; latest release commit: `03b12e0 Release v1.2.95`.
+- Latest GitHub release/tag: `v1.2.95`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.95 is published.** Content:
+  - **Contact auto-scroll fixed.** The contact iframe grew forever because `pages/contact.html` body has `min-height:100vh` + centered flex and the loader refit height on every iframe resize. `23-yt-posts` now injects `html,body{height:auto;min-height:0}` and top-aligns the iframe body, then sets a stable measured height. Verified live: iframe 950px constant for 8+ s, `scrollY` 0, no document-height growth.
+  - **Contact quick nav at bottom center.** On `/p/contact-us.html` `#jtQuickNav` is `display:flex` horizontally, centered at `bottom:14px` (safe-area aware). It now carries `class=""`. Post pages keep the original right-edge vertical quick nav (the broad `item-view` hide from v1.2.94 was reverted).
+- **v1.2.94 is published but superseded.** It introduced the contact frame-fit guard and briefly hid `#jtQuickNav` on every `item-view` page; v1.2.95 scopes the nav change to the contact page.
 - **v1.2.93 is published.** Content:
   - **Contact/static pages are single-column with no side widgets.** On `/p/contact-us.html` the left menu rail (`#rd3Left`), its toggle (`#jtLeftToggle`), the right sidebar (`#ytPosts` / `.sidebar-container`), and the floating quick nav (`#jtQuickNav`) are hidden; the 3-column grid becomes a full-width block layout.
   - **Infinite scroll is hard-disabled on static pages.** `11-infinite` now returns immediately when `html.jt-static-page` is set, in addition to the existing `/p/` path check.
@@ -54,7 +58,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.93 is pub
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.93**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
+- **CDN status (`@v1`):** `23-yt-posts.js` **1.2.95**, `23-yt-posts.css` **1.2.95**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, `24-home.js` **1.2.78**, and `24-home.css` / `21-three-column.css/js` / `22-post-image.css` **1.2.85**. Favicon assets live. No pending purge.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -342,7 +346,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.91**, `23-yt-posts.css` **1.2.93**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
+- No purge is pending. `@v1` currently serves `23-yt-posts.js` **1.2.95**, `23-yt-posts.css` **1.2.95**, `24-home.js` **1.2.78**, `11-infinite.js` **1.2.93**, `11-infinite.css` **1.2.88**, and `21-three-column.*` / `22-post-image.css` / `24-home.css` **1.2.85`; favicon links, click-to-play, loop, SEO meta, and the branded 404 are live.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.

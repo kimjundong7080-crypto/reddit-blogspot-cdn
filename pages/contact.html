@@ -284,6 +284,45 @@
             text-decoration: underline;
         }
 
+        /* 연락처 크롤링 방지 + 클릭 전 블러 처리 */
+        .contact-reveal {
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font: inherit;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .contact-reveal:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .contact-reveal .contact-mask {
+            display: inline-block;
+            filter: blur(4px);
+            letter-spacing: 2px;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+        }
+
+        .contact-reveal.is-revealed {
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .contact-reveal.is-revealed:hover {
+            text-decoration: underline;
+        }
+
         /* 4. 스크롤 애니메이션 (Intersection Observer) */
         .reveal {
             opacity: 0;
@@ -388,7 +427,6 @@
             
             <div class="hero-overlay"></div>
             
-            <div class="name-tag daniel">김준동</div>
             <div class="name-tag aaron">JUST TECH</div>
             
             <div class="main-title">
@@ -402,29 +440,6 @@
                 로봇·조립·검사·포장 설비의 <strong>설계와 제작 상담</strong>을 진행합니다.
             </p>
 
-            <div class="event-meta">
-                <!-- 날짜 정보 카드 -->
-                <div class="meta-item reveal delay-1">
-                    <div class="meta-icon">
-                        <i class="ph ph-calendar-blank"></i>
-                    </div>
-                    <div class="meta-content">
-                        <h3>상담 가능 시간</h3>
-                        <p>평일 09:00 – 18:00</p>
-                    </div>
-                </div>
-
-                <!-- 장소 정보 카드 -->
-                <div class="meta-item reveal delay-2">
-                    <div class="meta-icon">
-                        <i class="ph ph-map-pin"></i>
-                    </div>
-                    <div class="meta-content">
-                        <h3>JUST TECH</h3>
-                        <p>대구광역시 달서구</p>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- 하단 액션 바 -->
@@ -434,11 +449,15 @@
             <div class="contact-info">
                 <div class="contact-item">
                     <i class="ph ph-phone"></i>
-                    <a href="tel:01043616611">010-4361-6611</a>
+                    <button class="contact-reveal" type="button" data-kind="phone" aria-label="전화번호 보기" title="클릭하여 전화번호 보기">
+                        <span class="contact-mask" aria-hidden="true">••••••••••</span>
+                    </button>
                 </div>
                 <div class="contact-item">
                     <i class="ph ph-envelope-simple"></i>
-                    <a href="mailto:ssii@naver.com">ssii@naver.com</a>
+                    <button class="contact-reveal" type="button" data-kind="email" aria-label="이메일 보기" title="클릭하여 이메일 보기">
+                        <span class="contact-mask" aria-hidden="true">••••••••••</span>
+                    </button>
                 </div>
             </div>
         </footer>
@@ -480,10 +499,52 @@
 
             revealElements.forEach(el => revealObserver.observe(el));
 
-            // 2. 상담 문의 버튼
+            // 2. 연락처: 소스에 평문을 두지 않고 클릭 시에만 복호화/표시
+            const CONTACT_DATA = {
+                phone: { text: 'FRQVCBEWExQIExMUFA==', href: 'FRQVERYTFBMTFBQ=' },
+                email: { text: 'VlZMTGVLRFNAVwtGSkg=', href: 'VlZMTGVLRFNAVwtGSkg=' }
+            };
+            const decodeContact = (value) => {
+                try {
+                    const raw = window.atob(value);
+                    let out = '';
+                    for (let i = 0; i < raw.length; i++) {
+                        out += String.fromCharCode(raw.charCodeAt(i) ^ 37);
+                    }
+                    return out;
+                } catch (error) {
+                    return '';
+                }
+            };
+
+            document.querySelectorAll('.contact-reveal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const kind = btn.getAttribute('data-kind');
+                    const data = CONTACT_DATA[kind];
+                    if (!data) return;
+
+                    if (btn.classList.contains('is-revealed') && btn.dataset.href) {
+                        window.location.href = btn.dataset.href;
+                        return;
+                    }
+
+                    const text = decodeContact(data.text);
+                    const target = decodeContact(data.href);
+                    if (!text || !target) return;
+
+                    btn.textContent = text;
+                    btn.classList.add('is-revealed');
+                    btn.dataset.href = (kind === 'phone' ? 'tel:' : 'mailto:') + target;
+                    btn.title = (kind === 'phone' ? '전화 걸기: ' : '메일 보내기: ') + text;
+                    btn.setAttribute('aria-label', btn.title);
+                });
+            });
+
+            // 3. 상담 문의 버튼
             const registerBtn = document.querySelector('.register-btn');
             registerBtn.addEventListener('click', () => {
-                window.location.href = 'mailto:ssii@naver.com';
+                const email = decodeContact(CONTACT_DATA.email.href);
+                if (email) window.location.href = 'mailto:' + email;
             });
         });
     </script>
