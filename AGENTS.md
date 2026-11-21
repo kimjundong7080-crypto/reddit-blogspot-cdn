@@ -8,6 +8,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.108 is pu
 
 ## 1. Current status — read first
 
+- **Unreleased local change — domain-aware branding.** `src/23-yt-posts.html` now selects SEO/site strings from a `BRAND` table by `location.hostname`: `techlifeworld.com` → JUST TECH, `shutupquick.com` → 삶의 지혜, `deepstronglove.com` → 일상의 즐거움. Changed values: `SITE`, `HOME_TITLE`, `HOME_DESC`, `FALLBACK_DESC`, item/about/contact descriptions, home `alternateName`, static-page titles (`PAGES`), and the 404 title/description. Brand is shared as `window.__jtBrand` for the later IIFEs. In the same change: `SELF_ORIGIN` (current `location.protocol//host`) replaced `ORIGIN` for JSON-LD `@id`/`url`, the canonical fallback and the favicon fallback, so other domains no longer point at techlifeworld; `ORIGIN` is still used only for the `.blogspot.com` redirect target. Dead code removed: the never-called `initHomeHero()` and its unused `html.jt-home-page .jt-hero*` CSS block. Build/`--check`/`node --check` pass; not released yet, so `@v1` still serves the old body.
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
 - Branch: `main`; latest release commit: `19dc992 Release v1.2.108`.

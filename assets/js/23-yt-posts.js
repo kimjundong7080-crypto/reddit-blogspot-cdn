@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.108 */
+/* Reddit-style Blogger YouTube post list — v1.2.109 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -163,25 +163,6 @@
     if(!feed||!window.MutationObserver||feed.__jtLazyObs)return;
     feed.__jtLazyObs=1;
     new MutationObserver(function(){lazyPostImages(feed);}).observe(feed,{childList:true,subtree:true});
-  }
-  function initHomeHero(){
-    if(document.querySelector('.jt-hero'))return;
-    var body=document.querySelector('.post-body');
-    if(!body)return;
-    var id='lyFcrrULyN0';
-    var poster='https://i.ytimg.com/vi/'+id+'/sddefault.jpg';
-    var hero=document.createElement('div');
-    hero.className='jt-hero';
-    hero.innerHTML='<div class="jt-hero-media"><img class="jt-hero-poster" src="'+poster+'" alt="" loading="eager" fetchpriority="high" decoding="async"><button type="button" class="jt-hero-play" aria-label="히어로 영상 재생"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button></div>'
-      +'<div class="jt-hero-copy"><p class="jt-hero-kicker">JUST TECH</p><h2 class="jt-hero-title">산업 자동화 기술 아카이브</h2><p class="jt-hero-sub">로봇·설비·자동화 현장을 기록합니다.</p></div>';
-    body.insertBefore(hero,body.firstChild);
-    var media=hero.querySelector('.jt-hero-media');
-    var play=hero.querySelector('.jt-hero-play');
-    if(play){
-      play.onclick=function(){
-        media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=0&loop=1&playlist='+id+'&controls=0&modestbranding=1&playsinline=1&rel=0" title="JUST TECH 히어로 영상" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
-      };
-    }
   }
   /* /search : 라벨 필터 + 번호 페이지네이션 */
   function initSearchApp(){
@@ -1060,10 +1041,38 @@
   (function(){
     if(window.__jtSeo)return; window.__jtSeo=1;
     var ORIGIN='https://www.techlifeworld.com';
-    var SITE='JUST TECH';
-    var HOME_TITLE='JUST TECH | 산업 자동화·로봇·설비 기술 아카이브';
-    var HOME_DESC='로봇·조립·검사·포장 설비까지 산업 자동화 현장의 설계·제작·적용 사례와 기술 자료를 정리한 JUST TECH 블로그입니다.';
-    var FALLBACK_DESC='산업 자동화·로봇·설비 기술 자료를 기록하는 JUST TECH 블로그입니다.';
+    /* 실제 접속 도메인: JSON-LD·canonical 폴백이 다른 도메인에서 techlifeworld를 가리키지 않도록 한다. */
+    var SELF_ORIGIN=/^https?:$/.test(location.protocol)?location.protocol+'//'+location.host:ORIGIN;
+    /* 도메인별 브랜딩: 같은 CDN 자산을 세 블로그가 공유하므로 hostname으로 문구를 고른다. */
+    var BRAND={name:'JUST TECH',altName:'테크라이프월드',
+      homeTitle:'JUST TECH | 산업 자동화·로봇·설비 기술 아카이브',
+      homeDesc:'로봇·조립·검사·포장 설비까지 산업 자동화 현장의 설계·제작·적용 사례와 기술 자료를 정리한 JUST TECH 블로그입니다.',
+      fallbackDesc:'산업 자동화·로봇·설비 기술 자료를 기록하는 JUST TECH 블로그입니다.',
+      itemDesc:' 관련 산업 자동화 기술 자료와 적용 사례를 정리한 JUST TECH 글입니다.',
+      aboutDesc:'JUST TECH의 산업 자동화·로봇·생산설비 설계/제작 경험과 기술 아카이브를 소개합니다.',
+      contactDesc:'산업 자동화·로봇·조립·검사·포장 설비의 설계와 제작 상담 안내입니다.'};
+    var BRANDS=[
+      {re:/(^|\.)shutupquick\.com$/i,name:'삶의 지혜',altName:'shutupquick.com',
+        homeTitle:'삶의 지혜 | 삶에 도움이 되는 지혜와 팁',
+        homeDesc:'살아가면서 필요한 지혜와 생활 속 요령, 짧은 조언을 모아 정리한 삶의 지혜 블로그입니다.',
+        fallbackDesc:'삶에 도움이 되는 지혜와 생활 팁을 기록하는 삶의 지혜 블로그입니다.',
+        itemDesc:' 관련 삶의 지혜와 생활 팁을 정리한 글입니다.',
+        aboutDesc:'삶의 지혜 블로그가 다루는 주제와 이야기를 소개합니다.',
+        contactDesc:'삶의 지혜 블로그 문의 안내입니다.'},
+      {re:/(^|\.)deepstronglove\.com$/i,name:'일상의 즐거움',altName:'deepstronglove.com',
+        homeTitle:'일상의 즐거움 | 매일의 소소한 이야기',
+        homeDesc:'평범한 일상에서 발견하는 즐거움과 소소한 이야기, 취미와 관심사를 기록하는 일상의 즐거움 블로그입니다.',
+        fallbackDesc:'일상의 즐거움과 소소한 이야기를 기록하는 블로그입니다.',
+        itemDesc:' 관련 일상의 즐거움과 소소한 이야기를 담은 글입니다.',
+        aboutDesc:'일상의 즐거움 블로그가 기록하는 이야기를 소개합니다.',
+        contactDesc:'일상의 즐거움 블로그 문의 안내입니다.'}
+    ];
+    for(var bi=0;bi<BRANDS.length;bi++){if(BRANDS[bi].re.test(location.hostname)){BRAND=BRANDS[bi];break;}}
+    window.__jtBrand=BRAND;
+    var SITE=BRAND.name;
+    var HOME_TITLE=BRAND.homeTitle;
+    var HOME_DESC=BRAND.homeDesc;
+    var FALLBACK_DESC=BRAND.fallbackDesc;
     if(/\.blogspot\.com$/i.test(location.hostname)){
       var bsTarget=ORIGIN+location.pathname+location.search;
       var bsCanonical=document.querySelector('link[rel="canonical"]');
@@ -1149,7 +1158,7 @@
       }
       if(id)return 'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
       var img=document.querySelector('.post-body img, .jt-project-media img');
-      return img&&img.src?img.src:ORIGIN+'/favicon.ico';
+      return img&&img.src?img.src:SELF_ORIGIN+'/favicon.ico';
     }
     function putLd(id,data){
       var el=document.getElementById(id);
@@ -1165,7 +1174,8 @@
       ||(/^\/p\/[^/]+\.html$/.test(location.pathname)&&location.pathname!=='/p/home.html');
     var isItem=!!(document.body&&document.body.classList.contains('item-view'))&&!isStaticPage;
     var rawTitle=(document.title||'').replace(/\s+/g,' ').trim();
-    var headline=rawTitle.replace(/\s*\|\s*JUST TECH$/,'')||SITE;
+    var SITE_RE=new RegExp('\\s*\\|\\s*'+SITE.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$');
+    var headline=rawTitle.replace(SITE_RE,'')||SITE;
     if(isHome){
       document.title=HOME_TITLE;
     }else if(isSearchPage){
@@ -1197,18 +1207,18 @@
       if(!head().querySelector('meta[property="og:image"]'))setMeta('property','og:image',homeImage);
       if(!head().querySelector('meta[name="twitter:image"]'))setMeta('name','twitter:image',homeImage);
       putLd('jt-ld-website',{'@context':'https://schema.org','@graph':[
-        {'@type':'WebSite','@id':ORIGIN+'/#website','url':ORIGIN+'/p/home.html','name':SITE,
-          'alternateName':'테크라이프월드','description':HOME_DESC,'inLanguage':'ko',
-          'publisher':{'@id':ORIGIN+'/#organization'},
+        {'@type':'WebSite','@id':SELF_ORIGIN+'/#website','url':SELF_ORIGIN+'/p/home.html','name':SITE,
+          'alternateName':BRAND.altName,'description':HOME_DESC,'inLanguage':'ko',
+          'publisher':{'@id':SELF_ORIGIN+'/#organization'},
           'potentialAction':{'@type':'SearchAction',
-            'target':{'@type':'EntryPoint','urlTemplate':ORIGIN+'/search?q={search_term_string}'},
+            'target':{'@type':'EntryPoint','urlTemplate':SELF_ORIGIN+'/search?q={search_term_string}'},
             'query-input':'required name=search_term_string'}},
-        {'@type':'Organization','@id':ORIGIN+'/#organization','name':SITE,'url':ORIGIN+'/p/home.html',
+        {'@type':'Organization','@id':SELF_ORIGIN+'/#organization','name':SITE,'url':SELF_ORIGIN+'/p/home.html',
           'description':FALLBACK_DESC}
       ]});
     }else if(isItem){
-      var canonical=(document.querySelector('link[rel=canonical]')||{}).href||(ORIGIN+location.pathname);
-      var initialDesc=cut(bodyText(),150)||(headline+' 관련 산업 자동화 기술 자료와 적용 사례를 정리한 JUST TECH 글입니다.');
+      var canonical=(document.querySelector('link[rel=canonical]')||{}).href||(SELF_ORIGIN+location.pathname);
+      var initialDesc=cut(bodyText(),150)||(headline+BRAND.itemDesc);
       setMeta('name','description',initialDesc);
       setMeta('property','og:description',initialDesc);
       setMeta('name','twitter:description',initialDesc);
@@ -1223,15 +1233,15 @@
           '@type':'BlogPosting','@id':canonical+'#article',
           'mainEntityOfPage':{'@type':'WebPage','@id':canonical},
           'headline':headline,'description':desc,'image':[ogImage()],'inLanguage':'ko',
-          'author':{'@type':'Organization','name':SITE,'url':ORIGIN+'/p/home.html'},
-          'publisher':{'@type':'Organization','name':SITE,'url':ORIGIN+'/p/home.html'},
-          'isPartOf':{'@type':'Blog','name':SITE,'url':ORIGIN+'/p/home.html'}
+          'author':{'@type':'Organization','name':SITE,'url':SELF_ORIGIN+'/p/home.html'},
+          'publisher':{'@type':'Organization','name':SITE,'url':SELF_ORIGIN+'/p/home.html'},
+          'isPartOf':{'@type':'Blog','name':SITE,'url':SELF_ORIGIN+'/p/home.html'}
         }];
         if(extra.published)graph[0].datePublished=extra.published;
         if(extra.updated)graph[0].dateModified=extra.updated;
         if(extra.section)graph[0].articleSection=extra.section;
         graph.push({'@type':'BreadcrumbList','itemListElement':[
-          {'@type':'ListItem','position':1,'name':'홈','item':ORIGIN+'/p/home.html'},
+          {'@type':'ListItem','position':1,'name':'홈','item':SELF_ORIGIN+'/p/home.html'},
           {'@type':'ListItem','position':2,'name':headline,'item':canonical}
         ]});
         putLd('jt-ld-article',{'@context':'https://schema.org','@graph':graph});
@@ -1260,9 +1270,9 @@
       var path=location.pathname;
       var pageTitle=document.title||SITE;
       var pageDesc=path==='/p/about.html'
-        ? 'JUST TECH의 산업 자동화·로봇·생산설비 설계/제작 경험과 기술 아카이브를 소개합니다.'
+        ? BRAND.aboutDesc
         : (path==='/p/contact-us.html'||path==='/p/contact.html')
-          ? '산업 자동화·로봇·조립·검사·포장 설비의 설계와 제작 상담 안내입니다.'
+          ? BRAND.contactDesc
           : FALLBACK_DESC;
       setMeta('name','description',pageDesc);
       setMeta('property','og:description',pageDesc);
@@ -1282,10 +1292,11 @@
 
   (function(){
     if(window.__jtStaticPage)return; window.__jtStaticPage=1;
+    var BRAND_NAME=(window.__jtBrand&&window.__jtBrand.name)||'JUST TECH';
     var PAGES={
-      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | JUST TECH',label:'이력서',frame:'이력서',resume:true},
-      '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
-      '/p/contact.html':{file:'pages/contact.html',title:'Contact | JUST TECH',label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
+      '/p/resume.html':{file:'pages/resume.html',title:'이력서 | '+BRAND_NAME,label:'이력서',frame:'이력서',resume:true},
+      '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | '+BRAND_NAME,label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
+      '/p/contact.html':{file:'pages/contact.html',title:'Contact | '+BRAND_NAME,label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
     };
     var page=PAGES[location.pathname];
     if(!page||!window.fetch)return;
@@ -1428,12 +1439,13 @@
         +'<div class="jt-404-actions"><a class="jt-404-btn primary" href="/">홈으로</a><a class="jt-404-btn" href="/search">글 검색</a></div>'
         +'<ul class="jt-404-recent" aria-label="최근 글"></ul>'
         +'</div>';
-      var title='페이지를 찾을 수 없음 | JUST TECH';
+      var notFoundName=(window.__jtBrand&&window.__jtBrand.name)||'JUST TECH';
+      var title='페이지를 찾을 수 없음 | '+notFoundName;
       document.title=title;
       setMeta('property','og:title',title);
       setMeta('name','twitter:title',title);
-      setMeta('name','description','요청한 페이지를 찾을 수 없습니다. JUST TECH 홈이나 검색에서 원하는 글을 찾아보세요.');
-      setMeta('property','og:description','요청한 페이지를 찾을 수 없습니다. JUST TECH 홈이나 검색에서 원하는 글을 찾아보세요.');
+      setMeta('name','description','요청한 페이지를 찾을 수 없습니다. '+notFoundName+' 홈이나 검색에서 원하는 글을 찾아보세요.');
+      setMeta('property','og:description','요청한 페이지를 찾을 수 없습니다. '+notFoundName+' 홈이나 검색에서 원하는 글을 찾아보세요.');
       setMeta('name','robots','noindex, follow');
       var ul=box.querySelector('.jt-404-recent');
       if(!ul)return;
