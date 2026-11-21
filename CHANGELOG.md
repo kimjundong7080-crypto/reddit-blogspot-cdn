@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.93**
+Latest published release: **v1.2.96**
 
-This is the consolidated English record for the work cycle that ended with v1.2.93.
+This is the consolidated English record for the work cycle that ended with v1.2.96.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -45,6 +45,9 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.91 | `9c73c0f` | **`/search` YouTube thumbnails**: posts without a `media$thumbnail` fall back to `i.ytimg.com/vi/<id>/mqdefault.jpg`, and snippets are stripped of `[youtube ...]`/`[md]`/`[rede]` markers. Verified: 320×180 thumbnail rendered, 0 raw shortcodes on the page, 0 console errors. |
 | v1.2.92 | `28d0df8` | **Infinite-scroll freeze fixed**: post fetches time out after 10 s (feed 12 s), the dead Edge API fallback is disabled, a 15 s per-URL watchdog skips stalled candidates, and `build()` errors cannot strand `busy=true`. A forced hang recovered in ~10.1 s and appended the next post. |
 | v1.2.93 | `c8d592d` | **Contact/static pages cleaned up**: the left rail, its toggle, the right sidebar (`#ytPosts`), and the floating quick nav are hidden; the grid becomes a full-width block. `11-infinite` also hard-skips `html.jt-static-page`. Verified live: all side elements `display:none`, no horizontal overflow, no infinite feed. |
+| v1.2.94 | `c1c605c` | **Contact auto-scroll root cause fixed**: the iframe body's `min-height:100vh` plus resize-driven refit made the frame grow ~240px/0.5 s forever. `23-yt-posts` injects `min-height:0`/top alignment and sets a stable height. Also briefly hid `#jtQuickNav` on all `item-view` pages (reverted in v1.2.95). |
+| v1.2.95 | `03b12e0` | **Contact quick nav + stable live fix**: `#jtQuickNav` on `/p/contact-us.html` is horizontal, centered at the bottom (14px), and has `class=""`; post pages keep the original right-edge nav. Verified live: iframe 950px constant for 8+ s, `scrollY` 0, no height growth, nav centered/bottom. |
+| v1.2.96 | `db13aec` | **Contact page trimmed and contact details protected**: removed the `김준동` tag, consultation hours, and address. Phone/email are now blurred placeholders with no plaintext/`tel:`/`mailto:` in the source; values are XOR+base64 encoded and decoded on click (first click reveals, next dials/mails). Verified live: no plaintext before click, correct reveal after, iframe stable. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
