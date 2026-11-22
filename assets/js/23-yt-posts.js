@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.110 */
+/* Reddit-style Blogger YouTube post list — v1.2.111 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -753,13 +753,30 @@
   }
   window.__jtPrepareYouTubeShortcodes=function(source){
     var pattern=/\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]/gi;
+    var shortsLink=/\[shorts\s+link\s*=\s*["']([^"']+)["']\s*\]/gi;
+    var shortsPlain=/\[shorts\s+["']([^"']+)["']'?\s*\]/gi;
     var mapCode=/\[map[^\]\n]{0,300}\]/gi;
+    function ytIdFromUrl(value){
+      var m=String(value||'').match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+      if(!m)m=String(value||'').match(/^([A-Za-z0-9_-]{11})$/);
+      return m?m[1]:'';
+    }
+    function ytDiv(id,shorts){
+      return shorts?'<div class="jt-yt-embed jt-shorts" data-yt="'+id+'" data-shorts="1"></div>':'<div class="jt-yt-embed" data-yt="'+id+'"></div>';
+    }
     var out=String(source).replace(pattern,function(full,link){
       link=String(link||'').trim();
-      var match=link.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
-      if(!match)match=link.match(/^([A-Za-z0-9_-]{11})$/);
-      var id=match?match[1]:'';
-      return id?'\n<div class="jt-yt-embed" data-yt="'+id+'"></div>\n':full;
+      var id=ytIdFromUrl(link);
+      if(!id)return full;
+      return '\n'+ytDiv(id,/\/shorts\//i.test(link))+'\n';
+    });
+    out=out.replace(shortsLink,function(full,link){
+      var id=ytIdFromUrl(String(link||'').trim());
+      return id?'\n'+ytDiv(id,true)+'\n':full;
+    });
+    out=out.replace(shortsPlain,function(full,link){
+      var id=ytIdFromUrl(String(link||'').trim());
+      return id?'\n'+ytDiv(id,true)+'\n':full;
     });
     return out.replace(mapCode,function(full){
       var addr=jtMapAddress(full);
@@ -921,10 +938,10 @@
       var frames=box.querySelectorAll('iframe');
       for(var i=0;i<frames.length;i++)frames[i].remove();
     }
-    function startPlayback(box,id,observer){
+    function startPlayback(box,id,observer,keepOthers){
       if(box.getAttribute('data-loaded')||!document.documentElement.contains(box))return;
-      if(activePlaybackBox&&activePlaybackBox!==box)stopPlayback(activePlaybackBox);
-      activePlaybackBox=box;
+      if(!keepOthers&&activePlaybackBox&&activePlaybackBox!==box)stopPlayback(activePlaybackBox);
+      if(!keepOthers)activePlaybackBox=box;
       box.setAttribute('data-loaded','1');
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
@@ -945,6 +962,7 @@
     function mount(box){
       var id=box.getAttribute('data-yt');
       if(!id)return;
+      var isShorts=box.classList.contains('jt-shorts')||box.getAttribute('data-shorts')==='1';
       var loaded=box.getAttribute('data-loaded');
       if(box.__jtYtMounted)return;
       if(loaded){
@@ -987,8 +1005,27 @@
       play.addEventListener('click',function(){startPlayback(box,id,null);});
       box.appendChild(thumb);
       box.appendChild(play);
-      /* 단일 글에서도 자동재생하지 않고 포스터+재생 버튼을 유지한다.
-         자동재생이 차단되는 브라우저에서 검은 화면/멈춤으로 보이던 문제를 없앤다. */
+      /* 일반 영상은 포스터+재생 버튼을 유지한다.
+         세로(숏츠) 영상은 0.5초 뒤 무음 자동재생하고, 화면 밖이면 보일 때 시작한다. */
+      if(isShorts){
+        setTimeout(function(){
+          if(!document.documentElement.contains(box))return;
+          var r=box.getBoundingClientRect();
+          var vh=window.innerHeight||document.documentElement.clientHeight;
+          if(r.bottom>0&&r.top<vh){startPlayback(box,id,null,true);return;}
+          if(window.IntersectionObserver){
+            var io=new IntersectionObserver(function(entries){
+              if(entries[0]&&entries[0].isIntersecting){
+                io.disconnect();
+                box.__jtShortsObserver=null;
+                startPlayback(box,id,null,true);
+              }
+            },{threshold:0.25});
+            box.__jtShortsObserver=io;
+            io.observe(box);
+          }
+        },500);
+      }
     }
     /* 숏코드가 제목(h1~h6)처럼 잘림(clamp) 스타일 안에 들어간 경우 임베드를 밖으로 꺼낸다 */
     function unclipEmbed(box){
@@ -1014,6 +1051,7 @@
       var paragraph=/<p>\s*\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]\s*<\/p>/gi;
       /* 제목/스팬 등 태그로 감싸진 숏코드도 처리: 대괄호 전체를 잡은 뒤 태그를 제거해 ID 추출 */
       var shortcode=/\[youtube[^\]]{0,400}\]/gi;
+      var shortsCode=/\[shorts[^\]]{0,400}\]/gi;
       var mapCode=/\[map[^\]\n]{0,300}\]/gi;
       for(var b=0;b<bodies.length;b++){
         var body=bodies[b];
@@ -1021,18 +1059,32 @@
            제목 데이터에 남은 [youtube ...] 문자열을 숏코드로 오인해 innerHTML을
            다시 쓰면 랜딩 DOM이 재생성되어 공개(reveal) 옵저버가 끊긴다. */
         if(body.querySelector('.jt-landing'))continue;
-        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[map')===-1)continue;
+        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[shorts')===-1&&body.innerHTML.indexOf('[map')===-1)continue;
         var html=body.innerHTML,found=false;
         html=html.replace(paragraph,function(full,link){
           var id=ytId(link);if(!id)return full;
-          found=true;return '<div class="jt-yt-embed" data-yt="'+id+'"></div>';
+          found=true;
+          var shorts=/\/shorts\//i.test(link);
+          return shorts?'<div class="jt-yt-embed jt-shorts" data-yt="'+id+'" data-shorts="1"></div>':'<div class="jt-yt-embed" data-yt="'+id+'"></div>';
         });
         html=html.replace(shortcode,function(full){
           var plainText=full.replace(/<[^>]*>/g,' ');
           var lm=plainText.match(/link\s*=\s*["']([^"']+)["']/i)||plainText.match(/https?:\/\/[^\s"'<\]]+/i);
-          var id=lm?ytId(lm[1]||lm[0]):'';
+          var url=lm?(lm[1]||lm[0]):'';
+          var id=url?ytId(url):'';
           if(!id)return full;
-          found=true;return '<div class="jt-yt-embed" data-yt="'+id+'"></div>';
+          found=true;
+          var shorts=/\/shorts\//i.test(url);
+          return shorts?'<div class="jt-yt-embed jt-shorts" data-yt="'+id+'" data-shorts="1"></div>':'<div class="jt-yt-embed" data-yt="'+id+'"></div>';
+        });
+        html=html.replace(shortsCode,function(full){
+          var plainText=full.replace(/<[^>]*>/g,' ');
+          var lm=plainText.match(/link\s*=\s*["']([^"']+)["']/i)||plainText.match(/["']([^"']+)["']/)||plainText.match(/https?:\/\/[^\s"'<\]]+/i);
+          var url=lm?(lm[1]||lm[0]):'';
+          var id=url?ytId(url):'';
+          if(!id)return full;
+          found=true;
+          return '<div class="jt-yt-embed jt-shorts" data-yt="'+id+'" data-shorts="1"></div>';
         });
         html=html.replace(mapCode,function(full){
           var addr=jtMapAddress(full.replace(/<[^>]*>/g,' '));
