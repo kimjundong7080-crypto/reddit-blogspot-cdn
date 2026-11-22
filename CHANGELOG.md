@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.114**
+Latest published release: **v1.2.115**
 
-This is the consolidated English record for the work cycle that ended with v1.2.114.
+This is the consolidated English record for the work cycle that ended with v1.2.115.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -66,6 +66,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.112 | `bdfd04e` | **Wider map/YouTube embeds**: regular `.jt-yt-embed` and `.jt-map-embed` changed from `width:min(calc(100% - 96px),820px)` to `min(calc(100% - 32px),900px)` (desktop) and from `calc(100% - 32px)` to `calc(100% - 24px)` at ≤768px, cutting the side margin roughly in half. Shorts keep their 360px centered width. Verified live on shutupquick `/2026/11/sssss.html`: the map and an injected YouTube embed are both 688px wide (387px tall) with 16px left/right gaps, up from 624px/48px gaps. |
 | v1.2.113 | `01c31ae` | **Map visibility fallback**: map iframes now use the classic `https://maps.google.com/maps?q=...&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed` endpoint with `loading="eager"`. The map box shows the address as a centered placeholder (`.jt-map-note`) behind the iframe and a visible `Google 지도에서 열기` link (`.jt-map-fallback`, new tab) after it, so ad blockers/privacy extensions or Google-embed blocks still leave usable output. Verified live (688×387, iframe loaded) and with `maps.google.com` aborted: the address and fallback link remain visible. |
 | v1.2.114 | `8236e06` | **Map thumbnails for map-only posts**: `jtMapThumb(addr)` builds a keyless data-URI SVG (map grid, red pin, address label) and is used by both the `/search` cards and the `#ytPosts` recommended list when a post has no `media$thumbnail`, no YouTube id, and no `<img>` but contains a `[map "..."]` shortcode. Verified live on shutupquick `/2026/11/ss.html`: the `sssss` recommended card shows the SVG map thumb (`data:image/svg+xml`, `naturalWidth > 0`) instead of `yt-thumb-empty`. |
+| v1.2.115 | `6a551d7` | **Viewport auto-stop + captions off**: `initViewportPlaybackGuard()` runs on scroll/resize/document-hidden and removes the iframe (`data-loaded`/`ready` cleared) from any `.jt-yt-embed`, plus removing `#ytPosts` hover preview iframes, once the element is less than 50% visible. All YouTube iframe URLs (click-to-play, Shorts autoplay, recommended hover preview) now include `cc_load_policy=0`. Verified live on techlifeworld: Shorts and a clicked normal video both had `cc_load_policy=0` and were stopped after `scrollTo(0,3000)`; returning to the top does not auto-restart (poster/play remains). |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
