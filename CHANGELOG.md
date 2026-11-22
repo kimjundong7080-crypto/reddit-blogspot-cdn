@@ -73,6 +73,8 @@ Tooling note (2026-11-22): a user-global Kilo skill, `surgical-code-edit`, was a
 
 Documentation addition (2026-11-22): added AGENTS.md §10 Shortcode reference (`[youtube]`, `[shorts]`, `[map]`, `[md]`, `[rede]`/`[rade]`) and §11 remaining work/known issues for the v1.2.111 Shorts-autoplay release.
 
+Documentation addition (2026-11-22, Naver Clip): added AGENTS.md §12 with the Naver Clip investigation — the working oEmbed URL (`https://m.naver.com/shorts/oembed/?seedMediaId=<32 hex>&serviceType=CLIP`), the `naver.me` CORS/opaque-redirect blocker, the unavailable Cloudflare resolver (wrangler not authenticated), the fact that Naver autoplay cannot be forced from a parent page, and the implementation plan. No source change or release was made for Naver Clip; §11 items 9–11 track it as not implemented.
+
 ## 3. Blogger data operations
 
 - Restored pages:

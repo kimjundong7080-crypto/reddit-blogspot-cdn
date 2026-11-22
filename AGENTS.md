@@ -416,6 +416,7 @@ Behavior notes:
 - `[md]` must be the first non-empty line of the post body; no closing tag is required. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
 - Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
 - Shortcode parsing runs in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), including infinite-scroll clones.
+- **Naver Clip is planned, not implemented** (`[clip "..."]`, `[naverclip "..."]`). See §12 for the working oEmbed URL, the `naver.me` resolution blocker, and the implementation plan.
 
 ## 11. Remaining work and known issues (2026-11-22)
 
@@ -427,3 +428,30 @@ Behavior notes:
 6. **Infinite-scroll clones.** Clones lose iframe elements during sanitization; the Shorts mount/observer logic re-creates players when visible. Re-test with several real Shorts posts after infinite scroll appends clones.
 7. **No automated tests.** Verification is manual Playwright checks plus `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/23-yt-posts.js`, and `git diff --check`.
 8. **CDN purge lag.** jsDelivr `@v1` keeps a 12 h `s-maxage`; purge after the new tag is indexed. Early purges can still return an older `x-jsd-version`, and repeated purges can be throttled. Confirm the served version before declaring a release live.
+9. **Naver Clip embed is NOT implemented yet.** The user asked to treat a Naver Clip like Shorts (centered, inline playback). The working embed URL and the blocking issue are documented in §12. Do not claim it is supported until the `[clip]` shortcode and the `naver.me` resolver decision are implemented and verified.
+10. **`naver.me` cannot be expanded client-side.** A browser `fetch` of `https://naver.me/...` fails CORS and an opaque redirect hides the `Location` header. The bridge HTML contains `seedMediaId`, but reading it cross-origin also needs a proxy. A server-side resolver (Cloudflare Worker) is required, or authors must paste the full `m.naver.com/shorts/?seedMediaId=...` URL.
+11. **Naver player autoplay is not controllable.** The oEmbed page starts paused and ignores `autoplay`/`mute` query parameters; a parent page cannot call `play()` on the cross-origin frame. Plan a click-to-play poster + centered 9:16 layout instead of muted autoplay.
+
+## 12. Naver Clip investigation (2026-11-22)
+
+Request: treat `https://naver.me/x3cEg2Iw` like YouTube Shorts — centered inline playback.
+
+Findings:
+
+- `naver.me/x3cEg2Iw` returns a 302 to
+  `https://link.naver.com/bridge?url=https%3A%2F%2Fm.naver.com%2Fshorts%2F%3FseedMediaId%3D<32 hex>%26serviceType%3DCLIP...&dst=naversearchapp://...`.
+- The **working inline embed** is:
+  `https://m.naver.com/shorts/oembed/?seedMediaId=<32 hex>&serviceType=CLIP`
+  It renders the clip (verified with `4B440BBD4CA14AC8D3F3ED51FD7A4A9AC4E9`: video 720×1280, title/sound shown, starts paused with a mute control).
+- These variants do **not** work: `?url=https://naver.me/...` (shows "비공개 또는 삭제되어 볼 수 없는 클립입니다"), `?url=<full m.naver URL>`, `oembed.json`, `tv.naver.com/oembed`, and extra `autoplay`/`mute` query parameters (video stays paused).
+- `naver.me` has no public unshorten API. The Naver Open API `/v1/util/shorturl` only shortens and was discontinued 2024-11-28. `api.allorigins.win`, `corsproxy.io`, and `api.codetabs.com` were unavailable/401/522 from this environment.
+- The repo has `cloudflare/shortlinks` (`techlifeworld-shortlinks`) with a `/15544` redirect route. A `/naver-resolve?url=...` endpoint could fetch `naver.me` with `redirect:"manual"`/`"follow"` server-side, parse `seedMediaId` from the `Location`/bridge HTML, and return JSON with CORS. It is **not implemented**, and `wrangler whoami` reports "You are not authenticated"; no `CLOUDFLARE_API_TOKEN`/`CF_*` env var is present. Deploying the worker needs the user to authenticate (`wrangler login`) or provide a token/route approval. The route would also need `www.techlifeworld.com/naver-resolve*` in `cloudflare/shortlinks/wrangler.toml`.
+
+Implementation plan once unblocked:
+
+1. Add `[clip "URL"]` / `[naverclip "URL"]` / `[naver "URL"]` to both shortcode paths and the scanned-post guard.
+2. If the URL contains `seedMediaId=<32 hex>`, build the oembed iframe and reuse the `.jt-yt-embed.jt-shorts` 9:16 centered layout (height 640/max 360px). Do **not** promise autoplay.
+3. If the URL is `naver.me/...`, call the resolver endpoint (preferred) or render a centered "네이버 클립 열기" card that links out. Never iframe `naver.me` directly: it shows the `link.naver.com` app-bridge page.
+4. Add a poster/click-to-play button and a visible fallback link, similar to the map fallback, so blocked embeds still leave a usable action.
+5. Verify on all three domains and update §10/§11.
+
