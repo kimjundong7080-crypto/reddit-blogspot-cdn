@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.109 */
+/* Reddit-style Blogger YouTube post list — v1.2.110 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -742,14 +742,28 @@
     });
   });
 
+  /* [map "주소 또는 지명"] 숏코드에서 주소 문자열을 추출한다. */
+  function jtMapAddress(text){
+    var s=String(text||'');
+    var m=s.match(/\[map\s+["']([^"']+)["']'?\s*\]/i)||s.match(/\[map\s+([^\]"']+?)\s*\]/i);
+    return m?m[1].trim():'';
+  }
+  function jtEscapeAttr(s){
+    return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
   window.__jtPrepareYouTubeShortcodes=function(source){
     var pattern=/\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]/gi;
-    return String(source).replace(pattern,function(full,link){
+    var mapCode=/\[map[^\]\n]{0,300}\]/gi;
+    var out=String(source).replace(pattern,function(full,link){
       link=String(link||'').trim();
       var match=link.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
       if(!match)match=link.match(/^([A-Za-z0-9_-]{11})$/);
       var id=match?match[1]:'';
       return id?'\n<div class="jt-yt-embed" data-yt="'+id+'"></div>\n':full;
+    });
+    return out.replace(mapCode,function(full){
+      var addr=jtMapAddress(full);
+      return addr?'\n<div class="jt-map-embed" data-map="'+jtEscapeAttr(addr)+'"></div>\n':full;
     });
   };
 
@@ -1000,13 +1014,14 @@
       var paragraph=/<p>\s*\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]\s*<\/p>/gi;
       /* 제목/스팬 등 태그로 감싸진 숏코드도 처리: 대괄호 전체를 잡은 뒤 태그를 제거해 ID 추출 */
       var shortcode=/\[youtube[^\]]{0,400}\]/gi;
+      var mapCode=/\[map[^\]\n]{0,300}\]/gi;
       for(var b=0;b<bodies.length;b++){
         var body=bodies[b];
         /* 홈 랜딩(.jt-landing)은 위젯이 만든 UI이므로 숏코드 치환 대상에서 제외한다.
            제목 데이터에 남은 [youtube ...] 문자열을 숏코드로 오인해 innerHTML을
            다시 쓰면 랜딩 DOM이 재생성되어 공개(reveal) 옵저버가 끊긴다. */
         if(body.querySelector('.jt-landing'))continue;
-        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1)continue;
+        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[map')===-1)continue;
         var html=body.innerHTML,found=false;
         html=html.replace(paragraph,function(full,link){
           var id=ytId(link);if(!id)return full;
@@ -1019,6 +1034,11 @@
           if(!id)return full;
           found=true;return '<div class="jt-yt-embed" data-yt="'+id+'"></div>';
         });
+        html=html.replace(mapCode,function(full){
+          var addr=jtMapAddress(full.replace(/<[^>]*>/g,' '));
+          if(!addr)return full;
+          found=true;return '<div class="jt-map-embed" data-map="'+jtEscapeAttr(addr)+'"></div>';
+        });
         if(found){
           body.innerHTML=html;
           body.setAttribute('data-yt-scanned','1');
@@ -1028,6 +1048,21 @@
       }
       var boxes=document.querySelectorAll('.jt-yt-embed');
       for(var i=0;i<boxes.length;i++)mount(boxes[i]);
+      var maps=document.querySelectorAll('.jt-map-embed');
+      for(var mi=0;mi<maps.length;mi++){
+        var mb=maps[mi];
+        if(mb.__jtMap)continue;
+        var addr=mb.getAttribute('data-map')||'';
+        if(!addr)continue;
+        mb.__jtMap=1;
+        var fr=document.createElement('iframe');
+        fr.src='https://www.google.com/maps?q='+encodeURIComponent(addr)+'&z=15&hl=ko&output=embed';
+        fr.loading='lazy';
+        fr.referrerPolicy='no-referrer-when-downgrade';
+        fr.allowFullscreen=true;
+        fr.title=addr+' 지도';
+        mb.appendChild(fr);
+      }
     }
     window.__jtRunYouTubeShortcodes=run;
     ready(run);
