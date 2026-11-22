@@ -1164,6 +1164,58 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       if(a.parentNode)a.parentNode.replaceChild(img,a);
     }
   }
+  /* 뷰포트에서 절반 이상 벗어난 동영상은 자동 정지한다. */
+  function initViewportPlaybackGuard(){
+    function stopBox(box){
+      box.removeAttribute('data-loaded');
+      box.classList.remove('ready');
+      var frames=box.querySelectorAll('iframe');
+      for(var i=0;i<frames.length;i++)frames[i].remove();
+    }
+    var ticking=false;
+    function check(){
+      ticking=false;
+      var vh=window.innerHeight||document.documentElement.clientHeight;
+      var boxes=document.querySelectorAll('.jt-yt-embed');
+      for(var i=0;i<boxes.length;i++){
+        var box=boxes[i];
+        if(!box.getAttribute('data-loaded')&&!box.querySelector('iframe'))continue;
+        var r=box.getBoundingClientRect();
+        var visible=Math.min(r.bottom,vh)-Math.max(r.top,0);
+        var ratio=r.height>0?Math.max(0,visible)/r.height:0;
+        if(ratio<0.5)stopBox(box);
+      }
+      var hovered=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
+      for(var h=0;h<hovered.length;h++){
+        var hr=hovered[h].getBoundingClientRect();
+        var hv=Math.min(hr.bottom,vh)-Math.max(hr.top,0);
+        var hratio=hr.height>0?Math.max(0,hv)/hr.height:0;
+        if(hratio<0.5){
+          var frames=hovered[h].querySelectorAll('iframe');
+          for(var fi=0;fi<frames.length;fi++)frames[fi].remove();
+          hovered[h].classList.remove('is-yt-hover');
+        }
+      }
+    }
+    function schedule(){
+      if(ticking)return;
+      ticking=true;
+      if(window.requestAnimationFrame)requestAnimationFrame(check);
+      else setTimeout(check,60);
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden)return;
+      var boxes=document.querySelectorAll('.jt-yt-embed');
+      for(var i=0;i<boxes.length;i++)stopBox(boxes[i]);
+      var hovFrames=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover iframe');
+      for(var j=0;j<hovFrames.length;j++)hovFrames[j].remove();
+      var hovItems=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
+      for(var k=0;k<hovItems.length;k++)hovItems[k].classList.remove('is-yt-hover');
+    });
+    check();
+  }
   function initImageClickGuard(){
     guardImageClicks();
     setTimeout(guardImageClicks,800);
@@ -1184,6 +1236,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
     bindDockControls();
     initExpanders();
     initImageClickGuard();
+    initViewportPlaybackGuard();
     initSearchApp();
     if(location.pathname==='/p/home.html')return;
     setTimeout(watchPostImages,800);
@@ -1316,7 +1369,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
               if(a.classList.contains('is-yt-hover'))return;
               a.classList.add('is-yt-hover');
               var frame=document.createElement('iframe');
-              frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1';
+              frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1&cc_load_policy=0';
               frame.title=title+' 무음 미리보기';
               frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture');
               frame.setAttribute('allowfullscreen','');
@@ -1664,7 +1717,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       box.__jtYtObserver=null;
       var frame=document.createElement('iframe');
       frame.className='jt-yt-frame';
-      frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&playsinline=1&rel=0&modestbranding=1';
+      frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&playsinline=1&rel=0&modestbranding=1&cc_load_policy=0';
       frame.title='YouTube video';
       frame.setAttribute('frameborder','0');
       frame.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
