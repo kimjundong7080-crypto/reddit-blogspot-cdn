@@ -68,6 +68,8 @@ Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccd
 
 Tooling note (2026-11-22): a user-global Kilo skill, `surgical-code-edit`, was added at `C:\Users\ssii\.kilo\skills\surgical-code-edit\SKILL.md` (79 lines). It standardizes minimal, convention-preserving code edits with mandatory lint/typecheck/test verification and explicit stop rules for ambiguity, destructive publishing, external paths, secrets, and unrequested dependency/API changes. It is not part of this repository or the release artifacts; see AGENTS.md §9.
 
+Documentation addition (2026-11-22): added AGENTS.md §10 Shortcode reference (`[youtube]`, `[shorts]`, `[map]`, `[md]`, `[rede]`/`[rade]`) and §11 remaining work/known issues for the v1.2.111 Shorts-autoplay release.
+
 ## 3. Blogger data operations
 
 - Restored pages:

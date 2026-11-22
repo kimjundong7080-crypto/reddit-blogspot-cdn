@@ -393,3 +393,34 @@ Global skills live in `C:\Users\ssii\.kilo\skills\<skill-name>\SKILL.md` and are
 
 These skills are user-global configuration, not part of this repository; this section documents them for the next AI. Do not copy the SKILL.md files into the repo or the release.
 
+## 10. Shortcode reference (v1.2.111)
+
+All shortcodes are processed by `src/23-yt-posts.html` and work on all three domains (`techlifeworld.com`, `shutupquick.com`, `deepstronglove.com`) because they share the same `@v1` CDN asset.
+
+| Shortcode | Syntax | Output | Autoplay |
+|---|---|---|---|
+| YouTube | `[youtube link="URL"]` | 16:9 poster + play button | No (click to play) |
+| Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, 0.5 s after mount |
+| Map | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed | No |
+| Markdown | `[md]` as the first non-empty line | Whole post rendered as Markdown | - |
+| Fold | `[rede]...[/rede]` or `[rade]...[/rade]` | Collapsed block with a "more" button | - |
+
+Behavior notes:
+
+- `[youtube]` accepts `youtu.be/`, `watch?v=`, `/embed/`, `/shorts/`, `/live/` URLs and a raw 11-character video id. A `/shorts/` URL is automatically upgraded to the Shorts layout and autoplay behavior.
+- Shorts are horizontally centered, use `aspect-ratio: 9/16`, and start a `youtube-nocookie` iframe with `autoplay=1&mute=1&loop=1&playsinline=1` 500 ms after mount. Off-screen Shorts wait for an `IntersectionObserver` (25% visible). Multiple Shorts may play muted at once; normal videos keep poster + click-to-play.
+- `[map]` uses a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe with `loading="lazy"`. Addresses containing spaces must be quoted.
+- `[md]` must be the first non-empty line of the post body; no closing tag is required. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
+- Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
+- Shortcode parsing runs in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), including infinite-scroll clones.
+
+## 11. Remaining work and known issues (2026-11-22)
+
+1. **shutupquick.com has no published posts.** Shorts and Map are verified only on techlifeworld and deepstronglove. The assets are shared, so publish one test post on shutupquick and confirm 9:16 autoplay plus the map iframe.
+2. **Vertical detection is URL-based.** Only `/shorts/` URLs and the `[shorts]` shortcode get the 9:16 autoplay layout. A vertical video linked as `watch?v=` or `youtu.be/` is treated as a normal 16:9 click-to-play video; there is no dimension API. Use `[shorts]` for those videos.
+3. **Muted autoplay depends on browser policy.** The iframe requests muted autoplay; some browsers may still block it. The poster + play button remain as a fallback, but there is no explicit "autoplay blocked" indicator.
+4. **Concurrent Shorts playback.** Multiple Shorts in one post can play muted at the same time (`keepOthers=true` for Shorts). Watch performance on posts with many Shorts and consider pausing off-screen players if it becomes an issue.
+5. **Expander interaction on the two domains.** On shutupquick/deepstronglove a post body over 900 px is collapsed; Shorts below the fold start only after the user expands or scrolls them into view. Verified on deepstronglove.
+6. **Infinite-scroll clones.** Clones lose iframe elements during sanitization; the Shorts mount/observer logic re-creates players when visible. Re-test with several real Shorts posts after infinite scroll appends clones.
+7. **No automated tests.** Verification is manual Playwright checks plus `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/23-yt-posts.js`, and `git diff --check`.
+8. **CDN purge lag.** jsDelivr `@v1` keeps a 12 h `s-maxage`; purge after the new tag is indexed. Early purges can still return an older `x-jsd-version`, and repeated purges can be throttled. Confirm the served version before declaring a release live.
