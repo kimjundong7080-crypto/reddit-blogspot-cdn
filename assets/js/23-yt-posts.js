@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.116 */
+/* Reddit-style Blogger YouTube post list — v1.2.117 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -673,6 +673,20 @@
             hoverTimer=setTimeout(function(){
               hoverTimer=null;
               if(a.classList.contains('is-yt-hover'))return;
+              /* 동시 재생 금지: 본문 동영상과 다른 호버 미리보기를 모두 정지시킨다. */
+              var jtAct=document.querySelectorAll('.jt-yt-embed');
+              for(var jai=0;jai<jtAct.length;jai++){
+                var jtAf=jtAct[jai].querySelectorAll('iframe');
+                for(var jafi=0;jafi<jtAf.length;jafi++)jtAf[jafi].remove();
+                jtAct[jai].removeAttribute('data-loaded');
+                jtAct[jai].classList.remove('ready');
+              }
+              var prevHover=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
+              for(var ph=0;ph<prevHover.length;ph++){
+                var pf=prevHover[ph].querySelectorAll('iframe');
+                for(var pfi=0;pfi<pf.length;pfi++)pf[pfi].remove();
+                prevHover[ph].classList.remove('is-yt-hover');
+              }
               a.classList.add('is-yt-hover');
               var frame=document.createElement('iframe');
               frame.src='https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&mute=1&loop=1&playlist='+ytId+'&controls=0&modestbranding=1&rel=0&playsinline=1&cc_load_policy=0';
@@ -1018,6 +1032,11 @@
       if(box.getAttribute('data-loaded')||!document.documentElement.contains(box))return;
       if(!keepOthers&&activePlaybackBox&&activePlaybackBox!==box)stopPlayback(activePlaybackBox);
       if(!keepOthers)activePlaybackBox=box;
+      /* 동시 재생 금지: 추천글 호버 미리보기도 함께 정지한다. */
+      var hovFrames=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover iframe');
+      for(var hfi=0;hfi<hovFrames.length;hfi++)hovFrames[hfi].remove();
+      var hovItems=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
+      for(var hii=0;hii<hovItems.length;hii++)hovItems[hii].classList.remove('is-yt-hover');
       box.setAttribute('data-loaded','1');
       if(observer)observer.disconnect();
       box.__jtYtObserver=null;
@@ -1106,7 +1125,7 @@
                   var rr=box.getBoundingClientRect();
                   var vv=Math.min(rr.bottom,vh)-Math.max(rr.top,0);
                   var ra=rr.height>0?Math.max(0,vv)/rr.height:0;
-                  if(ra>=0.5)startPlayback(box,id,null,true);
+                  if(ra>=0.5)startPlayback(box,id,null,false);
                 },500);
               }
             }else{
