@@ -1,18 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-22
-Latest published release: **v1.2.112**
-Current local package version: **1.2.112**
+Latest published release: **v1.2.113**
+Current local package version: **1.2.113**
 
-This document is the handoff for the next AI or engineer. Release v1.2.112 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.113 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `bdfd04e Release v1.2.112`.
-- Latest GitHub release/tag: `v1.2.112`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.112 is published.** Content: wider regular YouTube and map embeds: `width:min(calc(100% - 32px),900px)` on desktop and `calc(100% - 24px)` at ≤768px (was `-96px`/820px and `-32px`). Shorts keep the 360px centered width. Verified live on shutupquick `/2026/11/sssss.html`: map and injected YouTube both 688px wide (387px tall) with 16px side gaps, up from 624px/48px.
+- Branch: `main`; latest release commit: `01c31ae Release v1.2.113`.
+- Latest GitHub release/tag: `v1.2.113`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.113 is published.** Content: map visibility fallback. Map iframes use `maps.google.com/maps?q=...&output=embed` (classic host, `loading="eager"`), the map box keeps the address as a centered `.jt-map-note` placeholder, and a visible `Google 지도에서 열기` `.jt-map-fallback` link opens a new tab. If an ad blocker or Google blocks the iframe, the address and link still appear. Verified live (688×387, iframe loaded) and with `maps.google.com` aborted in Playwright (placeholder + link visible).
+- **v1.2.112 is published.** Content: wider regular YouTube/map embeds (`min(calc(100% - 32px),900px)`, `-24px` at ≤768px).
 - **v1.2.111 is published.** Content (all three domains):
   - **Vertical Shorts embeds**: a `[youtube link=".../shorts/<id>"]` URL or the new `[shorts link="..."]` / `[shorts "URL"]` shortcode becomes a horizontally centered 9:16 `.jt-yt-embed.jt-shorts` box (max 360px wide) and starts a **muted, looping, `playsinline`** iframe **0.5 s** after mount.
   - Off-screen Shorts do not autoplay; an `IntersectionObserver` (25% visible) starts them when scrolled into view. Multiple Shorts can play muted at once (`startPlayback(..., keepOthers=true)`); normal videos keep the poster + click-to-play behavior.
@@ -86,7 +87,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.112 is pu
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`, verified after the v1.2.112 purge):** `23-yt-posts.css` serves **1.2.112** with the wider `-32px` embed width; `23-yt-posts.js` remains functionally **1.2.111** (Shorts/Map shortcodes) and differs only by the version line.
+- **CDN status (`@v1`, verified after the v1.2.113 purge):** `23-yt-posts.js` and `23-yt-posts.css` serve **1.2.113** (matching `jt-map-fallback`/`jt-map-note` and the `maps.google.com` embed URL).
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -349,7 +350,7 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than the current latest tag (`v1.2.112`) and never reuse a tag:
+For a release, choose a version greater than the current latest tag (`v1.2.113`) and never reuse a tag:
 
 ```powershell
 node scripts/release.mjs 1.2.97
