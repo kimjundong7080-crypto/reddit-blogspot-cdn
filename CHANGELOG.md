@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.110**
+Latest published release: **v1.2.111**
 
-This is the consolidated English record for the work cycle that ended with v1.2.110.
+This is the consolidated English record for the work cycle that ended with v1.2.111.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -62,6 +62,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.108 | `19dc992` | **Search thumbnails fixed for R2 images**: `/search` was reading `/feeds/posts/summary`, which omits post content and therefore all `<img>` tags. It now reads `/feeds/posts/default?alt=json&max-results=150`, so `firstImage()` finds R2 URLs. Verified with the v1.2.108 script: `청소` (1600px), `fdsfds` (1199px), and `test37` (1199px) thumbnails load; one post (`4325reff`) has only a `[이미지: ...]` text placeholder and no real image. |
 | v1.2.109 | `f91c5b9` | **Domain-aware branding**: `src/23-yt-posts.html` picks SEO/site strings from a `BRAND` table by `location.hostname` — `techlifeworld.com` → JUST TECH, `shutupquick.com` → 삶의 지혜, `deepstronglove.com` → 일상의 즐거움 — covering `SITE`, home/item/about/contact descriptions, `alternateName`, static-page titles, and the 404 title/description (exposed as `window.__jtBrand`). `SELF_ORIGIN` now feeds JSON-LD `@id`/`url`, the canonical fallback and the favicon fallback so other domains no longer point at techlifeworld (`ORIGIN` is kept only for the `.blogspot.com` redirect). Dead code removed: never-called `initHomeHero()` and its unused `html.jt-home-page .jt-hero*` CSS (90 lines). Verified: brand selection per host, build/`--check`/`node --check`, and `@v1` serving 1.2.109 after purge. |
 | v1.2.110 | `9183cf4` | **Google Maps embed shortcode** for all three domains: `[map "자연어 주소 또는 지명"]` becomes a responsive 16:9 `.jt-map-embed` with a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe (lazy, `referrerpolicy=no-referrer-when-downgrade`). Handles double/single/unquoted forms and the malformed `[map "..."']`, in both the Markdown (`__jtPrepareYouTubeShortcodes`) and HTML (`run()`) paths, with the scanned-post guard extended to `[map`. Verified live by injecting shortcodes on deepstronglove and techlifeworld: iframes created with encoded addresses, `display:block`, 1.778 ratio; the Google endpoint returns 200. |
+| v1.2.111 | `40e07f0` | **Vertical Shorts embeds** for all three domains: `/shorts/` YouTube links (via `[youtube link]`) and the new `[shorts link="..."]` / `[shorts "URL"]` shortcodes render a centered 9:16 `.jt-yt-embed.jt-shorts` box (max 360px wide) and start a muted, looping, `playsinline` iframe automatically **0.5 s** after mount. Off-screen Shorts wait for an `IntersectionObserver` (25% visible) instead of autoplaying; multiple Shorts may play muted at once, while normal videos keep the click-to-play poster. Verified live on techlifeworld (360×640, ratio 0.563, no iframe at 300 ms, autoplay iframe at ~1 s) and deepstronglove (autoplay after scrolling into view); normal video still requires a click. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 

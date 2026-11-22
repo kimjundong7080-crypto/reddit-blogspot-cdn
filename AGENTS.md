@@ -1,21 +1,22 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-22
-Latest published release: **v1.2.110**
-Current local package version: **1.2.110**
+Latest published release: **v1.2.111**
+Current local package version: **1.2.111**
 
-This document is the handoff for the next AI or engineer. Release v1.2.110 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.111 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `9183cf4 Release v1.2.110`.
-- Latest GitHub release/tag: `v1.2.110`. The release script updates and pushes both `main` and a new version tag.
-- **v1.2.110 is published.** Content (all three domains):
-  - **Google Maps embed shortcode**: `[map "자연어 주소 또는 지명"]` renders a responsive 16:9 `.jt-map-embed` iframe via keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` (lazy loading, `referrerpolicy=no-referrer-when-downgrade`).
-  - Supports double quotes, single quotes, unquoted text, and the malformed `[map "..."']` form; works in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), and the scanned-post guard now checks `[map` as well as `[youtube`.
-  - Verified live by injecting shortcodes on `deepstronglove.com` and `techlifeworld.com`: two/one iframes created with correctly encoded addresses, `display:block`, 1.778 aspect ratio; the Google endpoint returns 200. `@v1` JS/CSS confirmed at **1.2.110**.
+- Branch: `main`; latest release commit: `40e07f0 Release v1.2.111`.
+- Latest GitHub release/tag: `v1.2.111`. The release script updates and pushes both `main` and a new version tag.
+- **v1.2.111 is published.** Content (all three domains):
+  - **Vertical Shorts embeds**: a `[youtube link=".../shorts/<id>"]` URL or the new `[shorts link="..."]` / `[shorts "URL"]` shortcode becomes a horizontally centered 9:16 `.jt-yt-embed.jt-shorts` box (max 360px wide) and starts a **muted, looping, `playsinline`** iframe **0.5 s** after mount.
+  - Off-screen Shorts do not autoplay; an `IntersectionObserver` (25% visible) starts them when scrolled into view. Multiple Shorts can play muted at once (`startPlayback(..., keepOthers=true)`); normal videos keep the poster + click-to-play behavior.
+  - Verified live: techlifeworld 360×640 (ratio 0.563), no iframe at 300 ms and the autoplay iframe present at ~1 s; deepstronglove autoplays after scrolling into view; normal video still requires a click; 0 console errors. `@v1` JS/CSS confirmed at **1.2.111**.
+- **v1.2.110 is published.** Content: Google Maps embed shortcode `[map "..."]` (centered 16:9 `.jt-map-embed`, keyless embed URL, all three domains).
 - **v1.2.109 is published.** Content: domain-aware branding (`BRAND` table by hostname) for SEO/site strings and `SELF_ORIGIN`-based canonical/JSON-LD fallbacks.
 - **v1.2.108 is published.** Content:
   - **Search thumbnails fixed for R2 images**: `/search` fetched `/feeds/posts/summary`, which strips post content (and every `<img>`), so `firstImage()` never saw the R2 URLs. It now fetches `/feeds/posts/default?alt=json&max-results=150`; verified with the 1.2.108 script that `청소` (1600px), `fdsfds` (1199px), and `test37` (1199px) R2 thumbnails render. `4325reff` has only a `[이미지: ...]` placeholder in its content and no real image.
@@ -84,7 +85,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.110 is pu
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`, verified after the v1.2.110 purge):** `23-yt-posts.js` and `23-yt-posts.css` serve **1.2.110** (the JS contains the map shortcode helpers `jtMapAddress`/`jtEscapeAttr` and `.jt-map-embed`; the CSS contains the `.jt-map-embed` rules). Other unchanged-but-older `@v1` copies (`24-home.js`, `11-infinite.js`, `24-home.css`, `21-three-column.js`) differ from 1.2.110 only by version-string lines, so they are functionally identical. The purge worked on the first attempt after the tag was indexed; the earlier v1.2.108 JS delay was a jsDelivr throttle that has since reset.
+- **CDN status (`@v1`, verified after the v1.2.111 purge):** `23-yt-posts.js` and `23-yt-posts.css` serve **1.2.111** (the JS contains `shortsCode`/`jt-shorts` and `startPlayback` with `keepOthers`; the CSS contains the 9:16 `.jt-shorts` rules). Other unchanged-but-older `@v1` copies differ only by version-string lines.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -347,7 +348,7 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than the current latest tag (`v1.2.110`) and never reuse a tag:
+For a release, choose a version greater than the current latest tag (`v1.2.111`) and never reuse a tag:
 
 ```powershell
 node scripts/release.mjs 1.2.97
@@ -372,7 +373,7 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- **Purge resolved:** `@v1/assets/js/23-yt-posts.js` and `@v1/assets/css/23-yt-posts.css` now serve **1.2.110** after the post-release purge. Earlier 1.2.105/1.2.108 edge copies were cleared by re-purging after the new tag was indexed; when a purge reports `finished` but the edge still reports the old `x-jsd-version`/`Age`, re-purge once the tag appears in `data.jsdelivr.com`.
+- **Purge resolved:** `@v1/assets/js/23-yt-posts.js` and `@v1/assets/css/23-yt-posts.css` now serve **1.2.111** after the post-release purge. Earlier edge copies were cleared by re-purging after the new tag was indexed; when a purge reports `finished` but the edge still reports the old `x-jsd-version`/`Age`, re-purge once the tag appears in `data.jsdelivr.com`.
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.
