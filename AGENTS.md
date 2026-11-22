@@ -454,4 +454,3 @@ Implementation plan once unblocked:
 3. If the URL is `naver.me/...`, call the resolver endpoint (preferred) or render a centered "네이버 클립 열기" card that links out. Never iframe `naver.me` directly: it shows the `link.naver.com` app-bridge page.
 4. Add a poster/click-to-play button and a visible fallback link, similar to the map fallback, so blocked embeds still leave a usable action.
 5. Verify on all three domains and update §10/§11.
-
