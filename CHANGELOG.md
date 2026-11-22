@@ -65,6 +65,8 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
+Tooling note (2026-11-22): a user-global Kilo skill, `surgical-code-edit`, was added at `C:\Users\ssii\.kilo\skills\surgical-code-edit\SKILL.md` (79 lines). It standardizes minimal, convention-preserving code edits with mandatory lint/typecheck/test verification and explicit stop rules for ambiguity, destructive publishing, external paths, secrets, and unrequested dependency/API changes. It is not part of this repository or the release artifacts; see AGENTS.md §9.
+
 ## 3. Blogger data operations
 
 - Restored pages:

@@ -380,3 +380,15 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 - `/p/resume.html` and `/p/contact-us.html` restored on 2026-11-20 as live Blogger Pages (HTTP 200) with page IDs `8369950385896197882` and `3994593479765014806`. The page body contains the inline jsDelivr iframe loader; if those pages are ever deleted again, recreate them with the same titles (`resume`, `contact-us`) and the loader content.
 - No raw `[youtube ...]` post titles or labels remain as of 2026-11-20 (the one affected post was corrected through the Blogger API).
 - Blogger admin-only work remains with the user: search description, custom robots.txt, page titles, Search Console address change for `madomiad.blogspot.com`.
+- `shutupquick.com` has no published posts, so the v1.2.110 `[map "..."]` shortcode was verified only on `deepstronglove.com` and `techlifeworld.com`. It uses the same shared `23-yt-posts` asset, so publish one post there and confirm the iframe when content exists.
+
+## 9. Local agent skills (Kilo)
+
+Global skills live in `C:\Users\ssii\.kilo\skills\<skill-name>\SKILL.md` and are loaded by name + description. A newly added skill appears only after a Kilo restart or a new session.
+
+- **`surgical-code-edit`** (added 2026-11-22): minimal, convention-preserving code changes with mandatory verification. Triggers on code modification/fix/refactor/patch requests ("코드 수정", "고쳐", "fix", "patch", "implement"); excludes review-only, plan-only, docs-only, and unrequested broad rewrites. Enforces stop conditions for ambiguity, destructive git/publish actions, external paths, secrets, and unrequested dependency/API changes. Workflow: LSP/grep locate → read local context → one- or two-line patch intent → minimal edit → project lint/typecheck/test/build (fallback syntax or smoke check) → concise report with `path:line` and evidence. File is 79 lines and follows progressive disclosure.
+- **`token-budget`**: keeps context/cache usage low (LSP first, read ranges not whole files, summarize logs).
+- **`agent-md-refactor`**: splits bloated instruction files into linked docs.
+
+These skills are user-global configuration, not part of this repository; this section documents them for the next AI. Do not copy the SKILL.md files into the repo or the release.
+
