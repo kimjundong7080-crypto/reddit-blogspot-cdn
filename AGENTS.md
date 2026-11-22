@@ -1,18 +1,19 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-22
-Latest published release: **v1.2.116**
-Current local package version: **1.2.116**
+Latest published release: **v1.2.117**
+Current local package version: **1.2.117**
 
-This document is the handoff for the next AI or engineer. Release v1.2.116 is published and all changed assets are current at `@v1`. See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.117 is published and all changed assets are current at `@v1` (the JS purge may need a retry; see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `6433f4a Release v1.2.116`.
-- Latest GitHub release/tag: `v1.2.116`. The release script updates and pushes `main` and a new version tag.
-- **v1.2.116 is published.** Content: center-entry autoplay for all YouTube embeds. `initCenterAutoplay()` runs inside the YouTube IIFE (so it can call `startPlayback`) and scans `.jt-yt-embed[data-yt]` on scroll/resize/DOM mutations: at ≥60% visible it sets a 500 ms timer then plays muted; below 60% it cancels the timer; below 50% it stops. This replaces the Shorts-only IntersectionObserver, which disconnected after the first play and never restarted after v1.2.115's stop guard. Verified live: normal embed had no iframe at 300 ms, an autoplay iframe at ~1.2 s, stopped at `scrollTo(0,3000)`, and auto-restarted after scrolling back to the top.
+- Branch: `main`; latest release commit: `36d2926 Release v1.2.117`.
+- Latest GitHub release/tag: `v1.2.117`. The release script updates and pushes `main` and a new version tag.
+- **v1.2.117 is published.** Content: only one video plays at a time. Center autoplay calls `startPlayback(box,id,null,false)`, so `activePlaybackBox` stops the previous embed before the next starts. Starting an embed removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe (clearing `data-loaded`/`ready`) and other previews. Verified locally with three stacked embeds: exactly one iframe at the top/second/third positions; a hover preview reduced post embeds 1→0 and left exactly one preview.
+- **v1.2.116 is published.** Content: center-entry autoplay for all YouTube embeds (`initCenterAutoplay`, ≥60% visible, 500 ms, stop <50%).
 - **v1.2.115 is published.** Content: viewport auto-stop (<50% visible) + `cc_load_policy=0` on all YouTube iframes, including hover previews.
 - **v1.2.114 is published.** Content: map thumbnails for map-only posts (`jtMapThumb` data-URI SVG).
 - **v1.2.113 is published.** Content: map visibility fallback (`maps.google.com` classic embed, eager loading, address placeholder, visible `Google 지도에서 열기` link).
@@ -90,7 +91,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.116 is pu
   - **`/search` results are a responsive card grid**: 4 columns on desktop, 3 at ≤1100px, 2 at ≤900px, 1 at ≤640px. Cards are vertical (16:9 thumbnail on top, title/meta below). Verified live: desktop `179px ×4`, mobile `327px ×1`, no horizontal overflow.
 - **v1.2.78 is published.** Content:
   - **Home mid-page freeze hardened.** The home landing subtree is cloned after hero typing; the clone kept the CSS classes but lost the JS expandos, so the reveal `IntersectionObserver` kept watching detached nodes and `#jt-about` / `.jt-cta` never received `is-in` (opacity stayed 0). A document-level reveal ticker (rAF on scroll/resize + 15×800 ms re-check) now reveals any `.jt-reveal` block in view regardless of node identity, and carousel/typing/ceremony init is re-run idempotently with clone-safe guards.
-- **CDN status (`@v1`, verified after the v1.2.116 purge):** `23-yt-posts.js` serves **1.2.116** (`initCenterAutoplay`, `initViewportPlaybackGuard`, `cc_load_policy=0`); `23-yt-posts.css` serves **1.2.113** (map placeholder/fallback styles).
+- **CDN status (`@v1`, measured after v1.2.117 release):** the tag serves `23-yt-posts.js` **1.2.117** (`startPlayback(...,false)`, hover-preview teardown), but `@v1` still returned **1.2.116** at handoff because the JS purge was throttled (`throttlingReset` ~290 s). Re-purge `@v1/assets/js/23-yt-posts.js` after the reset and confirm `x-jsd-version=1.2.117`. `23-yt-posts.css` serves **1.2.113**.
 - **Blogger Pages restored on 2026-11-20**: `/p/resume.html` (page id `8369950385896197882`) and `/p/contact-us.html` (page id `3994593479765014806`) now return **HTTP 200**. Each page's content is a small inline iframe loader that renders the corresponding `pages/*.html` from jsDelivr inside `#jtStaticHost`; the Blogger page body itself is hidden by the existing `.jt-static-page` CSS.
 - Build/checks currently pass: `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/11-infinite.js`, `node --check assets/js/23-yt-posts.js`, `node --check assets/js/24-home.js`, `git diff --check`.
 - Live checks on 2026-11-20 (fresh isolated browser context):
@@ -353,7 +354,7 @@ node --check assets/js/23-yt-posts.js
 git diff --check
 ```
 
-For a release, choose a version greater than the current latest tag (`v1.2.116`) and never reuse a tag:
+For a release, choose a version greater than the current latest tag (`v1.2.117`) and never reuse a tag:
 
 ```powershell
 node scripts/release.mjs 1.2.97
