@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.112 */
+/* Reddit-style Blogger YouTube post list — v1.2.113 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1107,13 +1107,26 @@
         var addr=mb.getAttribute('data-map')||'';
         if(!addr)continue;
         mb.__jtMap=1;
+        var note=document.createElement('span');
+        note.className='jt-map-note';
+        note.textContent=addr;
+        mb.appendChild(note);
         var fr=document.createElement('iframe');
-        fr.src='https://www.google.com/maps?q='+encodeURIComponent(addr)+'&z=15&hl=ko&output=embed';
-        fr.loading='lazy';
+        fr.src='https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed';
+        fr.loading='eager';
         fr.referrerPolicy='no-referrer-when-downgrade';
         fr.allowFullscreen=true;
         fr.title=addr+' 지도';
         mb.appendChild(fr);
+        if(!(mb.nextElementSibling&&mb.nextElementSibling.classList&&mb.nextElementSibling.classList.contains('jt-map-fallback'))){
+          var link=document.createElement('a');
+          link.className='jt-map-fallback';
+          link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr);
+          link.target='_blank';
+          link.rel='noopener';
+          link.textContent='Google 지도에서 열기';
+          if(mb.parentNode)mb.parentNode.insertBefore(link,mb.nextSibling);
+        }
       }
     }
     window.__jtRunYouTubeShortcodes=run;
