@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-21 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.113**
+Latest published release: **v1.2.114**
 
-This is the consolidated English record for the work cycle that ended with v1.2.113.
+This is the consolidated English record for the work cycle that ended with v1.2.114.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -65,6 +65,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.111 | `40e07f0` | **Vertical Shorts embeds** for all three domains: `/shorts/` YouTube links (via `[youtube link]`) and the new `[shorts link="..."]` / `[shorts "URL"]` shortcodes render a centered 9:16 `.jt-yt-embed.jt-shorts` box (max 360px wide) and start a muted, looping, `playsinline` iframe automatically **0.5 s** after mount. Off-screen Shorts wait for an `IntersectionObserver` (25% visible) instead of autoplaying; multiple Shorts may play muted at once, while normal videos keep the click-to-play poster. Verified live on techlifeworld (360×640, ratio 0.563, no iframe at 300 ms, autoplay iframe at ~1 s) and deepstronglove (autoplay after scrolling into view); normal video still requires a click. |
 | v1.2.112 | `bdfd04e` | **Wider map/YouTube embeds**: regular `.jt-yt-embed` and `.jt-map-embed` changed from `width:min(calc(100% - 96px),820px)` to `min(calc(100% - 32px),900px)` (desktop) and from `calc(100% - 32px)` to `calc(100% - 24px)` at ≤768px, cutting the side margin roughly in half. Shorts keep their 360px centered width. Verified live on shutupquick `/2026/11/sssss.html`: the map and an injected YouTube embed are both 688px wide (387px tall) with 16px left/right gaps, up from 624px/48px gaps. |
 | v1.2.113 | `01c31ae` | **Map visibility fallback**: map iframes now use the classic `https://maps.google.com/maps?q=...&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed` endpoint with `loading="eager"`. The map box shows the address as a centered placeholder (`.jt-map-note`) behind the iframe and a visible `Google 지도에서 열기` link (`.jt-map-fallback`, new tab) after it, so ad blockers/privacy extensions or Google-embed blocks still leave usable output. Verified live (688×387, iframe loaded) and with `maps.google.com` aborted: the address and fallback link remain visible. |
+| v1.2.114 | `8236e06` | **Map thumbnails for map-only posts**: `jtMapThumb(addr)` builds a keyless data-URI SVG (map grid, red pin, address label) and is used by both the `/search` cards and the `#ytPosts` recommended list when a post has no `media$thumbnail`, no YouTube id, and no `<img>` but contains a `[map "..."]` shortcode. Verified live on shutupquick `/2026/11/ss.html`: the `sssss` recommended card shows the SVG map thumb (`data:image/svg+xml`, `naturalWidth > 0`) instead of `yt-thumb-empty`. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
