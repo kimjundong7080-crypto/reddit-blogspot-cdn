@@ -1,13 +1,14 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-23
-Latest published release: **v1.2.122**
-Current local package version: **1.2.122**
+Latest published release: **v1.2.124**
+Current local package version: **1.2.124**
 
 This document is the handoff for the next AI or engineer. Release v1.2.122 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.122 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
+- **v1.2.124 is published** (commit `1097d57`, tag `v1.2.124`): `assets/js/22-post-image.js` is new and performs **R2 image mapping** — it reads `https://pub-b1e181c4ed0440489fcbbb5cb9aceaa6.r2.dev/i/index.json` (`{ filename → key }`, hosted in the `jt-blog-images` bucket) and rewrites each `.post-body` image whose URL basename is listed, keeping the Blogger URL as the fallback (`data-jt-r2-original` + `onerror`) and re-scanning through a `MutationObserver` for infinite scroll. Host override: `window.JT_R2 = { host: '…' }`. Verified on the live post `/2026/11/_0.html`: both body images loaded from `pub-b1e181c4ed0440489fcbbb5cb9aceaa6.r2.dev` (1600×1131, 1491×1055), the index request returned 200 and there were no console errors; an image absent from the index stayed on `blogger.googleusercontent.com`. `@v1` and the tag both serve `1.2.124` after purge.
 - **v1.2.122 is published.** Content (commit `92c7ace`, tag `v1.2.122`): **only the `[md] ... [/md]` block is rendered as Markdown.**
   - Change: a `[md]`/`[/md]` pair now delimits the Markdown region. The renderer finds the marker text nodes, cuts only the range between the pair with a DOM `Range`, replaces it with a `.markdown` wrapper, and leaves every other paragraph (intro text, images, embeds before/after the block) untouched. Several pairs in one post each get their own wrapper, and the pairs are processed last-to-first so earlier ranges stay valid.
   - Compatibility: a post with `[md]` and **no** `[/md]` (what `auto_blogger` writes today) keeps the v1.2.121 whole-body behavior, so existing posts render exactly as before. Unpaired markers are removed from the text so they never show as literal `[md]`; an empty `[md][/md]` block renders nothing and leaves no empty wrapper.
@@ -28,7 +29,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.122 is pu
 
 - **v1.2.118 is published.** Content: **single-owner playback**. Only the embed closest to the viewport center (≥60% visible, released below 50%) plays; every other embed is paused with a `pauseVideo` postMessage (iframe kept, poster restored) instead of being torn down, so the playback position survives and the video resumes where it stopped. An 800 ms relock cooldown stops two embeds from alternating (the earlier flicker), embeds inside a collapsed `[rede]` fold are never candidates, a manual click pins that video until the next scroll, and iframes are pruned only when more than three are alive off-screen. The embed URL now carries `enablejsapi=1` + `origin`. Shared `@v1` asset, so techlifeworld.com, shutupquick.com and deepstronglove.com all get it.
 - Repository: `D:\코드 수정 작업\06_블로그 스팟 API 글쓰기\reddit-blogspot-cdn`. Older notes may still name the retired `15_블로그 스팟\RedditBlogspotCdn` location.
-- Branch: `main`; latest release commit: `92c7ace Release v1.2.122`.
+- Branch: `main`; latest release commit: `1097d57 Release v1.2.124`.
 - Latest GitHub release/tag: `v1.2.120`. The release script updates and pushes `main` and a new version tag.
 - **v1.2.117 is published.** Content: only one video plays at a time. Center autoplay calls `startPlayback(box,id,null,false)`, so `activePlaybackBox` stops the previous embed before the next starts. Starting an embed removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe (clearing `data-loaded`/`ready`) and other previews. Verified locally with three stacked embeds: exactly one iframe at the top/second/third positions; a hover preview reduced post embeds 1→0 and left exactly one preview.
 - **v1.2.116 is published.** Content: center-entry autoplay for all YouTube embeds (`initCenterAutoplay`, ≥60% visible, 500 ms, stop <50%).

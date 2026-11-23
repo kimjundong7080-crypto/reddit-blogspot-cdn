@@ -16,6 +16,8 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 | `assets/css/24-home.css`, `assets/js/24-home.js` | 홈 랜딩(`/p/home.html`) 전체 |
 | `pages/resume.html`, `pages/contact.html` | 정적 페이지 원본 (iframe srcdoc로 렌더) |
 
+R2 이미지 매칭(v1.2.124): `22-post-image.js` 가 `https://pub-….r2.dev/i/index.json` 의 `{ 파일명 → 키 }` 표를 받아, 본문 `<img>` 의 URL 마지막 파일명이 표에 있으면 R2 원본으로 바꿉니다. 표에 없거나 R2 로드가 실패하면 Blogger 원본을 그대로 두고, 무한 스크롤/지연 로딩으로 새로 붙는 이미지도 `MutationObserver` 로 처리합니다. host 는 `window.JT_R2 = { host: '…' }` 로 교체할 수 있습니다(색인 파일명 대소문자 무시 매칭 지원).
+
 > 상세한 인수인계 규칙·환경·배포 절차는 **[AGENTS.md](./AGENTS.md)** 를 참고하세요.
 
 ## 소스와 빌드
@@ -26,6 +28,7 @@ jsDelivr CDN으로 서빙하며, Blogger에는 로더 코드만 넣습니다.
 |---|---|
 | `src/21-three-column.html` | `assets/css/21-three-column.css`, `assets/js/21-three-column.js` |
 | `src/11-infinite.html` | `assets/css/11-infinite.css`, `assets/js/11-infinite.js` |
+| `src/22-post-image.html` | `assets/css/22-post-image.css`, `assets/js/22-post-image.js` |
 
 ```bash
 npm run build                  # package.json 버전으로 생성
