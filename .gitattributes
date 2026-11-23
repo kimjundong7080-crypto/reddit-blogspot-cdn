@@ -1,0 +1,5 @@
+# 소스는 LF 로 통일하고, 생성물(assets/**)은 바이트 그대로 유지한다.
+# (core.autocrlf=true 인 Windows 체크아웃에서 `npm run check` 가 개행 차이로
+#  "OUT OF DATE" 를 잘못 보고하던 문제를 막는다.)
+* text=auto eol=lf
+assets/** -text
