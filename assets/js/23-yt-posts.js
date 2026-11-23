@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.120 */
+/* Reddit-style Blogger YouTube post list — v1.2.121 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1060,12 +1060,23 @@
           for(var i=0;i<nodes.length;i++)pending.push({el:nodes[i],src:toText(nodes[i].innerHTML)});
           continue;
         }
-        var text=toText(body.innerHTML),lines=text.split('\n'),idx=0;
-        while(idx<lines.length&&lines[idx].trim()==='')idx++;
-        if(idx<lines.length&&lines[idx].trim().toLowerCase()==='[md]'){
-          lines.splice(0,idx+1);pending.push({el:body,src:lines.join('\n'),wrap:true});
+        var text=toText(body.innerHTML),lines=text.split('\n'),idx=0,hasMd=false;
+        /* [md]는 첫 줄이 아니어도 된다. 붙여넣은 글이 중간에 [md]를 두면
+           본문 전체가 그대로 노출되므로, 어느 줄에 있든 그 글 전체를 Markdown으로 렌더한다. */
+        for(idx=0;idx<lines.length;idx++){
+          // Blogger가 문단 앞 공백을 &nbsp;로 바꿔 두므로 줄 앞 NBSP는 지운다(제목/표 인식).
+          lines[idx]=lines[idx].replace(/^[\u00a0]+/,'');
+          if(lines[idx].trim().toLowerCase()==='[md]')hasMd=true;
+        }
+        if(hasMd){
+          var mdLines=[];
+          for(idx=0;idx<lines.length;idx++){
+            if(lines[idx].trim().toLowerCase()==='[md]')continue;
+            mdLines.push(lines[idx]);
+          }
+          pending.push({el:body,src:mdLines.join('\n'),wrap:true});
         }else if(/\[r[ea]de\][\s\S]*?\[\/r[ea]de\]/i.test(text)){
-          pending.push({el:body,src:text,wrap:true});
+          pending.push({el:body,src:lines.join('\n'),wrap:true});
         }
       }
       renderPending();
