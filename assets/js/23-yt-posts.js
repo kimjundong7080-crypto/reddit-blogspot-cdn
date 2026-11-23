@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.121 */
+/* Reddit-style Blogger YouTube post list — v1.2.122 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1049,6 +1049,122 @@
       }
       if(window.__jtRunYouTubeShortcodes)window.__jtRunYouTubeShortcodes();
     }
+    /* v1.2.122: [md] ... [/md] 사이만 Markdown으로 렌더한다.
+       - 짝이 맞는 [md]...[/md]가 하나라도 있으면 그 안쪽만 렌더하고 바깥 HTML은 그대로 둔다.
+         여러 블록이 있어도 블록마다 따로 렌더하며, 본문 어디에 있어도 동작한다.
+       - [/md] 없이 [md]만 있는 글(auto_blogger가 넣는 기존 형식)은 v1.2.121과 같이
+         본문 전체를 렌더한다. 기존 글 모양이 바뀌지 않게 하기 위한 호환 경로다.
+       - 짝이 맞지 않는 마커는 화면에 글자로 남지 않도록 지운다. */
+    var MD_TOKEN_RE=/\[\s*\/?\s*md\s*\]/gi;
+    var MD_TOKEN_SRC='\\[\\s*(\\/?)\\s*md\\s*\\]';
+    function stripNbspLines(src){
+      var lines=String(src||'').split('\n');
+      for(var i=0;i<lines.length;i++)lines[i]=lines[i].replace(/^[\u00a0]+/,'');
+      return lines.join('\n');
+    }
+    /* 본문 텍스트 노드를 이어 붙여 마커의 절대 위치를 찾는다(태그 사이에 끼어도 안전). */
+    function textIndex(body){
+      var walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,null);
+      var nodes=[],text='',n;
+      while((n=walker.nextNode())){nodes.push({node:n,start:text.length});text+=n.nodeValue;}
+      return {nodes:nodes,text:text};
+    }
+    function pointAt(index,nodes){
+      for(var i=nodes.length-1;i>=0;i--){
+        if(index>=nodes[i].start){
+          var len=nodes[i].node.nodeValue.length;
+          return {node:nodes[i].node,offset:Math.min(Math.max(index-nodes[i].start,0),len)};
+        }
+      }
+      return nodes.length?{node:nodes[0].node,offset:0}:null;
+    }
+    function mdMarkers(body){
+      var idx=textIndex(body),re=new RegExp(MD_TOKEN_SRC,'gi'),m;
+      var pairs=[],stray=[],open=null;
+      while((m=re.exec(idx.text))!==null){
+        var tok={start:m.index,end:m.index+m[0].length};
+        if(!m[1]){
+          if(open)stray.push(open);
+          open=tok;
+        }else if(open){
+          pairs.push({contentStart:open.end,contentEnd:tok.start,end:tok.end});
+          open=null;
+        }else stray.push(tok);
+      }
+      if(open)stray.push(open);
+      return {pairs:pairs,stray:stray,nodes:idx.nodes};
+    }
+    /* el 안에서 skip 하나만 뺐을 때 빈 블록인지. 빈 <p>는 레이아웃 여백만 남으므로 정리 대상. */
+    function blankBlock(el,skip){
+      if(!el||el.nodeType!==1)return false;
+      if(!/^(P|DIV|SECTION|H[1-6]|LI|BLOCKQUOTE)$/.test(el.tagName))return false;
+      var kids=el.childNodes,i,n;
+      for(i=0;i<kids.length;i++){
+        n=kids[i];
+        if(n===skip)continue;
+        if(n.nodeType===3){if(n.nodeValue.replace(/[\s\u00a0]+/g,'')!=='')return false;continue;}
+        if(n.nodeType!==1)continue;
+        if(/^BR$/.test(n.tagName))continue;
+        if(/^(IMG|IFRAME|VIDEO|AUDIO|TABLE|PRE|HR)$/.test(n.tagName))return false;
+        if(n.className==='markdown')return false;
+        if(n.textContent.replace(/[\s\u00a0]+/g,'')!=='')return false;
+        if(n.querySelector('img,iframe,video,audio,table,pre,hr'))return false;
+      }
+      return true;
+    }
+    /* 마커가 문단 하나를 다 차지한 경우 <p><div class="markdown"> 같은 잘못된 중첩이 생기므로
+       빈 껍데기 블록은 벗겨내고, 마커 때문에 남은 빈 문단도 지운다. */
+    function liftWrap(wrap){
+      var guard=0,el=wrap.parentNode;
+      while(el&&el!==document.body&&el.nodeType===1&&guard++<6&&blankBlock(el,wrap)){
+        var up=el.parentNode;
+        if(!up)break;
+        up.insertBefore(wrap,el);up.removeChild(el);el=wrap.parentNode;
+      }
+      var prev=wrap.previousElementSibling,next=wrap.nextElementSibling;
+      if(prev&&!prev.className&&blankBlock(prev,null)&&prev.parentNode)prev.parentNode.removeChild(prev);
+      if(next&&!next.className&&blankBlock(next,null)&&next.parentNode)next.parentNode.removeChild(next);
+    }
+    /* 구간 안에 남아 있는 인라인 HTML은 Markdown으로 되돌린다.
+       그대로 텍스트만 뽑으면 굵게/링크/이미지가 사라지기 때문이다. */
+    function inlineToMarkdown(html){
+      return String(html||'')
+        .replace(/<img\b[^>]*?\bsrc\s*=\s*(["'])([\s\S]*?)\1[^>]*>/gi,function(m,q,url){return url?'![]('+url+')':'';})
+        .replace(/<a\b[^>]*?\bhref\s*=\s*(["'])([\s\S]*?)\1[^>]*>([\s\S]*?)<\/a>/gi,function(m,q,href,label){
+          label=String(label||'').replace(/<[^>]*>/g,'').trim();
+          return label?'['+label+']('+href+')':href;
+        })
+        .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi,'**$2**')
+        .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi,'*$2*');
+    }
+    function renderRegion(region,info){
+      var a=pointAt(region.contentStart,info.nodes),b=pointAt(region.contentEnd,info.nodes);
+      if(!a||!b)return;
+      var range=document.createRange();
+      try{range.setStart(a.node,a.offset);range.setEnd(b.node,b.offset);}catch(e){return;}
+      var holder=document.createElement('div');
+      try{holder.appendChild(range.cloneContents());}catch(e){return;}
+      var src=stripNbspLines(toText(inlineToMarkdown(holder.innerHTML))).replace(MD_TOKEN_RE,'');
+      var wrap=document.createElement('div');
+      wrap.className='markdown';
+      try{range.deleteContents();range.insertNode(wrap);}catch(e){return;}
+      liftWrap(wrap);
+      if(src.replace(/[\s\u00a0]+/g,'')===''){
+        if(wrap.parentNode)wrap.parentNode.removeChild(wrap);
+        return;
+      }
+      pending.push({el:wrap,src:src});
+    }
+    function dropStrayMarkers(body){
+      var walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,null),list=[],n,i;
+      while((n=walker.nextNode()))list.push(n);
+      for(i=0;i<list.length;i++){
+        var v=list[i].nodeValue;
+        if(!v||v.toLowerCase().indexOf('md')<0)continue;
+        var cleaned=v.replace(MD_TOKEN_RE,'');
+        if(cleaned!==v)list[i].nodeValue=cleaned;
+      }
+    }
     function scan(){
       var bodies=document.querySelectorAll('.post-body');
       for(var b=0;b<bodies.length;b++){
@@ -1060,9 +1176,14 @@
           for(var i=0;i<nodes.length;i++)pending.push({el:nodes[i],src:toText(nodes[i].innerHTML)});
           continue;
         }
+        var info=mdMarkers(body);
+        if(info.pairs.length){
+          for(var p=info.pairs.length-1;p>=0;p--)renderRegion(info.pairs[p],info);
+          dropStrayMarkers(body);
+          continue;
+        }
         var text=toText(body.innerHTML),lines=text.split('\n'),idx=0,hasMd=false;
-        /* [md]는 첫 줄이 아니어도 된다. 붙여넣은 글이 중간에 [md]를 두면
-           본문 전체가 그대로 노출되므로, 어느 줄에 있든 그 글 전체를 Markdown으로 렌더한다. */
+        /* [/md] 없이 [md]만 있는 글: 어느 줄에 있든 그 글 전체를 Markdown으로 렌더한다. */
         for(idx=0;idx<lines.length;idx++){
           // Blogger가 문단 앞 공백을 &nbsp;로 바꿔 두므로 줄 앞 NBSP는 지운다(제목/표 인식).
           lines[idx]=lines[idx].replace(/^[\u00a0]+/,'');
@@ -1072,11 +1193,13 @@
           var mdLines=[];
           for(idx=0;idx<lines.length;idx++){
             if(lines[idx].trim().toLowerCase()==='[md]')continue;
-            mdLines.push(lines[idx]);
+            mdLines.push(lines[idx].replace(MD_TOKEN_RE,''));
           }
           pending.push({el:body,src:mdLines.join('\n'),wrap:true});
         }else if(/\[r[ea]de\][\s\S]*?\[\/r[ea]de\]/i.test(text)){
           pending.push({el:body,src:lines.join('\n'),wrap:true});
+        }else{
+          dropStrayMarkers(body);
         }
       }
       renderPending();
