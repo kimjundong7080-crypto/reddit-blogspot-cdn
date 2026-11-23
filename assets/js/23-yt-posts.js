@@ -1,10 +1,14 @@
-/* Reddit-style Blogger YouTube post list — v1.2.118 */
+/* Reddit-style Blogger YouTube post list — v1.2.119 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
-     홈/홈버튼을 가장 최신 글로 보낸다. (techlifeworld.com 동작은 변경하지 않음) */
+     홈(/)으로 들어올 때마다 최근 글 10개를 한 칸씩 순환해 "맨 위 시작글"을 바꾼다.
+     (techlifeworld.com 동작은 변경하지 않음) */
   var JT_NO_LANDING=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
   var JT_LATEST_KEY='jt-latest-post';
+  var JT_HOME_KEY='jt-home-rotation';
+  var JT_HOME_POOL_MS=600000;
+  var JT_HOME_POOL_SIZE=10;
   function jtReadLatest(){
     try{
       var o=JSON.parse(localStorage.getItem(JT_LATEST_KEY)||'null');
@@ -15,6 +19,30 @@
   function jtSaveLatest(href){
     if(!href)return;
     try{localStorage.setItem(JT_LATEST_KEY,JSON.stringify({href:href,t:Date.now()}));}catch(e){}
+  }
+  function jtReadHomePool(){
+    try{
+      var o=JSON.parse(localStorage.getItem(JT_HOME_KEY)||'null');
+      if(o&&o.hrefs&&o.hrefs.length)return o;
+    }catch(e){}
+    return null;
+  }
+  function jtWriteHomePool(pool){
+    try{localStorage.setItem(JT_HOME_KEY,JSON.stringify(pool));}catch(e){}
+  }
+  /* 최근 글 목록을 한 칸씩 돌려, 같은 글이 연속으로 맨 위에 오지 않게 한다. */
+  function jtNextHomeHref(pool){
+    var list=pool.hrefs,len=list.length;
+    var i=Math.floor(Number(pool.i)||0);
+    i=((i%len)+len)%len;
+    var href=list[i];
+    if(len>1&&href===pool.last){i=(i+1)%len;href=list[i];}
+    return {href:href,i:(i+1)%len};
+  }
+  function jtRotateHome(pool){
+    var hit=jtNextHomeHref(pool);
+    jtWriteHomePool({hrefs:pool.hrefs,t:pool.t||Date.now(),i:hit.i,last:hit.href});
+    return hit.href;
   }
   function jtApplyLatestLinks(href){
     if(!JT_NO_LANDING||!href)return;
@@ -32,19 +60,31 @@
     return '';
   }
   if(JT_NO_LANDING&&(location.pathname==='/'||location.pathname==='/p/home.html')){
-    var cachedLatest=jtReadLatest();
-    if(cachedLatest){location.replace(cachedLatest);return;}
-    var latestFallback=location.pathname==='/p/home.html'?'/':null;
-    var latestTimer=setTimeout(function(){if(latestFallback)location.replace(latestFallback);},8000);
-    fetch('/feeds/posts/default?alt=json&max-results=1',{cache:'no-store'})
+    var homePool=jtReadHomePool();
+    if(homePool&&Date.now()-(homePool.t||0)<JT_HOME_POOL_MS){
+      location.replace(jtRotateHome(homePool));
+      return;
+    }
+    var staleHref=homePool?jtNextHomeHref(homePool).href:'';
+    var homeFallback=staleHref||(location.pathname==='/p/home.html'?'/':'');
+    var latestTimer=setTimeout(function(){if(homeFallback)location.replace(homeFallback);},8000);
+    fetch('/feeds/posts/default?alt=json&max-results='+JT_HOME_POOL_SIZE,{cache:'no-store'})
       .then(function(r){return r.json();})
       .then(function(j){
         clearTimeout(latestTimer);
-        var e=j.feed&&j.feed.entry&&j.feed.entry[0],href=jtEntryHref(e);
-        if(href){jtSaveLatest(href);location.replace(href);}
-        else if(latestFallback)location.replace(latestFallback);
+        var entries=(j.feed&&j.feed.entry)||[];
+        var hrefs=[];
+        for(var i=0;i<entries.length;i++){
+          var h=jtEntryHref(entries[i]);
+          if(h&&hrefs.indexOf(h)<0)hrefs.push(h);
+        }
+        if(hrefs.length){
+          jtSaveLatest(hrefs[0]);
+          var fresh={hrefs:hrefs,t:Date.now(),i:homePool?(Number(homePool.i)||0):0,last:homePool?homePool.last:''};
+          location.replace(jtRotateHome(fresh));
+        }else if(homeFallback)location.replace(homeFallback);
       })
-      ['catch'](function(){clearTimeout(latestTimer);if(latestFallback)location.replace(latestFallback);});
+      ['catch'](function(){clearTimeout(latestTimer);if(homeFallback)location.replace(homeFallback);});
     if(location.pathname==='/p/home.html')return;
   }
   if(location.pathname==='/p/home.html'&&!JT_NO_LANDING)document.documentElement.classList.add('jt-home-page');
@@ -413,6 +453,18 @@
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
   }
+  /* 접힌 [rede] 폴드나 '더보기' 긴 글 안인지 확인한다. 펼쳤을 때만 자동재생한다. */
+  function jtInCollapsed(el){
+    var h=el&&el.parentNode;
+    while(h&&h!==document.body){
+      if(h.classList){
+        if((h.classList.contains('ify-fold')||h.classList.contains('jt-expandable'))&&!h.classList.contains('is-open'))return true;
+      }
+      if(h.tagName==='DETAILS'&&!h.open)return true;
+      h=h.parentNode;
+    }
+    return false;
+  }
   function initExpanders(){
     if(!JT_NO_LANDING)return;
     if(!document.body.classList.contains('item-view'))return;
@@ -423,6 +475,9 @@
       if(b.getBoundingClientRect().height<LIMIT)return;
       b.__jtExpand=1;
       b.classList.add('jt-expandable');
+      /* 자동재생이 먼저 시작된 경우에도 접힌 글 안에서는 즉시 정지한다. */
+      var preVids=b.querySelectorAll('.jt-yt-embed');
+      for(var pv=0;pv<preVids.length;pv++)if(window.__jtPauseYtBox)window.__jtPauseYtBox(preVids[pv]);
       var btn=document.createElement('button');
       btn.type='button';
       btn.className='jt-expand-btn';
@@ -433,8 +488,13 @@
         btn.textContent=open?'접기':'더보기';
         btn.setAttribute('aria-expanded',open?'true':'false');
         if(!open){
+          /* 접은 글 안의 영상은 즉시 정지하고 포스터로 되돌린다. */
+          var vids=b.querySelectorAll('.jt-yt-embed');
+          for(var vi=0;vi<vids.length;vi++)if(window.__jtPauseYtBox)window.__jtPauseYtBox(vids[vi]);
           var top=b.getBoundingClientRect().top+window.pageYOffset-16;
           window.scrollTo({top:top,behavior:'smooth'});
+        }else if(window.__jtRescanYt){
+          window.__jtRescanYt();
         }
       });
       if(b.parentNode)b.parentNode.insertBefore(btn,b.nextSibling);
@@ -484,6 +544,7 @@
       for(var i=0;i<boxes.length;i++){
         var box=boxes[i];
         if(!box.getAttribute('data-loaded')&&!box.querySelector('iframe'))continue;
+        if(jtInCollapsed(box)&&!box.__jtManual){stopBox(box);continue;}
         var r=box.getBoundingClientRect();
         var visible=Math.min(r.bottom,vh)-Math.max(r.top,0);
         var ratio=r.height>0?Math.max(0,visible)/r.height:0;
@@ -909,7 +970,12 @@
             lazy[k].setAttribute('src',lazy[k].getAttribute('data-src'));
             lazy[k].removeAttribute('data-src');
           }
+        }else{
+          /* 접힌 폴드 안의 영상은 자동재생하지 않는다. */
+          var vids=inner.querySelectorAll('.jt-yt-embed');
+          for(var vi=0;vi<vids.length;vi++)if(window.__jtPauseYtBox)window.__jtPauseYtBox(vids[vi]);
         }
+        if(open&&window.__jtRescanYt)window.__jtRescanYt();
       });
       more.appendChild(btn);fold.appendChild(more);
       return fold;
@@ -1083,7 +1149,7 @@
       activePlaybackBox=box;
       box.removeAttribute('data-paused');
       box.setAttribute('data-loaded','1');
-      if(userInitiated)box.__jtUserPinned=Date.now();
+      if(userInitiated){box.__jtUserPinned=Date.now();box.__jtManual=1;}
       var frame=frameOf(box);
       if(frame){
         box.classList.add('ready');
@@ -1162,15 +1228,6 @@
       var vis=Math.min(r.bottom,vh)-Math.max(r.top,0);
       return {ratio:r.height>0?Math.max(0,vis)/r.height:0,center:Math.abs((r.top+r.bottom)/2-vh/2)};
     }
-    /* 접힌 [rede] 블록 안의 영상은 자동재생 후보에서 제외한다. */
-    function inCollapsedFold(box){
-      var h=box.parentNode;
-      while(h&&h!==document.body){
-        if(h.classList&&h.classList.contains('ify-fold')&&!h.classList.contains('is-open'))return true;
-        h=h.parentNode;
-      }
-      return false;
-    }
     /* 화면 밖 플레이어가 3개를 넘을 때만 iframe을 정리한다. */
     function prunePlaybacks(vh){
       var boxes=document.querySelectorAll('.jt-yt-embed');
@@ -1201,13 +1258,15 @@
         var vh=window.innerHeight||document.documentElement.clientHeight;
         if(activePlaybackBox&&!document.documentElement.contains(activePlaybackBox))activePlaybackBox=null;
         /* 사용자가 직접 누른 영상은 다음 스크롤 전까지 그대로 둔다. */
+        /* 접힌 글/폴드 안에서 재생 중이던 영상은 즉시 멈춘다. */
+        if(activePlaybackBox&&!activePlaybackBox.__jtManual&&jtInCollapsed(activePlaybackBox))pauseBox(activePlaybackBox);
         if(activePlaybackBox&&activePlaybackBox.__jtUserPinned)return;
         var boxes=document.querySelectorAll('.jt-yt-embed[data-yt]');
         var best=null,bestInfo=null;
         for(var i=0;i<boxes.length;i++){
           var box=boxes[i];
           if(!box.getAttribute('data-yt'))continue;
-          if(inCollapsedFold(box))continue;
+          if(jtInCollapsed(box))continue;
           var info=ratioOf(box,vh);
           if(!info||info.ratio<CENTER_START)continue;
           /* 방금 멈춘 영상은 잠시 후보에서 빼 두 영상이 번갈아 깜빡이지 않게 한다. */
@@ -1223,7 +1282,7 @@
             }else if(!best.__jtCenterTimer){
               best.__jtCenterTimer=setTimeout(function(){
                 best.__jtCenterTimer=null;
-                if(!document.documentElement.contains(best)||inCollapsedFold(best))return;
+                if(!document.documentElement.contains(best)||jtInCollapsed(best))return;
                 var later=ratioOf(best,window.innerHeight||document.documentElement.clientHeight);
                 if(!later||later.ratio<CENTER_KEEP)return;
                 playBox(best,best.getAttribute('data-yt'),false);
@@ -1255,6 +1314,7 @@
         new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
       }
       schedule();
+      window.__jtRescanYt=schedule;
     }
     /* 숏코드가 제목(h1~h6)처럼 잘림(clamp) 스타일 안에 들어간 경우 임베드를 밖으로 꺼낸다 */
     function unclipEmbed(box){
@@ -1418,11 +1478,16 @@
     /* 파비콘: 테마 XML을 수정할 수 없으므로 head에 직접 주입한다. */
     (function(){
       var base='https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/assets/img/';
+      /* 사이트별 파비콘: shutupquick/deepstronglove는 전용 아이콘 폴더를 쓴다. */
+      var brandIcon='';
+      var hostName=String(location.hostname||'').toLowerCase();
+      if(hostName==='shutupquick.com'||hostName.slice(-16)==='.shutupquick.com')brandIcon='favicon/shutupquick/';
+      else if(hostName==='deepstronglove.com'||hostName.slice(-19)==='.deepstronglove.com')brandIcon='favicon/deepstronglove/';
       var old=head().querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]');
       for(var i=0;i<old.length;i++)if(old[i].parentNode)old[i].parentNode.removeChild(old[i]);
       function add(rel,type,file,sizes){
         var l=document.createElement('link');
-        l.rel=rel;if(type)l.type=type;l.href=base+file;if(sizes)l.sizes=sizes;
+        l.rel=rel;if(type)l.type=type;l.href=base+brandIcon+file;if(sizes)l.sizes=sizes;
         head().appendChild(l);
       }
       add('icon','image/svg+xml','favicon.svg','any');
