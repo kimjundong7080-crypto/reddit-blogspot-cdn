@@ -1,13 +1,18 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-23
-Latest published release: **v1.2.121**
-Current local package version: **1.2.121**
+Latest published release: **v1.2.122**
+Current local package version: **1.2.122**
 
-This document is the handoff for the next AI or engineer. Release v1.2.121 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.121 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.122 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.122 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
+- **v1.2.122 is published.** Content (commit `92c7ace`, tag `v1.2.122`): **only the `[md] ... [/md]` block is rendered as Markdown.**
+  - Change: a `[md]`/`[/md]` pair now delimits the Markdown region. The renderer finds the marker text nodes, cuts only the range between the pair with a DOM `Range`, replaces it with a `.markdown` wrapper, and leaves every other paragraph (intro text, images, embeds before/after the block) untouched. Several pairs in one post each get their own wrapper, and the pairs are processed last-to-first so earlier ranges stay valid.
+  - Compatibility: a post with `[md]` and **no** `[/md]` (what `auto_blogger` writes today) keeps the v1.2.121 whole-body behavior, so existing posts render exactly as before. Unpaired markers are removed from the text so they never show as literal `[md]`; an empty `[md][/md]` block renders nothing and leaves no empty wrapper.
+  - Fidelity: HTML left inside the region is converted back to Markdown before `marked` (`<img>`→`![]()`, `<a href>`→`[]()`, `<b>/<strong>`→`**`, `<i>/<em>`→`*`), so a region written partly in HTML no longer loses its image, link or bold; leading `&nbsp;` is stripped per line as before.
+  - Verified: a browser harness (marked from CDN, the built IIFE on synthetic `.post-body` markup) covers 9 cases — pair with surrounding paragraphs, two pairs, legacy `[md]`-only, lone `[/md]`, marker sharing a paragraph with text, nested `div`, empty pair, stray inline `[md]`, and a region containing `<b>`/`<a>`/`<img>`: headings/tables/code/strong render, markers are gone, outside text survives, and empty blocks leave no wrapper. Live `ddd3.html` (legacy `[md]`, mid-body) still renders 1 `h2`, 2 `h3`, 2 tables, 40 `<code>`, `.markdown` wrapper, no `[md]`, 0 console errors; `@v1` serves `x-jsd-version: 1.2.122`.
 - **v1.2.121 is published.** Content (commit `68a8c95`, tag `v1.2.121`): **Markdown rendering no longer depends on `[md]` being the first line.**
   - Problem: a post whose `[md]` marker sat mid-body (live: `https://www.deepstronglove.com/2026/11/ddd3.html`) was not detected, so raw Markdown (`##` headings, `|` tables, backtick code) was printed as plain paragraphs and the literal `[md]` line stayed visible.
   - Fix: `scan()` treats any line that is exactly `[md]` as a Markdown trigger, renders the whole body with `marked`, and drops every `[md]` line. Each line also loses the leading `&nbsp;` Blogger writes for an indented paragraph, so `&nbsp;## heading` becomes an `<h2>`.
@@ -23,7 +28,7 @@ This document is the handoff for the next AI or engineer. Release v1.2.121 is pu
 
 - **v1.2.118 is published.** Content: **single-owner playback**. Only the embed closest to the viewport center (≥60% visible, released below 50%) plays; every other embed is paused with a `pauseVideo` postMessage (iframe kept, poster restored) instead of being torn down, so the playback position survives and the video resumes where it stopped. An 800 ms relock cooldown stops two embeds from alternating (the earlier flicker), embeds inside a collapsed `[rede]` fold are never candidates, a manual click pins that video until the next scroll, and iframes are pruned only when more than three are alive off-screen. The embed URL now carries `enablejsapi=1` + `origin`. Shared `@v1` asset, so techlifeworld.com, shutupquick.com and deepstronglove.com all get it.
 - Repository: `D:\코드 수정 작업\06_블로그 스팟 API 글쓰기\reddit-blogspot-cdn`. Older notes may still name the retired `15_블로그 스팟\RedditBlogspotCdn` location.
-- Branch: `main`; latest release commit: `68a8c95 Release v1.2.121`.
+- Branch: `main`; latest release commit: `92c7ace Release v1.2.122`.
 - Latest GitHub release/tag: `v1.2.120`. The release script updates and pushes `main` and a new version tag.
 - **v1.2.117 is published.** Content: only one video plays at a time. Center autoplay calls `startPlayback(box,id,null,false)`, so `activePlaybackBox` stops the previous embed before the next starts. Starting an embed removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe (clearing `data-loaded`/`ready`) and other previews. Verified locally with three stacked embeds: exactly one iframe at the top/second/third positions; a hover preview reduced post embeds 1→0 and left exactly one preview.
 - **v1.2.116 is published.** Content: center-entry autoplay for all YouTube embeds (`initCenterAutoplay`, ≥60% visible, 500 ms, stop <50%).
@@ -424,7 +429,8 @@ All shortcodes are processed by `src/23-yt-posts.html` and work on all three dom
 | YouTube | `[youtube link="URL"]` | 16:9 poster + play button | No (click to play) |
 | Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, only while it is the centered video |
 | Map | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed | No |
-| Markdown | `[md]` on its own line (any position; first line is the documented default) | Whole post rendered as Markdown, `[md]` line dropped | - |
+| Markdown | `[md]` ... `[/md]` (pair, any position, repeatable) | Only the enclosed range is rendered as Markdown | - |
+| Markdown (legacy) | `[md]` alone, no `[/md]` | Whole post rendered as Markdown, `[md]` line dropped | - |
 | Fold | `[rede]...[/rede]` or `[rade]...[/rade]` | Collapsed block with a "more" button | - |
 
 Behavior notes:
@@ -432,13 +438,13 @@ Behavior notes:
 - `[youtube]` accepts `youtu.be/`, `watch?v=`, `/embed/`, `/shorts/`, `/live/` URLs and a raw 11-character video id. A `/shorts/` URL is automatically upgraded to the Shorts layout and autoplay behavior.
 - **All autoplay is muted** (`mute=1`), including a manual click; do not describe it as audible playback. Center autoplay (v1.2.116 to v1.2.118) picks the embed nearest the viewport center and starts it after a 500 ms dwell; only that one plays and every other embed is paused with its position kept. v1.2.119 suppresses autoplay inside collapsed `[rede]`/`[rade]` folds and collapsed `.jt-expandable` bodies, and resumes after expanding. Shorts use a centered 9:16 box and the same muted player.
 - `[map]` uses a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe with `loading="lazy"`. Addresses containing spaces must be quoted.
-- `[md]` may sit anywhere as its own line (v1.2.121); the whole post body is then rendered as Markdown and every `[md]` line is dropped, so a misplaced marker no longer leaves raw Markdown on the page. No closing tag is required. Leading `&nbsp;` that Blogger puts before an indented paragraph is stripped per line, so a `##` heading still becomes a heading. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
+- `[md]` ... `[/md]` (v1.2.122) renders **only the range between the pair**; paragraphs outside it keep their HTML, including images and embeds. Several pairs are allowed and each is rendered separately. A `[md]` with no `[/md]` keeps the v1.2.121 whole-body behavior (this is what `auto_blogger` writes), so old posts are unchanged. Unpaired markers are stripped from the visible text. Leading `&nbsp;` that Blogger puts before an indented paragraph is stripped per line, so a `##` heading still becomes a heading. `<b>/<strong>`, `<i>/<em>`, `<a href>` and `<img>` inside the region are turned back into Markdown first, so they are not lost. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
 - Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
 - YouTube timestamp citations pasted by AI summaries (`[[00:51](https://www.youtube.com/watch?v=...&t=51)]`) are normalized to a normal link showing `00:51`; a link-stripped `[[00:51]]` becomes plain `00:51` (v1.2.120). A destination URL containing `)` is not matched, so keep YouTube URLs intact.
 - Shortcode parsing runs in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), including infinite-scroll clones.
 - **Naver Clip is planned, not implemented** (`[clip "..."]`, `[naverclip "..."]`). See §12 for the working oEmbed URL, the `naver.me` resolution blocker, and the implementation plan.
 
-## 11. Remaining work and known issues (2026-11-23, v1.2.121)
+## 11. Remaining work and known issues (2026-11-23, v1.2.122)
 
 1. **All autoplay is muted.** `playBox()` always builds the iframe with `mute=1` (plus `autoplay=1&loop=1`), including a manual play-button click. This is intentional for browser autoplay policy; do not describe playback as audible. If unmuted manual playback is ever wanted, change only the user-initiated path and re-test on all three domains.
 2. **Search-engine registration is NOT done.** Google Search Console, Naver Search Advisor, Bing Webmaster Tools and Daum registration require account/DNS actions. Verified ready: `/sitemap.xml` (URLs plus lastmod), `/sitemap-pages.xml`, RSS (`/feeds/posts/default?alt=rss`), and `robots.txt` already lists `Sitemap: https://<domain>/sitemap.xml`. HTML meta-tag verification cannot be satisfied by this project because the head is injected by JavaScript; use DNS TXT verification (domain property), then submit the sitemaps. Re-check DNS propagation with `nslookup` after the user adds records.
