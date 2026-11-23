@@ -1,23 +1,26 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-23
-Latest published release: **v1.2.119**
-Current local package version: **1.2.119**
+Latest published release: **v1.2.120**
+Current local package version: **1.2.120**
 
-This document is the handoff for the next AI or engineer. Release v1.2.119 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.119 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.120 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.120 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
+- **v1.2.120 is published.** Content (commit `250c029`, tag `v1.2.120`): **YouTube timestamp citations no longer break Markdown posts.**
+  - Problem: AI summaries paste timestamps as `[[00:01](https://www.youtube.com/watch?v=...&t=1)]`. That is not valid Markdown, so `marked` kept the outer brackets as text (`[00:01]` with stray `[`/`]`), and when the body had already been converted to HTML the anchor was stripped and only `[[00:01]]` survived.
+  - Fix: `renderInto()` now calls `jtFixTimeStamps()` before shortcode prep and `marked.parse`. `[[mm:ss](url)]` / `[[h:mm:ss](url)]` become a normal `[mm:ss](url)` link; a link-stripped `[[mm:ss]]` becomes plain `mm:ss`. Already-valid `[mm:ss](url)` links are untouched, and the pass also covers `[rede]` folds and `.markdown` blocks.
+  - Verified: the built asset and the served 1.2.120 CDN file both contain `jtFixTimeStamps`; six transform cases (single, multiple, `h:mm:ss`, stripped, plain, heading, empty) pass; `marked` renders `[[00:51](...&t=51)]` as `<a href="...&t=51">00:51</a>` with no stray brackets; all three domains load 1.2.120. No post among the newest 25 per site currently uses `[md]`, so no live Markdown post existed to regression-test.
 - **v1.2.119 is published.** Content (commit `222d443`, tag `v1.2.119`):
   - **Home start-post rotation** (`shutupquick.com` / `deepstronglove.com` only): `/` and `/p/home.html` no longer always jump to the newest post. A 10-post pool is cached in `localStorage` (`jt-home-rotation`, 10 min) and each visit advances one post, skipping the post shown on the previous visit, so ten visits show ten different posts and the eleventh cycles. The pool is refetched after 10 minutes and the rotation index carries over. `techlifeworld.com` keeps `/` → `/p/home.html`. Verified live: shutupquick `_855 → _22 → blog-post`, deepstronglove `cxv → c → cxv`.
   - **Collapsed-content autoplay block** (shared asset, all three domains): center autoplay excludes every embed inside a collapsed `[rede]`/`[rade]` fold **and** inside a collapsed `더보기` body (`.jt-expandable`), plus `details:not([open])`. All playback is muted (`mute=1`). Collapsing pauses playing embeds with `pauseVideo` (iframe kept, poster restored) and expanding triggers a rescan (`window.__jtRescanYt`); a manually clicked video (`__jtManual`) is exempt from the ambient pause. Verified with a live-style harness (collapsed fold/body: 0 players; expand: autoplay; collapse: `data-paused=1`, iframe kept) and on live shutupquick (1 collapsed expander embed, 0 players).
   - **Per-site favicons**: `assets/img/favicon/shutupquick/` (gold bulb on teal) and `assets/img/favicon/deepstronglove/` (smiling sun on coral), each with SVG, 16/32/48 PNG, ICO (16+32+48) and a 180px apple-touch icon. `23-yt-posts` picks the folder by hostname and still removes Blogger icon links; `techlifeworld.com` keeps the flat JUST TECH set. Verified live on both domains (5 link tags, 32px icon loads) and the ICO decodes in Chrome.
 
 - **v1.2.118 is published.** Content: **single-owner playback**. Only the embed closest to the viewport center (≥60% visible, released below 50%) plays; every other embed is paused with a `pauseVideo` postMessage (iframe kept, poster restored) instead of being torn down, so the playback position survives and the video resumes where it stopped. An 800 ms relock cooldown stops two embeds from alternating (the earlier flicker), embeds inside a collapsed `[rede]` fold are never candidates, a manual click pins that video until the next scroll, and iframes are pruned only when more than three are alive off-screen. The embed URL now carries `enablejsapi=1` + `origin`. Shared `@v1` asset, so techlifeworld.com, shutupquick.com and deepstronglove.com all get it.
-- Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
-- Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
-- Branch: `main`; latest release commit: `222d443 Release v1.2.119`.
-- Latest GitHub release/tag: `v1.2.119`. The release script updates and pushes `main` and a new version tag.
+- Repository: `D:\코드 수정 작업\06_블로그 스팟 API 글쓰기\reddit-blogspot-cdn`. Older notes may still name the retired `15_블로그 스팟\RedditBlogspotCdn` location.
+- Branch: `main`; latest release commit: `250c029 Release v1.2.120`.
+- Latest GitHub release/tag: `v1.2.120`. The release script updates and pushes `main` and a new version tag.
 - **v1.2.117 is published.** Content: only one video plays at a time. Center autoplay calls `startPlayback(box,id,null,false)`, so `activePlaybackBox` stops the previous embed before the next starts. Starting an embed removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe (clearing `data-loaded`/`ready`) and other previews. Verified locally with three stacked embeds: exactly one iframe at the top/second/third positions; a hover preview reduced post embeds 1→0 and left exactly one preview.
 - **v1.2.116 is published.** Content: center-entry autoplay for all YouTube embeds (`initCenterAutoplay`, ≥60% visible, 500 ms, stop <50%).
 - **v1.2.115 is published.** Content: viewport auto-stop (<50% visible) + `cc_load_policy=0` on all YouTube iframes, including hover previews.
@@ -198,6 +201,7 @@ The Blogger theme loads the CDN assets through jsDelivr `@v1`. `scripts/build.mj
 ### YouTube, search, SEO, and static pages — `src/23-yt-posts.html`
 
 - Supports `[youtube link="..."]`, Markdown `[md]`, and `[rede]`/`[rade]` folded sections.
+- Markdown sources are pre-processed by `jtFixTimeStamps()`: AI-style citations `[[mm:ss](url)]` become `[mm:ss](url)`, and `[[mm:ss]]` becomes `mm:ss` (v1.2.120). Keep this pass before `__jtPrepareYouTubeShortcodes`.
 - YouTube video ID `lyFcrrULyN0` is valid; YouTube oEmbed and its thumbnail have been checked previously.
 - Every embed uses click-to-play; the iframe is only created after a user click (autoplay removed in v1.2.76).
 - Center autoplay is suppressed inside collapsed `[rede]` folds and collapsed `.jt-expandable` bodies; collapsing pauses (iframe kept) and expanding rescans. Do not start autoplay from a collapse/expand handler without checking `jtInCollapsed`.
@@ -426,6 +430,7 @@ Behavior notes:
 - `[map]` uses a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe with `loading="lazy"`. Addresses containing spaces must be quoted.
 - `[md]` must be the first non-empty line of the post body; no closing tag is required. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
 - Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
+- YouTube timestamp citations pasted by AI summaries (`[[00:51](https://www.youtube.com/watch?v=...&t=51)]`) are normalized to a normal link showing `00:51`; a link-stripped `[[00:51]]` becomes plain `00:51` (v1.2.120). A destination URL containing `)` is not matched, so keep YouTube URLs intact.
 - Shortcode parsing runs in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), including infinite-scroll clones.
 - **Naver Clip is planned, not implemented** (`[clip "..."]`, `[naverclip "..."]`). See §12 for the working oEmbed URL, the `naver.me` resolution blocker, and the implementation plan.
 
@@ -444,7 +449,7 @@ Behavior notes:
 11. **`naver.me` cannot be expanded client-side** (CORS plus opaque redirect); a server-side resolver or a full `m.naver.com/shorts/?seedMediaId=...` URL is required.
 12. **Naver player autoplay is not controllable** (the oEmbed page starts paused and ignores query parameters); plan click-to-play 9:16 instead.
 13. **Live check limits for v1.2.119.** Playback was verified as player presence plus `data-paused` state, never audio, and autoplay is muted. Rotation was verified over three consecutive visits per domain in an incognito tab.
-14. **Stale handoff paths.** §1/§3 still name the old `15_블로그 스팟/RedditBlogspotCdn/blo/reddit-blogspot-cdn` location; the current workspace is `06_블로그 스팟 API 글쓰기/reddit-blogspot-cdn`.
+14. **Timestamp normalization limits.** `jtFixTimeStamps()` matches only `[[mm:ss](url)]`, `[[h:mm:ss](url)]` and `[[mm:ss]]`; a destination containing `)` is skipped and a bare `[00:01](url)` is already valid. It runs on the raw Markdown source, so it also applies inside `[rede]` folds but not to hand-written HTML posts that never enter the Markdown path.
 15. **Untracked preview file.** `icon-preview.png` at the repo root is a report screenshot; it is not committed and can be deleted.
 
 ## 12. Naver Clip investigation (2026-11-22)

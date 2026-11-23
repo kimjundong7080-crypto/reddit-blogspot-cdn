@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-23 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.119**
+Latest published release: **v1.2.120**
 
-This is the consolidated English record for the work cycle that ended with v1.2.119.
+This is the consolidated English record through v1.2.120.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -71,6 +71,8 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.117 | `36d2926` | **Only one video plays at a time**: center autoplay now calls `startPlayback(..., false)`, so `activePlaybackBox` stops the previous embed before starting the next. Starting any embed also removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe and clears `data-loaded`/`ready`, and removes other hover previews. Verified locally: three stacked embeds (normal, normal, Shorts) had exactly one iframe at the top, second, and third positions; hovering a YouTube recommendation dropped post embeds 1→0 and created exactly one preview. |
 | v1.2.118 | — | **Single-owner playback**: only the embed nearest the viewport center plays; all others are paused with `pauseVideo` (iframe kept, position preserved) instead of being removed, so no more alternating flicker or position resets. Adds an 800 ms relock cooldown, excludes embeds inside collapsed `[rede]` folds, pins a manually clicked video until the next scroll, prunes iframes only above three off-screen players, and adds `enablejsapi=1` + `origin` to the embed URL. |
 | v1.2.119 | `222d443` | **Home rotation, collapsed autoplay block, per-site favicons**: (1) shutupquick/deepstronglove `/` cycles through a cached 10-post pool (one post per visit, never the same twice in a row; verified `_855 → _22 → blog-post` and `cxv → c → cxv`), while techlifeworld keeps `/p/home.html`. (2) Center autoplay excludes embeds inside collapsed `[rede]` folds and collapsed `.jt-expandable` bodies; collapsing pauses with `pauseVideo` (iframe kept) and expanding rescans via `__jtRescanYt`, with manually clicked videos exempt. (3) New per-site icon sets under `assets/img/favicon/{shutupquick,deepstronglove}/` (SVG, 16/32/48 PNG, ICO, 180px apple-touch) chosen by hostname; live checks confirmed the 32px icon loads on both domains, the ICO decodes in Chrome, and techlifeworld keeps the old icons. |
+
+| v1.2.120 | `250c029` | **YouTube timestamp citations no longer break Markdown**: `[[00:01](https://youtube...&t=1)]` from AI summaries left stray brackets (`[00:01]`) or, once the body was HTML, lost the link (`[[00:01]]`). `renderInto()` now runs `jtFixTimeStamps()` first, turning `[[mm:ss](url)]` / `[[h:mm:ss](url)]` into a normal `[mm:ss](url)` link and `[[mm:ss]]` into `mm:ss`; valid `[mm:ss](url)` links are untouched. Shared `@v1` asset, so all three domains get it. Verified: six transform cases pass, `marked` renders the sample as a clean `00:51` link, and all three domains load 1.2.120; no current post uses `[md]`, so live Markdown regression was not exercised. |
 
 Autoplay note (v1.2.119): every player iframe is created with `mute=1`, so all automatic playback is muted; a manual click also keeps the mute flag. Collapsed `[rede]` folds and collapsed `.jt-expandable` bodies never start playback, and collapsing pauses a playing embed while keeping the iframe. Remaining work and known issues are tracked in `AGENTS.md` §11 (search-engine registration needs accounts/DNS, favicon caches, muted playback, expander click-path test gap, Naver Clip).
 
