@@ -89,9 +89,15 @@ function output(header, body) {
   return `${header}\n${body}\n`;
 }
 
+/* 저장소는 LF 기준이다. Windows(CRLF) 체크아웃에서도 생성물이 바이트 단위로
+   같아지도록 소스를 읽을 때 개행을 정규화한다(`npm run check` 거짓 실패 방지). */
+function readSource(rel) {
+  return fs.readFileSync(path.join(root, rel), 'utf8').replace(/\r\n?/g, '\n');
+}
+
 const files = new Map();
 for (const t of targets) {
-  const source = fs.readFileSync(path.join(root, t.source), 'utf8');
+  const source = readSource(t.source);
   const css = cleanStyle(extract(source, 'style'));
   const js = t.js ? cleanScript(extract(source, 'script')) : '';
   if (t.css && !css) throw new Error(`${t.name}: no <style> block`);
