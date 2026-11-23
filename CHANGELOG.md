@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-23 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.118**
+Latest published release: **v1.2.119**
 
-This is the consolidated English record for the work cycle that ended with v1.2.118.
+This is the consolidated English record for the work cycle that ended with v1.2.119.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -70,6 +70,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 | v1.2.116 | `6433f4a` | **Center-entry autoplay for all YouTube embeds**: `initCenterAutoplay()` (inside the YouTube IIFE, so it can call `startPlayback`) scans `.jt-yt-embed[data-yt]` on scroll/resize/DOM mutations. At ≥60% visible it starts a 500 ms timer, then plays muted (`cc_load_policy=0`); below 60% it cancels the timer, and below 50% it stops. Works for normal videos and Shorts, re-enters reset the timer, and clones with `data-yt` are covered. Replaces the Shorts-only IntersectionObserver autoplay that did not restart after `stopPlayback`. Verified live: normal embed had no iframe at 300 ms, autoplay iframe at ~1.2 s, stopped at `scrollTo(0,3000)`, and auto-restarted after returning to the top. |
 | v1.2.117 | `36d2926` | **Only one video plays at a time**: center autoplay now calls `startPlayback(..., false)`, so `activePlaybackBox` stops the previous embed before starting the next. Starting any embed also removes all `#ytPosts` hover-preview iframes; starting a hover preview removes every `.jt-yt-embed` iframe and clears `data-loaded`/`ready`, and removes other hover previews. Verified locally: three stacked embeds (normal, normal, Shorts) had exactly one iframe at the top, second, and third positions; hovering a YouTube recommendation dropped post embeds 1→0 and created exactly one preview. |
 | v1.2.118 | — | **Single-owner playback**: only the embed nearest the viewport center plays; all others are paused with `pauseVideo` (iframe kept, position preserved) instead of being removed, so no more alternating flicker or position resets. Adds an 800 ms relock cooldown, excludes embeds inside collapsed `[rede]` folds, pins a manually clicked video until the next scroll, prunes iframes only above three off-screen players, and adds `enablejsapi=1` + `origin` to the embed URL. |
+| v1.2.119 | `222d443` | **Home rotation, collapsed autoplay block, per-site favicons**: (1) shutupquick/deepstronglove `/` cycles through a cached 10-post pool (one post per visit, never the same twice in a row; verified `_855 → _22 → blog-post` and `cxv → c → cxv`), while techlifeworld keeps `/p/home.html`. (2) Center autoplay excludes embeds inside collapsed `[rede]` folds and collapsed `.jt-expandable` bodies; collapsing pauses with `pauseVideo` (iframe kept) and expanding rescans via `__jtRescanYt`, with manually clicked videos exempt. (3) New per-site icon sets under `assets/img/favicon/{shutupquick,deepstronglove}/` (SVG, 16/32/48 PNG, ICO, 180px apple-touch) chosen by hostname; live checks confirmed the 32px icon loads on both domains, the ICO decodes in Chrome, and techlifeworld keeps the old icons. |
 
 Documentation commits include: `2eacd93`, `487e4a6`, `943e9ce`, `3c03953`, `5ccdaba`, `82a8caf`, `1e91b15`, `ebf4003`.
 
