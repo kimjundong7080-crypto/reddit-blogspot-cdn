@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post image (R2 mapping) — v1.2.123 (index.json mapping + fallback) */
+/* Reddit-style Blogger post image (R2 mapping) — v1.2.124 (index.json mapping + fallback) */
 /* 22 post image — 본문 이미지를 R2(i/index.json) 매핑으로 치환
    1) https://pub-….r2.dev/i/index.json = { "파일명": "i/<hash>.ext" }
    2) 본문 <img> 의 URL 마지막 파일명이 매핑에 있으면 R2 원본으로 바꿈
@@ -16,6 +16,7 @@
   var DEBUG = !!CFG.debug;
 
   var index = null;      /* { 파일명: 'i/hash.ext' } */
+  var lowerIndex = {};   /* 소문자 파일명 폴백 색인 */
   var pending = false;
   var queued = [];
 
@@ -61,6 +62,11 @@
     var name = fileNameOf(url);
     if (!name) return '';
     var key = index[name];
+    if (!key) {
+      /* 예전 업로드가 소문자로 색인한 경우가 있어 소문자 비교를 한 번 더 시도한다.
+         (다른 파일을 잘못 붙이지 않도록, 이름이 정확히 같은 것만 소문자로 비교) */
+      key = lowerIndex[name.toLowerCase()];
+    }
     if (!key) {
       /* Blogger 이 이름 뒤에 -1, -2 를 붙이는 경우까지는 추측하지 않는다(오결합 방지). */
       return '';
@@ -168,6 +174,12 @@
 
   function withIndex(files) {
     index = files || {};
+    lowerIndex = {};
+    for (var k in index) {
+      if (!Object.prototype.hasOwnProperty.call(index, k)) continue;
+      var lk = String(k).toLowerCase();
+      if (!Object.prototype.hasOwnProperty.call(lowerIndex, lk)) lowerIndex[lk] = index[k];
+    }
     flush();
     observe();
     window.addEventListener('load', function () { flush(); });
