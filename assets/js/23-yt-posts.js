@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.119 */
+/* Reddit-style Blogger YouTube post list — v1.2.120 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -980,7 +980,15 @@
       more.appendChild(btn);fold.appendChild(more);
       return fold;
     }
+    function jtFixTimeStamps(src){
+      /* YouTube 인용 표기 [[00:01](url)]는 표준 Markdown이 아니어서 바깥 대괄호가 글자로 남는다.
+         안쪽 링크만 남기고, 링크가 벗겨진 [[00:01]]은 시간 텍스트만 남긴다. */
+      return String(src||'')
+        .replace(/\[\[(\d{1,2}:\d{2}(?::\d{2})?)\]\(([^)\s]+)\)\]/g,'[$1]($2)')
+        .replace(/\[\[(\d{1,2}:\d{2}(?::\d{2})?)\]\]/g,'$1');
+    }
     function renderInto(container,src){
+      src=jtFixTimeStamps(src);
       if(window.__jtPrepareYouTubeShortcodes)src=window.__jtPrepareYouTubeShortcodes(src);
       var re=/\[r[ea]de\]([\s\S]*?)\[\/r[ea]de\]/gi,last=0,m;
       container.innerHTML='';
