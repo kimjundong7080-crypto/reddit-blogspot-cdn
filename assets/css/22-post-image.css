@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post image — v1.2.122 */
+/* Reddit-style Blogger post image — v1.2.123 */
 /* 22 post image: center, full width, border (all images inside post body) */
 body.item-view .post-body-container > .post-body.entry-content > .separator,
 body.item-view .post-body-container > .post-body.entry-content > .separator > a{
@@ -71,4 +71,9 @@ body.item-view .post-body-container > .post-body.entry-content a[href*="blogger.
 }
 body.item-view .post-body-container > .post-body.entry-content img{
   cursor:default !important;
+}
+
+/* R2 로 바뀐 이미지: 교체 직전 원본이 사라질 때 깜빡임 완화 */
+body.item-view .post-body img.jt-r2-img{
+  background:rgba(127,127,127,.08) !important;
 }

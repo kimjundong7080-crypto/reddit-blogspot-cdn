@@ -27,7 +27,10 @@ const targets = [
     name: '22-post-image',
     source: 'src/22-post-image.html',
     css: 'assets/css/22-post-image.css',
-    cssTitle: 'Reddit-style Blogger post image'
+    js: 'assets/js/22-post-image.js',
+    cssTitle: 'Reddit-style Blogger post image',
+    jsTitle: 'Reddit-style Blogger post image (R2 mapping)',
+    jsSuffix: ' (index.json mapping + fallback)'
   },
   {
     name: '23-yt-posts',
