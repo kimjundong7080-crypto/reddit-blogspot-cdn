@@ -1166,11 +1166,9 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
   }
   /* 뷰포트에서 절반 이상 벗어난 동영상은 자동 정지한다. */
   function initViewportPlaybackGuard(){
+    /* v1.2.118: iframe을 지우면 재생 위치가 초기화되므로 일시정지만 한다. */
     function stopBox(box){
-      box.removeAttribute('data-loaded');
-      box.classList.remove('ready');
-      var frames=box.querySelectorAll('iframe');
-      for(var i=0;i<frames.length;i++)frames[i].remove();
+      if(window.__jtPauseYtBox)window.__jtPauseYtBox(box);
     }
     var ticking=false;
     function check(){
@@ -1367,13 +1365,11 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
             hoverTimer=setTimeout(function(){
               hoverTimer=null;
               if(a.classList.contains('is-yt-hover'))return;
-              /* 동시 재생 금지: 본문 동영상과 다른 호버 미리보기를 모두 정지시킨다. */
-              var jtAct=document.querySelectorAll('.jt-yt-embed');
-              for(var jai=0;jai<jtAct.length;jai++){
-                var jtAf=jtAct[jai].querySelectorAll('iframe');
-                for(var jafi=0;jafi<jtAf.length;jafi++)jtAf[jafi].remove();
-                jtAct[jai].removeAttribute('data-loaded');
-                jtAct[jai].classList.remove('ready');
+              /* 동시 재생 금지: 본문 동영상은 일시정지하고(위치 유지) 미리보기를 띄운다. */
+              if(window.__jtPauseAllYt)window.__jtPauseAllYt();
+              else{
+                var jtAct=document.querySelectorAll('.jt-yt-embed iframe');
+                for(var jai=0;jai<jtAct.length;jai++)jtAct[jai].remove();
               }
               var prevHover=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
               for(var ph=0;ph<prevHover.length;ph++){
@@ -1715,38 +1711,96 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       match=value.match(/^([A-Za-z0-9_-]{11})$/);
       return match?match[1]:'';
     }
+    /* v1.2.118: 재생 주인은 항상 하나다. 정지는 iframe 삭제가 아니라 일시정지이므로
+       재생 위치가 유지되고, 다시 중앙에 오면 그 위치에서 이어재생한다. */
+    var CENTER_START=0.6, CENTER_KEEP=0.5, DWELL_MS=500, RELOCK_MS=800;
+    function frameOf(box){
+      return box?box.querySelector('iframe.jt-yt-frame'):null;
+    }
+    function ytCommand(frame,func){
+      if(!frame||!frame.contentWindow)return;
+      try{frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:[]}),'*');}catch(e){}
+    }
+    /* iframe 자체를 없애는 유일한 정리 경로(메모리 보호용). */
     function stopPlayback(box){
       if(!box)return;
       box.removeAttribute('data-loaded');
+      box.removeAttribute('data-paused');
       box.classList.remove('ready');
       var frames=box.querySelectorAll('iframe');
       for(var i=0;i<frames.length;i++)frames[i].remove();
+      box.__jtPausedAt=Date.now();
+      if(activePlaybackBox===box)activePlaybackBox=null;
     }
-    function startPlayback(box,id,observer,keepOthers){
-      if(box.getAttribute('data-loaded')||!document.documentElement.contains(box))return;
-      if(!keepOthers&&activePlaybackBox&&activePlaybackBox!==box)stopPlayback(activePlaybackBox);
-      if(!keepOthers)activePlaybackBox=box;
-      /* 동시 재생 금지: 추천글 호버 미리보기도 함께 정지한다. */
-      var hovFrames=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover iframe');
-      for(var hfi=0;hfi<hovFrames.length;hfi++)hovFrames[hfi].remove();
-      var hovItems=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
-      for(var hii=0;hii<hovItems.length;hii++)hovItems[hii].classList.remove('is-yt-hover');
+    /* 일시정지: iframe은 그대로 두고 멈춘 뒤 포스터를 덮는다(재생 위치 유지). */
+    function pauseBox(box){
+      if(!box)return;
+      var frame=frameOf(box);
+      if(!frame)return;
+      /* 방금 만든 플레이어는 아직 명령을 받지 못하므로 제거하고 포스터로 되돌린다. */
+      if(Date.now()-(box.__jtLoadedAt||0)<1500){
+        stopPlayback(box);
+        return;
+      }
+      ytCommand(frame,'pauseVideo');
+      var retry=function(){
+        if(box.getAttribute('data-paused')&&frameOf(box)===frame)ytCommand(frame,'pauseVideo');
+      };
+      setTimeout(retry,250);
+      setTimeout(retry,1000);
       box.setAttribute('data-loaded','1');
-      if(observer)observer.disconnect();
-      box.__jtYtObserver=null;
-      var frame=document.createElement('iframe');
+      box.setAttribute('data-paused','1');
+      box.__jtPausedAt=Date.now();
+      box.classList.remove('ready');
+      if(activePlaybackBox===box)activePlaybackBox=null;
+    }
+    function pauseAllPlaybacks(except){
+      var boxes=document.querySelectorAll('.jt-yt-embed');
+      for(var i=0;i<boxes.length;i++){
+        if(boxes[i]===except)continue;
+        if(frameOf(boxes[i]))pauseBox(boxes[i]);
+      }
+    }
+    /* 다른 모듈(뷰포트 가드, 호버 미리보기)이 같은 규칙을 쓰도록 노출한다. */
+    window.__jtPauseAllYt=function(){pauseAllPlaybacks(null);};
+    window.__jtPauseYtBox=function(box){if(box)pauseBox(box);};
+    function stopHoverPreviews(){
+      var frames=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover iframe');
+      for(var i=0;i<frames.length;i++)frames[i].remove();
+      var items=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
+      for(var k=0;k<items.length;k++)items[k].classList.remove('is-yt-hover');
+    }
+    function playBox(box,id,userInitiated){
+      if(!box||!id||!document.documentElement.contains(box))return false;
+      pauseAllPlaybacks(box);
+      stopHoverPreviews();
+      activePlaybackBox=box;
+      box.removeAttribute('data-paused');
+      box.setAttribute('data-loaded','1');
+      if(userInitiated)box.__jtUserPinned=Date.now();
+      var frame=frameOf(box);
+      if(frame){
+        box.classList.add('ready');
+        ytCommand(frame,'playVideo');
+        return true;
+      }
+      var origin='';
+      try{origin=location.origin;}catch(e){}
+      frame=document.createElement('iframe');
       frame.className='jt-yt-frame';
-      frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&playsinline=1&rel=0&modestbranding=1&cc_load_policy=0';
+      frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&playsinline=1&rel=0&modestbranding=1&cc_load_policy=0&enablejsapi=1'+(origin?'&origin='+encodeURIComponent(origin):'');
       frame.title='YouTube video';
       frame.setAttribute('frameborder','0');
       frame.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
       frame.setAttribute('allowfullscreen','');
       frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
       frame.setAttribute('loading','lazy');
+      box.__jtLoadedAt=Date.now();
       frame.onload=function(){
-        box.classList.add('ready');
+        if(activePlaybackBox===box)box.classList.add('ready');
       };
       box.appendChild(frame);
+      return true;
     }
     function mount(box){
       var id=box.getAttribute('data-yt');
@@ -1791,43 +1845,94 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       play.className='jt-yt-play';
       play.setAttribute('aria-label','YouTube 동영상 재생');
       play.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
-      play.addEventListener('click',function(){startPlayback(box,id,null);});
+      play.addEventListener('click',function(){playBox(box,id,true);});
       box.appendChild(thumb);
       box.appendChild(play);
       /* 중앙 진입 자동재생은 initCenterAutoplay()가 담당한다. */
     }
-    /* 뷰포트 중앙(60% 이상 보임)에 들어온 영상은 0.5초 뒤 무음 자동재생하고,
-       중앙에서 벗어나면(50% 미만) 정지한다. 다시 중앙에 오면 재생한다. */
+    function ratioOf(box,vh){
+      var r=box.getBoundingClientRect();
+      if(!r.height)return null;
+      var vis=Math.min(r.bottom,vh)-Math.max(r.top,0);
+      return {ratio:r.height>0?Math.max(0,vis)/r.height:0,center:Math.abs((r.top+r.bottom)/2-vh/2)};
+    }
+    /* 접힌 [rede] 블록 안의 영상은 자동재생 후보에서 제외한다. */
+    function inCollapsedFold(box){
+      var h=box.parentNode;
+      while(h&&h!==document.body){
+        if(h.classList&&h.classList.contains('ify-fold')&&!h.classList.contains('is-open'))return true;
+        h=h.parentNode;
+      }
+      return false;
+    }
+    /* 화면 밖 플레이어가 3개를 넘을 때만 iframe을 정리한다. */
+    function prunePlaybacks(vh){
+      var boxes=document.querySelectorAll('.jt-yt-embed');
+      var alive=[];
+      for(var i=0;i<boxes.length;i++){if(frameOf(boxes[i]))alive.push(boxes[i]);}
+      for(var k=0;k<alive.length&&alive.length>3;k++){
+        var box=alive[k];
+        if(box===activePlaybackBox)continue;
+        var info=ratioOf(box,vh);
+        if(info&&info.ratio>0)continue;
+        stopPlayback(box);
+        alive.splice(k,1);
+        k--;
+      }
+    }
+    /* 중앙에 가장 가까운 영상 1개만 재생하고, 나머지는 모두 일시정지한다. */
     function initCenterAutoplay(){
       var ticking=false;
+      function clearTimers(){
+        var all=document.querySelectorAll('.jt-yt-embed');
+        for(var i=0;i<all.length;i++){
+          if(all[i].__jtCenterTimer){clearTimeout(all[i].__jtCenterTimer);all[i].__jtCenterTimer=null;}
+        }
+      }
       function scan(){
         ticking=false;
+        if(document.visibilityState==='hidden')return;
         var vh=window.innerHeight||document.documentElement.clientHeight;
+        if(activePlaybackBox&&!document.documentElement.contains(activePlaybackBox))activePlaybackBox=null;
+        /* 사용자가 직접 누른 영상은 다음 스크롤 전까지 그대로 둔다. */
+        if(activePlaybackBox&&activePlaybackBox.__jtUserPinned)return;
         var boxes=document.querySelectorAll('.jt-yt-embed[data-yt]');
+        var best=null,bestInfo=null;
         for(var i=0;i<boxes.length;i++){
-          (function(box){
-            var id=box.getAttribute('data-yt');
-            if(!id)return;
-            var r=box.getBoundingClientRect();
-            var visible=Math.min(r.bottom,vh)-Math.max(r.top,0);
-            var ratio=r.height>0?Math.max(0,visible)/r.height:0;
-            if(ratio>=0.6){
-              if(!box.getAttribute('data-loaded')&&!box.__jtCenterTimer){
-                box.__jtCenterTimer=setTimeout(function(){
-                  box.__jtCenterTimer=null;
-                  if(!document.documentElement.contains(box))return;
-                  var rr=box.getBoundingClientRect();
-                  var vv=Math.min(rr.bottom,vh)-Math.max(rr.top,0);
-                  var ra=rr.height>0?Math.max(0,vv)/rr.height:0;
-                  if(ra>=0.5)startPlayback(box,id,null,false);
-                },500);
-              }
-            }else{
-              if(box.__jtCenterTimer){clearTimeout(box.__jtCenterTimer);box.__jtCenterTimer=null;}
-              if(ratio<0.5)stopPlayback(box);
-            }
-          })(boxes[i]);
+          var box=boxes[i];
+          if(!box.getAttribute('data-yt'))continue;
+          if(inCollapsedFold(box))continue;
+          var info=ratioOf(box,vh);
+          if(!info||info.ratio<CENTER_START)continue;
+          /* 방금 멈춘 영상은 잠시 후보에서 빼 두 영상이 번갈아 깜빡이지 않게 한다. */
+          if(box.__jtPausedAt&&Date.now()-box.__jtPausedAt<RELOCK_MS)continue;
+          if(!bestInfo||info.center<bestInfo.center-2||(Math.abs(info.center-bestInfo.center)<=2&&info.ratio>bestInfo.ratio)){
+            best=box;bestInfo=info;
+          }
         }
+        if(best){
+          if(best!==activePlaybackBox){
+            if(frameOf(best)){
+              playBox(best,best.getAttribute('data-yt'),false);
+            }else if(!best.__jtCenterTimer){
+              best.__jtCenterTimer=setTimeout(function(){
+                best.__jtCenterTimer=null;
+                if(!document.documentElement.contains(best)||inCollapsedFold(best))return;
+                var later=ratioOf(best,window.innerHeight||document.documentElement.clientHeight);
+                if(!later||later.ratio<CENTER_KEEP)return;
+                playBox(best,best.getAttribute('data-yt'),false);
+              },DWELL_MS);
+            }
+          }
+        }else{
+          clearTimers();
+          var all=document.querySelectorAll('.jt-yt-embed');
+          for(var t=0;t<all.length;t++){
+            var ti=ratioOf(all[t],vh);
+            if(ti&&ti.ratio<CENTER_KEEP&&frameOf(all[t]))pauseBox(all[t]);
+          }
+        }
+        prunePlaybacks(vh);
       }
       function schedule(){
         if(ticking)return;
@@ -1835,7 +1940,10 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
         if(window.requestAnimationFrame)requestAnimationFrame(scan);
         else setTimeout(scan,60);
       }
-      window.addEventListener('scroll',schedule,{passive:true});
+      window.addEventListener('scroll',function(){
+        if(activePlaybackBox)activePlaybackBox.__jtUserPinned=0;
+        schedule();
+      },{passive:true});
       window.addEventListener('resize',schedule);
       if(window.MutationObserver&&document.body){
         new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});

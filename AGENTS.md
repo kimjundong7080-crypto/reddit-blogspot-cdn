@@ -1,13 +1,14 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
-Last updated: 2026-11-22
-Latest published release: **v1.2.117**
-Current local package version: **1.2.117**
+Last updated: 2026-11-23
+Latest published release: **v1.2.118**
+Current local package version: **1.2.118**
 
-This document is the handoff for the next AI or engineer. Release v1.2.117 is published and all changed assets are current at `@v1` (the JS purge may need a retry; see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release v1.2.118 is published; confirm that `@v1/assets/js/23-yt-posts.js` serves 1.2.118 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
+- **v1.2.118 is published.** Content: **single-owner playback**. Only the embed closest to the viewport center (≥60% visible, released below 50%) plays; every other embed is paused with a `pauseVideo` postMessage (iframe kept, poster restored) instead of being torn down, so the playback position survives and the video resumes where it stopped. An 800 ms relock cooldown stops two embeds from alternating (the earlier flicker), embeds inside a collapsed `[rede]` fold are never candidates, a manual click pins that video until the next scroll, and iframes are pruned only when more than three are alive off-screen. The embed URL now carries `enablejsapi=1` + `origin`. Shared `@v1` asset, so techlifeworld.com, shutupquick.com and deepstronglove.com all get it.
 - Repository: `D:\코드 수정 작업\15_블로그 스팟\RedditBlogspotCdn\blo\reddit-blogspot-cdn`
 - Workspace folder renamed to **RedditBlogspotCdn** (English letters only, no spaces/special characters). The previous Korean/parenthesized folder name is obsolete; use the path above.
 - Branch: `main`; latest release commit: `36d2926 Release v1.2.117`.
@@ -406,7 +407,7 @@ All shortcodes are processed by `src/23-yt-posts.html` and work on all three dom
 | Shortcode | Syntax | Output | Autoplay |
 |---|---|---|---|
 | YouTube | `[youtube link="URL"]` | 16:9 poster + play button | No (click to play) |
-| Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, 0.5 s after mount |
+| Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, only while it is the centered video |
 | Map | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed | No |
 | Markdown | `[md]` as the first non-empty line | Whole post rendered as Markdown | - |
 | Fold | `[rede]...[/rede]` or `[rade]...[/rade]` | Collapsed block with a "more" button | - |
@@ -414,7 +415,7 @@ All shortcodes are processed by `src/23-yt-posts.html` and work on all three dom
 Behavior notes:
 
 - `[youtube]` accepts `youtu.be/`, `watch?v=`, `/embed/`, `/shorts/`, `/live/` URLs and a raw 11-character video id. A `/shorts/` URL is automatically upgraded to the Shorts layout and autoplay behavior.
-- Shorts are horizontally centered, use `aspect-ratio: 9/16`, and start a `youtube-nocookie` iframe with `autoplay=1&mute=1&loop=1&playsinline=1` 500 ms after mount. Off-screen Shorts wait for an `IntersectionObserver` (25% visible). Multiple Shorts may play muted at once; normal videos keep poster + click-to-play.
+- Shorts are horizontally centered, use `aspect-ratio: 9/16`, and start a `youtube-nocookie` iframe with `autoplay=1&mute=1&loop=1&playsinline=1` 500 ms after mount. Off-screen Shorts wait for an `IntersectionObserver` (25% visible). Only the centered embed plays (muted); every other Shorts/video is paused with its position kept. Normal videos keep poster + click-to-play.
 - `[map]` uses a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe with `loading="lazy"`. Addresses containing spaces must be quoted.
 - `[md]` must be the first non-empty line of the post body; no closing tag is required. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
 - Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
@@ -426,7 +427,7 @@ Behavior notes:
 1. **shutupquick.com has no published posts.** Shorts and Map are verified only on techlifeworld and deepstronglove. The assets are shared, so publish one test post on shutupquick and confirm 9:16 autoplay plus the map iframe.
 2. **Vertical detection is URL-based.** Only `/shorts/` URLs and the `[shorts]` shortcode get the 9:16 autoplay layout. A vertical video linked as `watch?v=` or `youtu.be/` is treated as a normal 16:9 click-to-play video; there is no dimension API. Use `[shorts]` for those videos.
 3. **Muted autoplay depends on browser policy.** The iframe requests muted autoplay; some browsers may still block it. The poster + play button remain as a fallback, but there is no explicit "autoplay blocked" indicator.
-4. **Concurrent Shorts playback.** Multiple Shorts in one post can play muted at the same time (`keepOthers=true` for Shorts). Watch performance on posts with many Shorts and consider pausing off-screen players if it becomes an issue.
+4. **Concurrent playback (resolved in v1.2.118).** Only the centered embed plays; the others are paused via `pauseVideo` and keep their position. Iframes are pruned only when more than three are alive off-screen.
 5. **Expander interaction on the two domains.** On shutupquick/deepstronglove a post body over 900 px is collapsed; Shorts below the fold start only after the user expands or scrolls them into view. Verified on deepstronglove.
 6. **Infinite-scroll clones.** Clones lose iframe elements during sanitization; the Shorts mount/observer logic re-creates players when visible. Re-test with several real Shorts posts after infinite scroll appends clones.
 7. **No automated tests.** Verification is manual Playwright checks plus `node scripts/build.mjs`, `node scripts/build.mjs --check`, `node --check assets/js/23-yt-posts.js`, and `git diff --check`.
