@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.129 */
+/* Reddit-style Blogger home landing — v1.2.130 */
 /* ===== Houzz Pro 스타일 홈 랜딩 ===== */
 html.jt-home-page .jt-landing{
   --jt-accent:#1f7a5c;
@@ -251,7 +251,8 @@ html.jt-home-page .jt-hz-features{
 }
 html.jt-home-page .jt-hz-container{
   width:100%;
-  max-width:none;
+  /* 다른 랜딩 섹션(.jt-landing-section)과 같은 폭으로 가운데 정렬한다. */
+  max-width:1200px;
   margin:0 auto;
 }
 html.jt-home-page .jt-hz-header{
