@@ -1,13 +1,14 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
-Last updated: 2026-11-23
-Latest published release: **v1.2.124**
-Current local package version: **1.2.124**
+Last updated: 2026-11-24
+Latest published release: **v1.2.125**
+Current local package version: **1.2.125**
 
 This document is the handoff for the next AI or engineer. Release v1.2.122 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.122 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
 
 ## 1. Current status — read first
 
+- **v1.2.125 is published** (tag `v1.2.125`): **manually written posts are readable in dark mode.** Pasted HTML (Gemini, Google Docs) carries an inline `color:#1f1f1f`; because an inline declaration wins over the theme's `html[data-theme="dark"] .post-body{color:#e6e8eb}`, the text disappeared on the `#0f1113` background — live example `https://www.deepstronglove.com/2026/11/sa.html`, whose `.markdown.markdown-main-panel` wrapper computed `rgb(31,31,31)` in dark mode. `23-yt-posts` now exposes `jtFixInlineTextColors()`: it walks every `[style]` element under `.post-body`/`#jtStaticHost`/`#jtInfiniteFeed`, compares the element's own inline color with the first opaque background behind it (`jtBackdrop`), and only when contrast is under **3:1** replaces the color with `#e6e8eb` (`!important`) while remembering the original in `data-jt-fix-color`; switching back to light mode restores it. Elements that keep a light background of their own (code chips `rgb(242,240,240)`, quotes) are left untouched. Runs on theme toggle, `load`, 600 ms/2200 ms late passes and a 200 ms-debounced `MutationObserver` (infinite scroll, `[md]` renders); `initTheme` also follows the OS `prefers-color-scheme` change when the visitor has saved no choice. Verified on a local copy of the live `sa.html` (dark: wrapper `rgb(31,31,31)` → `rgb(230,232,235)`, `data-jt-fix-color` kept; light: restored `rgb(31,31,31)`, attribute removed; 0 console errors) and live on all three domains.
 - **v1.2.124 is published** (commit `1097d57`, tag `v1.2.124`): `assets/js/22-post-image.js` is new and performs **R2 image mapping** — it reads `https://pub-b1e181c4ed0440489fcbbb5cb9aceaa6.r2.dev/i/index.json` (`{ filename → key }`, hosted in the `jt-blog-images` bucket) and rewrites each `.post-body` image whose URL basename is listed, keeping the Blogger URL as the fallback (`data-jt-r2-original` + `onerror`) and re-scanning through a `MutationObserver` for infinite scroll. Host override: `window.JT_R2 = { host: '…' }`. Verified on the live post `/2026/11/_0.html`: both body images loaded from `pub-b1e181c4ed0440489fcbbb5cb9aceaa6.r2.dev` (1600×1131, 1491×1055), the index request returned 200 and there were no console errors; an image absent from the index stayed on `blogger.googleusercontent.com`. `@v1` and the tag both serve `1.2.124` after purge.
 - **v1.2.122 is published.** Content (commit `92c7ace`, tag `v1.2.122`): **only the `[md] ... [/md]` block is rendered as Markdown.**
   - Change: a `[md]`/`[/md]` pair now delimits the Markdown region. The renderer finds the marker text nodes, cuts only the range between the pair with a DOM `Range`, replaces it with a `.markdown` wrapper, and leaves every other paragraph (intro text, images, embeds before/after the block) untouched. Several pairs in one post each get their own wrapper, and the pairs are processed last-to-first so earlier ranges stay valid.

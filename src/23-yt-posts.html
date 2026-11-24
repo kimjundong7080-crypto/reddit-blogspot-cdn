@@ -816,6 +816,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       btn.setAttribute('aria-pressed',dark?'true':'false');
       btn.setAttribute('aria-label',dark?'라이트 모드로 전환':'다크 모드로 전환');
       btn.title=dark?'라이트 모드로 전환':'다크 모드로 전환';
+      jtFixInlineTextColors();
     }
     btn.onclick=function(){
       var next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
@@ -823,6 +824,80 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       try{localStorage.setItem(key,next);}catch(e){}
     };
     apply(mode);
+    /* 저장된 선택이 없을 때 OS 테마가 바뀌면 따라간다 */
+    if(window.matchMedia){
+      var mq=window.matchMedia('(prefers-color-scheme: dark)');
+      var onSystemTheme=function(e){
+        var s=null;try{s=localStorage.getItem(key);}catch(err){}
+        if(s==='dark'||s==='light')return;
+        apply(e.matches?'dark':'light');
+      };
+      if(mq.addEventListener)mq.addEventListener('change',onSystemTheme);
+      else if(mq.addListener)mq.addListener(onSystemTheme);
+    }
+  }
+  /* ===== 다크 모드: 손으로 쓴 글·붙여넣은 본문의 안 보이는 글자색 보정 =====
+     Google Docs·Gemini 등에서 붙여넣은 HTML 은 color:#1f1f1f 같은 인라인 글자색을 남긴다.
+     인라인 색은 상속보다 우선하므로 .post-body 의 다크 색이 먹지 않아 다크 배경 위에서 글자가 사라진다.
+     실제 배경과의 대비를 계산해 3:1 미만일 때만 테마 본문색으로 바꾸고,
+     라이트 모드로 돌아가면 원래 값으로 되돌린다. 배경이 밝은 인용·코드·표 칸은 건드리지 않는다. */
+  var JT_FIX_ATTR='data-jt-fix-color',JT_FIX_TEXT='#e6e8eb',JT_FIX_MIN=3;
+  function jtRgb(v){
+    var m=/^rgba?\(([^)]+)\)$/.exec(String(v||'').replace(/\s+/g,''));
+    if(!m)return null;
+    var p=m[1].split(','),r=parseFloat(p[0]),g=parseFloat(p[1]),b=parseFloat(p[2]);
+    if(isNaN(r)||isNaN(g)||isNaN(b))return null;
+    return [r,g,b,p.length>3?parseFloat(p[3]):1];
+  }
+  function jtLum(c){
+    var f=function(x){x=x/255;return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);};
+    return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]);
+  }
+  function jtContrast(a,b){
+    var x=jtLum(a)+0.05,y=jtLum(b)+0.05;
+    return x>y?x/y:y/x;
+  }
+  /* 글자 뒤에 실제로 깔린 첫 불투명 배경 */
+  function jtBackdrop(el){
+    var node=el;
+    while(node&&node.nodeType===1){
+      var c=jtRgb(getComputedStyle(node).backgroundColor);
+      if(c&&c[3]>0.5)return c;
+      node=node.parentElement;
+    }
+    return jtRgb(getComputedStyle(document.body).backgroundColor)||[255,255,255,1];
+  }
+  function jtFixInlineTextColors(){
+    var dark=document.documentElement.getAttribute('data-theme')==='dark';
+    var list=document.querySelectorAll('.post-body [style],.post-body[style],#jtStaticHost [style],#jtInfiniteFeed .post-body [style]');
+    for(var i=0;i<list.length;i++){
+      var el=list[i],orig=el.getAttribute(JT_FIX_ATTR);
+      if(!dark){
+        if(orig!==null){el.style.setProperty('color',orig);el.removeAttribute(JT_FIX_ATTR);}
+        continue;
+      }
+      if(orig!==null)continue;                 /* 이미 보정한 요소 */
+      var inline=el.style.color;               /* 인라인 선언이 있을 때만 대상 */
+      if(!inline)continue;
+      var fg=jtRgb(getComputedStyle(el).color);
+      if(!fg)continue;
+      if(jtContrast(fg,jtBackdrop(el))>=JT_FIX_MIN)continue;
+      el.setAttribute(JT_FIX_ATTR,inline);
+      el.style.setProperty('color',JT_FIX_TEXT,'important');
+    }
+  }
+  function initInlineTextColorFix(){
+    jtFixInlineTextColors();
+    window.addEventListener('load',jtFixInlineTextColors);
+    setTimeout(jtFixInlineTextColors,600);
+    setTimeout(jtFixInlineTextColors,2200);
+    if(window.MutationObserver){
+      var t=0;
+      new MutationObserver(function(){
+        if(t)return;
+        t=setTimeout(function(){t=0;jtFixInlineTextColors();},200);
+      }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style']});
+    }
   }
   function initQuickNav(){
     if(document.getElementById('jtQuickNav'))return;
@@ -1290,6 +1365,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
   }
   ready(function(){
     initTheme();
+    initInlineTextColorFix();
     initQuickNav();
     dockQuickControls();
     bindDockControls();

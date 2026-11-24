@@ -18,6 +18,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 
 | Version | Commit | Summary |
 |---|---|---|
+| v1.2.125 | — | **Manually written posts are readable in dark mode.** Pasting from Gemini/Google Docs keeps an inline `color:#1f1f1f`, and an inline color beats the theme's `.post-body` dark color, so the text vanished on `#0f1113`. `23-yt-posts` now measures each pasted element's own color against the background actually behind it and, below 3:1 contrast, switches it to the theme body color (`#e6e8eb`, restoring the original on light mode); bright chips/code blocks with their own background are left alone. Re-runs on toggle, load, late renders and DOM mutations (`MutationObserver`), and follows the OS theme when the visitor has not chosen one. Verified on a local copy of the live `sa.html` (fixed wrapper `rgb(31,31,31)` → `rgb(230,232,235)`, light mode restores `rgb(31,31,31)`, 0 console errors) and live on all three domains. |
 | v1.2.67 | `dfd3d42` | Home mid-page stall fixed; Blogger feed called directly before the dead Edge API; unused Turnstile CSS removed. |
 | v1.2.68 | `bc658aa` | `/p/resume.html` and `/p/contact-us.html` restored as live Blogger pages (HTTP 200); static pages excluded from item-view feed logic. |
 | v1.2.69 | `623d9b2` | Infinite-scroll clones no longer hide the clicked YouTube player (`iframe:not(.jt-yt-frame)`). |
