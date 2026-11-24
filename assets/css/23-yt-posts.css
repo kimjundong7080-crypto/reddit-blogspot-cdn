@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.126 */
+/* Reddit-style Blogger YouTube post list — v1.2.127 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -71,17 +71,27 @@ html[data-theme="dark"] #ytPosts .yt-viewport:after{
 #ytPosts .yt-item{
   display:flex;
   align-items:center;
-  gap:10px;
   height:82px;
   flex:0 0 82px;
   box-sizing:border-box;
-  padding:6px 8px;
+  padding:0;
   border-radius:10px;
   color:inherit !important;
   text-decoration:none !important;
-  /* transform 은 3D 진입 애니메이션이 쓰므로 호버는 :not(.is-out) 로 한정하고 transition 만 짧게 바꿔 쓴다 */
-  transition:transform .55s cubic-bezier(.22,.9,.3,1),opacity .45s ease,background-color .16s ease,box-shadow .18s ease;
+  transition:transform .55s cubic-bezier(.22,.9,.3,1),opacity .45s ease;
   transform-origin:center top;
+}
+/* 카드 표면은 내부 span 에 그린다: Blogger 테마가 <a> 에 transform/background !important 를 걸어 직접 지정이 먹지 않는 경우가 있다 */
+#ytPosts .yt-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  padding:6px 8px;
+  border-radius:10px;
+  transition:transform .16s ease,background-color .16s ease,box-shadow .18s ease;
 }
 #ytPosts .yt-item.is-out{
   opacity:0;
@@ -92,12 +102,13 @@ html[data-theme="dark"] #ytPosts .yt-viewport:after{
   position:relative;
   z-index:1;
 }
-#ytPosts .yt-item:not(.is-out):hover,
-#ytPosts .yt-item:not(.is-out):focus-visible{
+#ytPosts .yt-item:not(.is-out):hover{
   z-index:2;
+}
+#ytPosts .yt-item:not(.is-out):hover .yt-card,
+#ytPosts .yt-item:not(.is-out):focus-visible .yt-card{
   transform:translateY(-2px) scale(1.02);
-  transition:transform .16s ease,background-color .16s ease,box-shadow .18s ease;
-  background:rgba(255,69,0,.055) !important;
+  background:rgba(255,69,0,.055);
   box-shadow:inset 0 0 0 1px rgba(255,69,0,.38),0 8px 20px rgba(15,23,42,.14);
 }
 #ytPosts .yt-item:not(.is-out):hover .yt-title,
@@ -111,8 +122,8 @@ html[data-theme="dark"] #ytPosts .yt-viewport:after{
   box-shadow:inset 0 0 0 1px rgba(255,69,0,.28);
 }
 @media (prefers-reduced-motion:reduce){
-  #ytPosts .yt-item:not(.is-out):hover,
-  #ytPosts .yt-item:not(.is-out):focus-visible{transform:none !important}
+  #ytPosts .yt-item:not(.is-out):hover .yt-card,
+  #ytPosts .yt-item:not(.is-out):focus-visible .yt-card{transform:none !important}
 }
 #ytPosts .yt-more{
   display:none;
@@ -466,9 +477,9 @@ html[data-theme="dark"] #jtThemeToggle{
 html[data-theme="dark"] #ytPosts .yt-count,
 html[data-theme="dark"] #ytPosts .yt-meta,
 html[data-theme="dark"] #ytPosts .yt-empty{color:#9CA3AF}
-html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):hover,
-html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):focus-visible{
-  background:rgba(255,255,255,.075) !important;
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):hover .yt-card,
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):focus-visible .yt-card{
+  background:rgba(255,255,255,.075);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 10px 24px rgba(0,0,0,.5);
 }
 html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):hover .yt-thumb,
