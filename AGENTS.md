@@ -4,7 +4,7 @@ Last updated: 2026-11-24
 Latest published release: **v1.2.129**
 Current local package version: **1.2.129**
 
-This document is the handoff for the next AI or engineer. Release v1.2.122 is published and `@v1/assets/js/23-yt-posts.js` was confirmed at 1.2.122 after the jsDelivr purge (see §1/CDN status). See `CHANGELOG.md` for the consolidated English work log.
+This document is the handoff for the next AI or engineer. Release **v1.2.129** is published and, after the jsDelivr purge, `@v1/assets/css/21-three-column.css` and `@v1/assets/css/23-yt-posts.css` both answer `x-jsd-version: 1.2.129` (§8). See `CHANGELOG.md` for the consolidated English work log — one row per feature as it finally behaves; the intermediate tags v1.2.126/v1.2.127 were folded into the v1.2.128 row on 2026-11-24 and are **not** descriptive of current behavior.
 
 ## 1. Current status — read first
 
@@ -404,7 +404,8 @@ The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add que
 
 ## 8. Known open items
 
-- **CDN status:** as of 2026-11-23 `@v1` resolves to **1.2.119** and `@v1/assets/js/23-yt-posts.js` serves the 1.2.119 body (the CDN hash equals the local generated file after line-ending normalization). When a purge reports `finished` but the edge still reports the old `x-jsd-version`/`Age`, re-purge once the tag appears in `data.jsdelivr.com`.
+- **CDN status:** as of 2026-11-24 `@v1` resolves to **1.2.129**; `assets/css/21-three-column.css` and `assets/css/23-yt-posts.css` were purged for both `@v1.2.129` and `@v1` and then served `x-jsd-version: 1.2.129` (checked with a no-cache request ten seconds after the purge). When a purge reports `finished` but the edge still reports the old `x-jsd-version`/`Age`, re-purge once the tag appears in `data.jsdelivr.com`.
+- **Hover lift is verified by rule replay, not by a real pointer.** The preview browser has no hover API and background tabs freeze CSS transitions, so every hover check injects the served declarations under a class (`.jt-m`) and reads the computed values. That proves the declarations win the cascade on the live theme, but a human must still confirm the feel with a real mouse. Also unmeasured: the collapsed rail (`body.jt-left-collapsed .rd3-link`) and narrow widths, where the scaled card can overlap its neighbours by ~2 px (grid gap is 16 px, so the 1.02 scale on a ~223 px card stays inside it).
 - Turnstile remains disabled. A challenge was observed once after the v1.2.60 removal, but none was observed in the v1.2.76/77 live checks. Do not re-enable the gate without a user request.
 - The home “loading stops midway” symptom is hardened in v1.2.78: reveal no longer depends on a single observer attached to one node, so a cloned/replaced landing still reveals `#jt-projects`, `#jt-about`, and `.jt-cta`. Verified in a fresh browser; cached visitors may need a hard refresh.
 - The actual cloner of `.jt-landing` has never been identified with certainty (classes survive, expandos do not). Keep the ticker/guards in place; if a future change adds listeners to landing child nodes, re-bind them the same idempotent way.
@@ -488,3 +489,22 @@ Implementation plan once unblocked:
 3. If the URL is `naver.me/...`, call the resolver endpoint (preferred) or render a centered "네이버 클립 열기" card that links out. Never iframe `naver.me` directly: it shows the `link.naver.com` app-bridge page.
 4. Add a poster/click-to-play button and a visible fallback link, similar to the map fallback, so blocked embeds still leave a usable action.
 5. Verify on all three domains and update §10/§11.
+
+## 13. Session record — 2026-11-24 (v1.2.125, v1.2.128, v1.2.129)
+
+What happened, in order, so the next AI does not repeat it:
+
+1. **v1.2.125 — dark-mode text.** Hand-written/pasted posts kept an inline `color:#1f1f1f` that beat `.post-body{color:#e6e8eb}` on the `#0f1113` background. Fix: `jtFixInlineTextColors()` replaces only colours under 3:1 contrast, stores the original in `data-jt-fix-color`, restores it in light mode, and re-runs on theme toggle / load / 600 ms / 2200 ms / a debounced `MutationObserver`. Verified on a local copy of `sa.html` and live on three domains.
+2. **v1.2.126 → v1.2.128 — rail hover action.** Two attempts failed live because the Blogger theme styles these nodes with `!important`; the working recipe is an inner `<span class="yt-card">` surface plus `transform: … !important` on hover, scoped to `:not(.is-out)`, with `overflow:clip; overflow-clip-margin:14px` on `.yt-viewport` so the lifted card and its shadow are not clipped.
+3. **Docs consolidation.** The three attempts had produced three CHANGELOG rows and three AGENTS bullets. They are now **one row (v1.2.128) and one bullet** describing only the final behavior plus the traps worth remembering; commit `a2ca75d` (docs only, pushed before the next release).
+4. **v1.2.129 — one hover interaction on three surfaces.** The rail lift was extended to the left menu `.rd3-link` (new `--rd3-ring` variable, white in the dark `body.rd3-layout` block) and to `#jtSearchApp .jt-sp-item` (accent border + deeper shadow in dark). Both use `transform:…!important`, `:hover` + `:focus-visible`, and `prefers-reduced-motion` keeps colours only. Commit `e1ecdf7`, tag `v1.2.129`, purged and served as 1.2.129.
+5. **Verification used, on all three domains** (`/search` carries both the left menu and the cards, so one tab per domain was enough): served CSS fetched and replayed as a class, then `getComputedStyle` — menu `matrix(1.02, 0, 0, 1.02, 0, -2)` at 169 px wide, cards `matrix(1.02, …)` at 223×245 (218×193 on techlifeworld), rest state `transform:none`, card counts 3/5/20.
+
+Remaining work in this repo (nothing is broken; these are unverified or deferred items):
+
+1. **Real-pointer check** of all three hover surfaces (rail, left menu, `/search` cards) — plus touch devices, where `:hover` sticks after a tap on some browsers.
+2. **Reduced-motion and print** were not re-checked after v1.2.129; print styles (`@media print`) hide the rail per §5, but the new `transform` is worth one PDF render if anyone changes that area.
+3. **`.rd3-link` hover inside the collapsed rail** (`body.jt-left-collapsed`) and at widths under 900 px: the 1.02 scale on a 169 px link is ~1.7 px per side and can overlap the `.rd3-left-inner` right border. Cosmetic; fix by lowering the scale for that breakpoint only if the user notices.
+4. **Theme-level wiring is still user-only** (image mapping `22-post-image.js`, the shortlink Worker). Nothing in this session needed the theme XML, and the prohibited theme folder was not opened.
+5. **Search-card hover on a page with no results / one card** was not exercised; the rule is a pure transform so a missing neighbour changes nothing, but the empty state was not re-tested after the change.
+6. `icon-preview.png` at the repo root is still untracked (user's screenshot); do not commit or delete it without asking.
