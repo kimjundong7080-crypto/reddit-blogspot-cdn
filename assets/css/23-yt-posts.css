@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.125 */
+/* Reddit-style Blogger YouTube post list — v1.2.126 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -30,6 +30,9 @@
   position:relative;
   height:1120px;
   overflow:hidden;
+  /* 호버 시 카드가 살짝 커지고 그림자가 보이도록 잘림 여유를 둔다 */
+  overflow:clip;
+  overflow-clip-margin:14px;
   perspective:700px;
   border-radius:8px;
 }
@@ -76,14 +79,41 @@ html[data-theme="dark"] #ytPosts .yt-viewport:after{
   border-radius:10px;
   color:inherit !important;
   text-decoration:none !important;
-  transition:transform .55s cubic-bezier(.22,.9,.3,1),opacity .45s ease,background-color .12s ease;
+  /* transform 은 3D 진입 애니메이션이 쓰므로 호버는 :not(.is-out) 로 한정하고 transition 만 짧게 바꿔 쓴다 */
+  transition:transform .55s cubic-bezier(.22,.9,.3,1),opacity .45s ease,background-color .16s ease,box-shadow .18s ease;
   transform-origin:center top;
 }
 #ytPosts .yt-item.is-out{
   opacity:0;
   transform:rotateX(-78deg) translateY(-8px);
 }
-#ytPosts .yt-item:hover{background:transparent !important}
+/* 추천·인기 글 호버 액션: 카드 확대·들뜨기 + 붉은 테두리 + 제목 밑줄 */
+#ytPosts .yt-item{
+  position:relative;
+  z-index:1;
+}
+#ytPosts .yt-item:not(.is-out):hover,
+#ytPosts .yt-item:not(.is-out):focus-visible{
+  z-index:2;
+  transform:translateY(-2px) scale(1.02);
+  transition:transform .16s ease,background-color .16s ease,box-shadow .18s ease;
+  background:rgba(255,69,0,.055) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,69,0,.38),0 8px 20px rgba(15,23,42,.14);
+}
+#ytPosts .yt-item:not(.is-out):hover .yt-title,
+#ytPosts .yt-item:not(.is-out):focus-visible .yt-title{
+  text-decoration:underline;
+  text-underline-offset:2px;
+  text-decoration-thickness:1px;
+}
+#ytPosts .yt-item:not(.is-out):hover .yt-thumb,
+#ytPosts .yt-item:not(.is-out):focus-visible .yt-thumb{
+  box-shadow:inset 0 0 0 1px rgba(255,69,0,.28);
+}
+@media (prefers-reduced-motion:reduce){
+  #ytPosts .yt-item:not(.is-out):hover,
+  #ytPosts .yt-item:not(.is-out):focus-visible{transform:none !important}
+}
 #ytPosts .yt-more{
   display:none;
   align-items:center;
@@ -436,7 +466,15 @@ html[data-theme="dark"] #jtThemeToggle{
 html[data-theme="dark"] #ytPosts .yt-count,
 html[data-theme="dark"] #ytPosts .yt-meta,
 html[data-theme="dark"] #ytPosts .yt-empty{color:#9CA3AF}
-html[data-theme="dark"] #ytPosts .yt-item:hover{background:transparent !important}
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):hover,
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):focus-visible{
+  background:rgba(255,255,255,.075) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 10px 24px rgba(0,0,0,.5);
+}
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):hover .yt-thumb,
+html[data-theme="dark"] #ytPosts .yt-item:not(.is-out):focus-visible .yt-thumb{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
+}
 html[data-theme="dark"] #ytPosts .yt-thumb{background:#252a31}
 html[data-theme="dark"] #ytPosts .yt-thumb:before{
   background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,0) 70%);
