@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.130 */
+/* Reddit-style Blogger YouTube post list — v1.2.131 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1125,6 +1125,7 @@
           renderInto(job.el,job.src);addCopy(job.el);
         }
       }
+      wrapTables();
       if(window.__jtRunYouTubeShortcodes)window.__jtRunYouTubeShortcodes();
     }
     /* v1.2.122: [md] ... [/md] 사이만 Markdown으로 렌더한다.
@@ -1243,7 +1244,19 @@
         if(cleaned!==v)list[i].nodeValue=cleaned;
       }
     }
+    function wrapTables(){
+      var tables=document.querySelectorAll('.post-body table');
+      for(var i=0;i<tables.length;i++){
+        var t=tables[i],parent=t.parentNode;
+        if(!parent||!parent.classList||parent.classList.contains('jt-table-wrap'))continue;
+        var wrap=document.createElement('div');
+        wrap.className='jt-table-wrap';
+        parent.insertBefore(wrap,t);
+        wrap.appendChild(t);
+      }
+    }
     function scan(){
+      wrapTables();
       var bodies=document.querySelectorAll('.post-body');
       for(var b=0;b<bodies.length;b++){
         var body=bodies[b];

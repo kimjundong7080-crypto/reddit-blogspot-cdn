@@ -1,8 +1,9 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-24
-Latest published release: **v1.2.130**
-Current local package version: **1.2.130**
+Latest published release: **v1.2.131**
+Current local package version: **1.2.131**
+- **v1.2.131 is published**: Markdown headings (`h1~h6` under `.post-body`) and tables now have decorated heading bars/gradients and visible light/dark table borders, with `wrapTables()` adding a responsive `.jt-table-wrap` (table `min-width:600px`, `560px` at ≤640px; cells wrap via `word-break:keep-all; overflow-wrap:anywhere`). Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.131.
 
 This document is the handoff for the next AI or engineer. Release **v1.2.130** is published and, after the jsDelivr purge, `@v1/assets/css/24-home.css` answers `x-jsd-version: 1.2.130` (§8). See `CHANGELOG.md` for the consolidated English work log — one row per feature as it finally behaves; the intermediate tags v1.2.126/v1.2.127 were folded into the v1.2.128 row on 2026-11-24 and are **not** descriptive of current behavior.
 
