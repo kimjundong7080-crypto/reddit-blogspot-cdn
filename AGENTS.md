@@ -1,8 +1,9 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-24
-Latest published release: **v1.2.131**
-Current local package version: **1.2.131**
+Latest published release: **v1.2.132**
+Current local package version: **1.2.132**
+- **v1.2.132 is published**: multi-location maps. `[map "A", "B", "C"]` builds a keyless Google Maps **directions/waypoint** embed (`saddr` + `daddr` with `+to:`), showing the stops on one map with default route markers. `[map url="https://www.google.com/maps/d/embed?mid=..."]` embeds a pre-built **Google My Maps** map (multiple pins, per-pin icon/colour, no API key). Legacy one-address `[map "..."]` is unchanged. Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.132.
 - **v1.2.131 is published**: Markdown headings (`h1~h6` under `.post-body`) and tables now have decorated heading bars/gradients and visible light/dark table borders, with `wrapTables()` adding a responsive `.jt-table-wrap` (table `min-width:600px`, `560px` at ≤640px; cells wrap via `word-break:keep-all; overflow-wrap:anywhere`). Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.131.
 
 This document is the handoff for the next AI or engineer. Release **v1.2.130** is published and, after the jsDelivr purge, `@v1/assets/css/24-home.css` answers `x-jsd-version: 1.2.130` (§8). See `CHANGELOG.md` for the consolidated English work log — one row per feature as it finally behaves; the intermediate tags v1.2.126/v1.2.127 were folded into the v1.2.128 row on 2026-11-24 and are **not** descriptive of current behavior.
@@ -434,7 +435,9 @@ All shortcodes are processed by `src/23-yt-posts.html` and work on all three dom
 |---|---|---|---|
 | YouTube | `[youtube link="URL"]` | 16:9 poster + play button | No (click to play) |
 | Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, only while it is the centered video |
-| Map | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed | No |
+| Map (1 place) | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed, one marker | No |
+| Map (multiple) | `[map "A", "B", "C"]` | 16:9 Google Maps **directions/waypoint** embed; route with default markers (no custom icons) | No |
+| Map (My Maps) | `[map url="https://www.google.com/maps/d/embed?mid=..."]` | 16:9 Google **My Maps** embed; multiple custom pins/icons | No |
 | Markdown | `[md]` ... `[/md]` (pair, any position, repeatable) | Only the enclosed range is rendered as Markdown | - |
 | Markdown (legacy) | `[md]` alone, no `[/md]` | Whole post rendered as Markdown, `[md]` line dropped | - |
 | Fold | `[rede]...[/rede]` or `[rade]...[/rade]` | Collapsed block with a "more" button | - |
@@ -443,7 +446,7 @@ Behavior notes:
 
 - `[youtube]` accepts `youtu.be/`, `watch?v=`, `/embed/`, `/shorts/`, `/live/` URLs and a raw 11-character video id. A `/shorts/` URL is automatically upgraded to the Shorts layout and autoplay behavior.
 - **All autoplay is muted** (`mute=1`), including a manual click; do not describe it as audible playback. Center autoplay (v1.2.116 to v1.2.118) picks the embed nearest the viewport center and starts it after a 500 ms dwell; only that one plays and every other embed is paused with its position kept. v1.2.119 suppresses autoplay inside collapsed `[rede]`/`[rade]` folds and collapsed `.jt-expandable` bodies, and resumes after expanding. Shorts use a centered 9:16 box and the same muted player.
-- `[map]` uses a keyless `https://www.google.com/maps?q=<address>&z=15&hl=ko&output=embed` iframe with `loading="lazy"`. Addresses containing spaces must be quoted.
+- `[map]` uses keyless Google endpoints. One place → `https://maps.google.com/maps?q=<address>&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed`. Multiple quoted places → `https://maps.google.com/maps?saddr=<first>&daddr=<second>+to:<third>&output=embed` (route; fallback link uses `https://www.google.com/maps/dir/?api=1&...`). `url="..."` → the supplied Google My Maps/Maps embed URL is used directly (host/path validated to `https://(www.|maps.)?google.*/maps...`); use it for multiple pins with per-pin icons/colours. Marker colours/icons cannot be customised on the keyless single/route embeds. Map state is stored as JSON in `data-map`; renderer falls back to a legacy address string for old cached HTML.
 - `[md]` ... `[/md]` (v1.2.122) renders **only the range between the pair**; paragraphs outside it keep their HTML, including images and embeds. Several pairs are allowed and each is rendered separately. A `[md]` with no `[/md]` keeps the v1.2.121 whole-body behavior (this is what `auto_blogger` writes), so old posts are unchanged. Unpaired markers are stripped from the visible text. Leading `&nbsp;` that Blogger puts before an indented paragraph is stripped per line, so a `##` heading still becomes a heading. `<b>/<strong>`, `<i>/<em>`, `<a href>` and `<img>` inside the region are turned back into Markdown first, so they are not lost. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
 - Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
 - YouTube timestamp citations pasted by AI summaries (`[[00:51](https://www.youtube.com/watch?v=...&t=51)]`) are normalized to a normal link showing `00:51`; a link-stripped `[[00:51]]` becomes plain `00:51` (v1.2.120). A destination URL containing `)` is not matched, so keep YouTube URLs intact.

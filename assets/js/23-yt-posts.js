@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.131 */
+/* Reddit-style Blogger YouTube post list — v1.2.132 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -949,11 +949,37 @@
     });
   });
 
-  /* [map "주소 또는 지명"] 숏코드에서 주소 문자열을 추출한다. */
-  function jtMapAddress(text){
+  /* [map "주소"] / [map "A", "B"] / [map url="My Maps embed URL"] 해석. */
+  function jtMapSpec(text){
     var s=String(text||'');
-    var m=s.match(/\[map\s+["']([^"']+)["']'?\s*\]/i)||s.match(/\[map\s+([^\]"']+?)\s*\]/i);
-    return m?m[1].trim():'';
+    var inside=s.replace(/^\s*\[map\b/i,'').replace(/\]\s*$/,'')
+      .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
+    var urlM=inside.match(/\burl\s*=\s*["']([^"']+)["']/i);
+    if(urlM){
+      var u=urlM[1].trim();
+      if(/^https:\/\/(?:www\.|maps\.)?google\.[a-z.]+\/maps(?:[\/?]|$)/i.test(u)){
+        return {url:u,places:[]};
+      }
+      return null;
+    }
+    var places=[],re=/["']([^"']+)["']/g,m;
+    while((m=re.exec(inside))){
+      var v=m[1].trim();
+      if(v)places.push(v);
+    }
+    if(!places.length){
+      var bare=inside.trim();
+      if(bare)places.push(bare);
+    }
+    return places.length?{url:'',places:places}:null;
+  }
+  function jtMapAddress(text){
+    var spec=jtMapSpec(text);
+    if(!spec)return '';
+    return spec.url?'지도':(spec.places[0]||'');
+  }
+  function jtMapAttr(spec){
+    return jtEscapeAttr(JSON.stringify(spec));
   }
   function jtXmlEscape(s){
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1004,8 +1030,8 @@
       return id?'\n'+ytDiv(id,true)+'\n':full;
     });
     return out.replace(mapCode,function(full){
-      var addr=jtMapAddress(full);
-      return addr?'\n<div class="jt-map-embed" data-map="'+jtEscapeAttr(addr)+'"></div>\n':full;
+      var spec=jtMapSpec(full);
+      return spec?'\n<div class="jt-map-embed" data-map="'+jtMapAttr(spec)+'"></div>\n':full;
     });
   };
 
@@ -1609,9 +1635,9 @@
           return '<div class="jt-yt-embed jt-shorts" data-yt="'+id+'" data-shorts="1"></div>';
         });
         html=html.replace(mapCode,function(full){
-          var addr=jtMapAddress(full.replace(/<[^>]*>/g,' '));
-          if(!addr)return full;
-          found=true;return '<div class="jt-map-embed" data-map="'+jtEscapeAttr(addr)+'"></div>';
+          var spec=jtMapSpec(full.replace(/<[^>]*>/g,' '));
+          if(!spec)return full;
+          found=true;return '<div class="jt-map-embed" data-map="'+jtMapAttr(spec)+'"></div>';
         });
         if(found){
           body.innerHTML=html;
@@ -1626,27 +1652,52 @@
       for(var mi=0;mi<maps.length;mi++){
         var mb=maps[mi];
         if(mb.__jtMap)continue;
-        var addr=mb.getAttribute('data-map')||'';
-        if(!addr)continue;
+        var raw=mb.getAttribute('data-map')||'';
+        var spec=null;
+        try{spec=JSON.parse(raw);}catch(e){spec=null;}
+        if(!spec||(!spec.url&&!(spec.places&&spec.places.length))){
+          spec=raw?{url:'',places:[raw]}:null;
+        }
+        if(!spec)continue;
+        var places=spec.places||[];
+        var noteText=spec.url?'Google My Maps':(places.length>1?places.join(' · '):places[0]);
         mb.__jtMap=1;
         var note=document.createElement('span');
         note.className='jt-map-note';
-        note.textContent=addr;
+        note.textContent=noteText;
         mb.appendChild(note);
         var fr=document.createElement('iframe');
-        fr.src='https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed';
+        if(spec.url){
+          fr.src=spec.url;
+        }else if(places.length>1){
+          fr.src='https://maps.google.com/maps?saddr='+encodeURIComponent(places[0])
+            +'&daddr='+places.slice(1).map(encodeURIComponent).join('+to:')
+            +'&output=embed&hl=ko';
+        }else{
+          fr.src='https://maps.google.com/maps?q='+encodeURIComponent(places[0])+'&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed';
+        }
         fr.loading='eager';
         fr.referrerPolicy='no-referrer-when-downgrade';
         fr.allowFullscreen=true;
-        fr.title=addr+' 지도';
+        fr.title=noteText+' 지도';
         mb.appendChild(fr);
         if(!(mb.nextElementSibling&&mb.nextElementSibling.classList&&mb.nextElementSibling.classList.contains('jt-map-fallback'))){
           var link=document.createElement('a');
           link.className='jt-map-fallback';
-          link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr);
+          if(spec.url){
+            link.href=spec.url;
+            link.textContent='Google My Maps 열기';
+          }else if(places.length>1){
+            link.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(places[0])
+              +'&destination='+encodeURIComponent(places[places.length-1])
+              +'&waypoints='+places.slice(1,-1).map(encodeURIComponent).join('%7C');
+            link.textContent='Google 지도 경로 열기';
+          }else{
+            link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(places[0]);
+            link.textContent='Google 지도에서 열기';
+          }
           link.target='_blank';
           link.rel='noopener';
-          link.textContent='Google 지도에서 열기';
           if(mb.parentNode)mb.parentNode.insertBefore(link,mb.nextSibling);
         }
       }
