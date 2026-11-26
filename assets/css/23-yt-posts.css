@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.139 */
+/* Reddit-style Blogger YouTube post list — v1.2.140 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -613,6 +613,9 @@ html[data-theme="dark"] .post-body{--jt-md-title:#e6e8eb;--jt-md-border:rgba(255
 
 /* [youtube link="..."] responsive embed */
 .jt-yt-embed{display:block;position:relative;width:calc(100% - 48px);max-width:100%;aspect-ratio:16/9;margin:22px auto;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+/* v1.2.140: 마크다운 본문(.markdown 은 좌우 24px 패딩) 안에서는 이미지가 부모 폭을 그대로 채우므로
+   유튜브도 같은 폭을 쓴다(이중 여백 제거). 숏츠(9:16)는 제외한다. */
+.post-body .markdown .jt-yt-embed:not(.jt-shorts){width:100%;max-width:100%;margin-left:0;margin-right:0}
 .jt-yt-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:2}
 .jt-yt-embed:before{content:"";position:absolute;inset:0;background:#000}
 .jt-yt-embed.ready:before{display:none}
