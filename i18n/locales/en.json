@@ -1,0 +1,74 @@
+{
+  "ui": {
+    "home": "Home",
+    "blog": "Blog",
+    "contact": "Contact",
+    "resume": "Resume",
+    "language": "Language",
+    "back": "Back",
+    "print": "Print / Save as PDF"
+  },
+  "home": {
+    "eyebrow": "Technology · Robotics · Automation · Life",
+    "intro": "Solving field problems with automation and technology, and sharing what we learn.",
+    "blogTitle": "Blog",
+    "blogDesc": "Read notes on industrial automation, robotics, equipment and everyday life.",
+    "contactTitle": "Contact",
+    "contactDesc": "Open to project, technical collaboration and training inquiries.",
+    "resumeTitle": "Resume",
+    "resumeDesc": "A quick view of my experience and core skills.",
+    "blogCta": "Read the blog",
+    "contactCta": "Get in touch",
+    "resumeCta": "View resume"
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "I welcome inquiries about projects, technical collaboration and training. Feel free to reach out using the details below.",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "topicsTitle": "What we can work on together",
+    "topics": [
+      "Industrial automation and robot integration",
+      "CAD / 3D design and technical review",
+      "Technical content and documentation",
+      "Web and workflow automation"
+    ],
+    "response": "I usually reply within 1–2 business days.",
+    "note": "A short note about your schedule and requirements helps me respond faster."
+  },
+  "resume": {
+    "title": "Resume",
+    "name": "Kim Jundong",
+    "nameEn": "Kim Jundong",
+    "role": "Industrial Automation · Robotics · Equipment Engineer",
+    "summary": "I design automation systems, integrate robots and document the work. I enjoy structuring messy problems and building solutions that actually run in the field.",
+    "skillsTitle": "Core skills",
+    "skills": [
+      "Industrial automation design and review",
+      "Robot and PLC integration",
+      "CAD / 3D modeling",
+      "Equipment maintenance and improvement",
+      "Technical writing and content",
+      "Web and workflow automation"
+    ],
+    "experienceTitle": "Selected work",
+    "experience": [
+      {
+        "period": "Automation",
+        "title": "Equipment concept design and review",
+        "desc": "Clarify field requirements and design the structure and motion of automation equipment."
+      },
+      {
+        "period": "Robotics",
+        "title": "Robot and control integration",
+        "desc": "Connect robots, PLCs and peripherals and apply them on real production sites."
+      },
+      {
+        "period": "Documentation",
+        "title": "Technical documentation and content",
+        "desc": "Record design intent and lessons learned so the next project starts faster."
+      }
+    ],
+    "note": "Detailed career and project history are available on request."
+  }
+}

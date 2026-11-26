@@ -1,0 +1,12 @@
+{
+  "host": "www.deepstronglove.com",
+  "key": "deepstronglove",
+  "brand": "일상의 즐거움",
+  "accent": "#ec4899",
+  "blogUrl": "/",
+  "tagline": {
+    "ko": "매일의 소소한 이야기",
+    "en": "Small stories from everyday life",
+    "ja": "毎日のささやかな物語"
+  }
+}

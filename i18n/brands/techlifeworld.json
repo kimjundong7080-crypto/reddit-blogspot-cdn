@@ -1,0 +1,12 @@
+{
+  "host": "www.techlifeworld.com",
+  "key": "techlifeworld",
+  "brand": "JUST TECH",
+  "accent": "#1f7a5c",
+  "blogUrl": "/",
+  "tagline": {
+    "ko": "산업 자동화·로봇·설비 기술 아카이브",
+    "en": "Industrial automation, robotics and equipment archive",
+    "ja": "産業自動化・ロボット・設備の技術アーカイブ"
+  }
+}

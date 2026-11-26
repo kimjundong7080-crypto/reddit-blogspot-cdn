@@ -43,7 +43,7 @@ readme = readme
   .replace(/21·11 모두 \*\*v[^*]+\*\*/g, `21·11 모두 **v${version}**`);
 fs.writeFileSync(readmePath, readme, 'utf8');
 
-run(['add', 'package.json', 'assets', 'src', 'scripts', '.github', 'pages', 'README.md', 'AGENTS.md']);
+run(['add', 'package.json', 'assets', 'src', 'scripts', '.github', 'pages', 'i18n', 'workers', 'I18N.md', '.gitignore', 'README.md', 'AGENTS.md']);
 run([
   'commit',
   '-m',

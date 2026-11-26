@@ -7,6 +7,10 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/build.mjs --check",
+    "build:i18n": "node scripts/build-i18n.mjs",
+    "check:i18n": "node scripts/build-i18n.mjs --check",
+    "deploy:i18n:pages": "npx wrangler pages deploy dist/i18n --project-name jt-i18n",
+    "deploy:i18n:worker": "npx wrangler deploy --config workers/i18n-router/wrangler.toml",
     "release": "node scripts/release.mjs"
   }
 }

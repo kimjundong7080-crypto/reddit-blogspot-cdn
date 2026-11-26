@@ -26,3 +26,9 @@ jobs:
 
       - name: Ensure generated assets are committed
         run: git diff --exit-code -- assets
+
+      - name: Build static i18n pages
+        run: npm run build:i18n
+
+      - name: Verify i18n output
+        run: npm run check:i18n

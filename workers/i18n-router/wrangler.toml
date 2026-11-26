@@ -1,0 +1,18 @@
+name = "jt-i18n-router"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+PAGES_ORIGIN = "https://jt-i18n.pages.dev"
+
+routes = [
+  { pattern = "www.techlifeworld.com/ko*", zone_name = "techlifeworld.com" },
+  { pattern = "www.techlifeworld.com/en*", zone_name = "techlifeworld.com" },
+  { pattern = "www.techlifeworld.com/ja*", zone_name = "techlifeworld.com" },
+  { pattern = "www.shutupquick.com/ko*", zone_name = "shutupquick.com" },
+  { pattern = "www.shutupquick.com/en*", zone_name = "shutupquick.com" },
+  { pattern = "www.shutupquick.com/ja*", zone_name = "shutupquick.com" },
+  { pattern = "www.deepstronglove.com/ko*", zone_name = "deepstronglove.com" },
+  { pattern = "www.deepstronglove.com/en*", zone_name = "deepstronglove.com" },
+  { pattern = "www.deepstronglove.com/ja*", zone_name = "deepstronglove.com" },
+]

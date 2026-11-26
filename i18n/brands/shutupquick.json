@@ -1,0 +1,12 @@
+{
+  "host": "www.shutupquick.com",
+  "key": "shutupquick",
+  "brand": "삶의 지혜",
+  "accent": "#b45309",
+  "blogUrl": "/",
+  "tagline": {
+    "ko": "삶에 도움이 되는 지혜와 팁",
+    "en": "Practical wisdom and tips for everyday life",
+    "ja": "暮らしに役立つ知恵とヒント"
+  }
+}

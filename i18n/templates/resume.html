@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>{{title}}</title>
+<link rel="canonical" href="{{canonical}}">
+{{hreflang}}
+<meta name="theme-color" content="{{accent}}">
+<script>(function(){try{var t=localStorage.getItem('jt-i18n-theme');if(!t)t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+<style>
+:root{--accent:{{accent}};--bg:#edf2ef;--paper:#fff;--ink:#172923;--muted:#66766f;--line:#dce6e1;--soft:#f2f7f4}
+html[data-theme="dark"]{--bg:#0f1113;--paper:#171d19;--ink:#eef2ef;--muted:#b4beb8;--line:#303933;--soft:#1b231f}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+body{font-family:'Malgun Gothic','맑은 고딕','Noto Sans KR','Hiragino Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding:24px 12px 64px}
+a{color:inherit;text-decoration:none}
+.top{max-width:210mm;margin:0 auto 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:13px;font-weight:700;color:var(--muted)}
+.langs{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.langs a,.langs b{font-size:11px;padding:4px 8px;border-radius:999px}
+.langs a{color:var(--muted)}
+.langs b{background:var(--accent);color:#fff;font-weight:700}
+.theme{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;width:30px;height:30px;cursor:pointer}
+.resume{width:100%;max-width:210mm;min-height:297mm;margin:0 auto;padding:15mm 16mm;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 54px rgba(24,52,40,.09)}
+.head{display:flex;gap:18px;align-items:center;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+.photo{width:92px;height:112px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--soft)}
+.head h1{font-size:26px;letter-spacing:-.03em}
+.role{margin-top:3px;color:var(--accent);font-weight:700;font-size:13px}
+.summary{margin-top:8px;color:var(--muted);font-size:13px;max-width:560px}
+section{margin-top:20px}
+h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding-bottom:5px;border-bottom:1px solid var(--line)}
+.skills{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin-top:10px;font-size:13px}
+.skills li:before{content:"";display:inline-block;width:6px;height:6px;border-radius:2px;background:var(--accent);margin-right:8px;vertical-align:2px}
+.jobs{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.job{display:grid;grid-template-columns:92px 1fr;gap:12px}
+.job .period{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.03em;padding-top:2px}
+.job strong{font-size:13.5px}
+.job p{margin-top:3px;color:var(--muted);font-size:13px}
+.note{margin-top:20px;padding:10px 12px;background:var(--soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;color:var(--muted);font-size:12.5px}
+.actions{max-width:210mm;margin:12px auto 0;display:flex;gap:8px;justify-content:flex-end}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);padding:8px 14px;border-radius:999px;font-size:12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media(max-width:640px){.resume{padding:20px 16px;border-radius:12px}.head{flex-direction:column;align-items:flex-start}.job{grid-template-columns:1fr}.skills{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff;padding:0}
+  .top,.actions{display:none !important}
+  .resume{max-width:none;min-height:0;border:0;border-radius:0;box-shadow:none;padding:0}
+  .head{border-bottom-color:#000}
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="brand" href="/{{lang}}/">{{brand}}</a>
+  <nav class="langs" aria-label="{{languageLabel}}">
+    {{langSwitcher}}
+    <button class="theme" type="button" id="themeBtn" aria-label="theme">◐</button>
+  </nav>
+</div>
+<main class="resume">
+  <div class="head">
+    <img class="photo" src="{{photo}}" alt="{{name}}">
+    <div>
+      <h1>{{name}}</h1>
+      <div class="role">{{role}}</div>
+      <p class="summary">{{summary}}</p>
+    </div>
+  </div>
+  <section>
+    <h2>{{skillsTitle}}</h2>
+    <ul class="skills">{{skills}}</ul>
+  </section>
+  <section>
+    <h2>{{experienceTitle}}</h2>
+    <div class="jobs">{{experience}}</div>
+    <p class="note">{{note}}</p>
+  </section>
+</main>
+<div class="actions">
+  <button class="btn primary" type="button" onclick="window.print()">{{printLabel}}</button>
+  <a class="btn" href="/{{lang}}/">{{back}}</a>
+</div>
+<script>
+(function(){var b=document.getElementById('themeBtn');if(b)b.addEventListener('click',function(){var c=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=c;try{localStorage.setItem('jt-i18n-theme',c);}catch(e){}});})();
+</script>
+</body>
+</html>
