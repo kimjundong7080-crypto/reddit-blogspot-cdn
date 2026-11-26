@@ -5,6 +5,8 @@
 > Per-release rows live in [`../CHANGELOG.md`](../CHANGELOG.md).
 > Covers: §1, §8.
 
+- **v1.2.139 is published** (tag `v1.2.139`): **the icon-only rail height follows the 10-post rail.** `21-three-column` forced `#ytPosts .yt-viewport{height:1176px !important}` at ≤1239px (14 cards), which left ~336px of empty space under the new 10-card list; it is 838px (10×82 + 9×2) now, matching `23-yt-posts`. Caught on live deepstronglove `blog-post_600` right after v1.2.138.
+
 - **v1.2.138 is published** (tag `v1.2.138`): **top-10 rail, folded-embed autoplay, and an embed width that
   matches post images.** `#ytPosts` stops at 10 posts (`RAIL_LIMIT`, one `max-results=10` request,
   `visible=10`), the viewport is 1120→838px so exactly ten 82px cards fill it, and no further page is fetched,
