@@ -14,7 +14,8 @@
   End -840, ↓ at the end stays -840; mid-list wheel `defaultPrevented:true`, at the true end `false` with a real
   wheel moving the page 100px; touch branch (compiled media block re-applied as `@media all`) scrolls 84px per
   ArrowDown, 1092px per PageDown, page `scrollY` 0, and a bottom scroll fetched `start-index=25` (24 → 44
-  items). Not covered: a physical touch device, and the live domains until the `@v1` purge lands.
+  items). Live after the `@v1` purge: techlifeworld `/2026/11/_1.html` serves 1.2.137 with 19 rail items,
+  `tabindex=0`, Home `0` → ↓ `-84` → End `-420` and page `scrollY` `0`. Not covered: a physical touch device.
 - **The guide was split into `docs/`** (AGENTS.md 91 KB → 4.5 KB index + rules). Section numbers are preserved.
 
 - **Static multilingual pages (local, not deployed):** `I18N.md` documents the `/ko/ /en/ /ja/` Pages + Worker build for all three domains. Source is under `i18n/`, build with `npm run build:i18n`; deployment needs a Cloudflare token and proxying `www` (high risk). Do not deploy without explicit approval.

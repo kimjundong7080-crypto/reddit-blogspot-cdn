@@ -89,6 +89,22 @@ After an approved release:
 
 The Blogger theme URLs are fixed and use `@v1`; do not edit the theme or add query parameters to it.
 
+## Harness (local, offline)
+
+`harness/rail.html` loads the built `assets/css|js/23-yt-posts.*` against a stubbed Blogger feed (24 + 20
+items over two pages, then empty) so rail behaviour can be checked without the live sites:
+
+```bash
+python -m http.server 8123 --bind 127.0.0.1   # from the repository root
+# then open http://127.0.0.1:8123/harness/rail.html
+```
+
+Two environment workarounds live in the page, not in `src/`: short `setTimeout` delays are routed through a
+`MessageChannel` because a hidden tab clamps them to ~1 s (the rail adds one item per 40 ms), and tests can
+inject `.yt-list{transition:none}` to read exact offsets. The preview browser cannot emulate a coarse
+pointer, so the touch branch is exercised by re-applying the compiled
+`@media (hover:none),(pointer:coarse)` block as `@media all`.
+
 ## 9. Local agent skills (Kilo)
 
 Global skills live in `C:\Users\ssii\.kilo\skills\<skill-name>\SKILL.md` and are loaded by name + description. A newly added skill appears only after a Kilo restart or a new session.
