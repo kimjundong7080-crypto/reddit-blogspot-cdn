@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.134 */
+/* Reddit-style Blogger YouTube post list — v1.2.135 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -541,7 +541,7 @@
     return false;
   }
   function initExpanders(){
-    if(!JT_NO_LANDING)return;
+    /* v1.2.135: techlifeworld.com 에서도 동작한다(예전에는 JT_NO_LANDING 이 필요했다). */
     if(!document.body.classList.contains('item-view'))return;
     var LIMIT=900;
     function apply(b){
