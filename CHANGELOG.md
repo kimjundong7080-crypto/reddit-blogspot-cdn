@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-27 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.140**
+Latest published release: **v1.2.141**
 
-This is the consolidated English record through v1.2.140.
+This is the consolidated English record through v1.2.141.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -18,6 +18,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 
 | Version | Commit | Summary |
 |---|---|---|
+| v1.2.141 | — | **The rail card no longer clips at the right edge.** `#ytPosts .yt-card` gained `margin-right:10px` (flex shrink keeps the total at 100 %, so no horizontal overflow), giving the `scale(1.02)` hover and its shadow room inside `.yt-viewport` (`overflow:clip`, `overflow-clip-margin:14px`). Harness (320px sidebar): card 310px wide with its right edge at 430.3 against the viewport 440.3 (10px), 6.9px left after the 1.02 scale, `scrollWidth == clientWidth == 320`. |
 | v1.2.140 | — | **The YouTube box is as wide as a post image, and the sidebar blog archive is hidden.** Inside `.markdown` (24 px side padding) images fill the padded content box while the embed subtracted another 48 px, so the video was 48 px narrower (live 800 px body: image 752 px, embed 704 px); `.post-body .markdown .jt-yt-embed:not(.jt-shorts){width:100%;max-width:100%;margin-inline:0}` removes the double inset and Shorts keep their 360 px box. `#BlogArchive1{display:none !important}` in `21-three-column` hides the `widget BlogArchive` ('자료실') gadget — the theme XML is never edited, so this is a hide; deleting the gadget itself stays a Blogger Layout action. Verified with the built CSS: markdown body image 752 = embed 752 at the same left edge, legacy separator body 752 = 752, Shorts 360 centred. |
 | v1.2.139 | — | **The icon-only rail height follows the 10-post rail.** `21-three-column` forced `#ytPosts .yt-viewport{height:1176px !important}` at ≤1239 px (fourteen 82 px cards), so the new 10-post rail left ~336 px of empty space below the list on narrow layouts; it is now 838 px (10×82 + 9×2), the same box as `23-yt-posts`. Found on live deepstronglove `/2026/11/blog-post_600.html` after v1.2.138 (`@v1` CSS computed 1176 px while the new CSS listed 10 cards). |
 | v1.2.138 | — | **Top-10 rail, folded-embed autoplay, image-width YouTube box.** `#ytPosts` renders at most 10 posts (`RAIL_LIMIT`, a single `max-results=10` request, `visible=10`), the viewport is 1120→838 px so ten 82 px cards fill it exactly, and no further page is fetched (the wheel at the end lets the page scroll). Center autoplay no longer skips embeds inside a collapsed `[rede]` fold or a collapsed `.jt-expandable`: `clipRectOf()` intersects the embed box with every `overflow` ancestor and `ratioOf()` counts only the visible height, so a folded embed plays only when it is ≥98 % visible (normal embeds keep 0.6) and the viewport guard uses the same clipped ratio (stop below 0.5). `.jt-yt-embed` is `calc(100% - 48px)` (`calc(100% - 32px)` at ≤600 px) — the same box as `22-post-image` — instead of `min(100% - 32px, 900px)`. Verified with the built assets: rail 10 items, one `?alt=json&max-results=10` call, viewport 838 px, list 838 px, no horizontal overflow, no extra load on wheel; 760 px body gives image 712 px at left 180.3 and embed 712 px at left 180.3; a 401 px embed inside a 520 px collapsed fold plays when centred (`ready`, `data-loaded=1`), one clipped to 200 px does not, and a scrolled-away player pauses (`data-paused=1`, iframe kept). |
