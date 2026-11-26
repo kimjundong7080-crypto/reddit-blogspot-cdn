@@ -32,7 +32,7 @@
 #jtInfiniteFeed .jt-inf-post .comments,
 #jtInfiniteFeed .jt-inf-post #comments,
 #jtInfiniteFeed .jt-inf-post script,
-#jtInfiniteFeed .jt-inf-post iframe:not(.jt-yt-frame){
+#jtInfiniteFeed .jt-inf-post iframe:not(.jt-yt-frame):not(.jt-map-frame){
   display:none !important;
 }
 .jt-inf-loader{
@@ -180,7 +180,7 @@
     function cleanClone(article){
       var clone=article.cloneNode(true);
       var kill=clone.querySelectorAll(
-        '#comments,.comments,.comments-content,.comment-form,.comment-footer,'+
+        '#comments,.comments,.comments-content,.comment-form,.comment-footer,.jt-cmt,'+
         'script,iframe,style,.post-share-buttons,.share-buttons,.post-sidebar,'+
         '.inline-ad,.post-ads,.adsbygoogle,[data-ad-client]'
       );

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.144 */
+/* Reddit-style Blogger post infinite scroll — v1.2.145 */
 #jtInfiniteFeed{
   width:100%;
   max-width:100%;
@@ -23,7 +23,7 @@
 #jtInfiniteFeed .jt-inf-post .comments,
 #jtInfiniteFeed .jt-inf-post #comments,
 #jtInfiniteFeed .jt-inf-post script,
-#jtInfiniteFeed .jt-inf-post iframe:not(.jt-yt-frame){
+#jtInfiniteFeed .jt-inf-post iframe:not(.jt-yt-frame):not(.jt-map-frame){
   display:none !important;
 }
 .jt-inf-loader{

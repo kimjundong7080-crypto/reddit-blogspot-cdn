@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.144 */
+/* Reddit-style Blogger YouTube post list — v1.2.145 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -576,6 +576,7 @@
           window.scrollTo({top:top,behavior:'smooth'});
         }else if(window.__jtRescanYt){
           window.__jtRescanYt();
+          if(window.__jtRefreshMaps)window.__jtRefreshMaps(b);
         }
       });
       if(b.parentNode)b.parentNode.insertBefore(btn,b.nextSibling);
@@ -1127,6 +1128,7 @@
           for(var vi=0;vi<vids.length;vi++)if(window.__jtPauseYtBox)window.__jtPauseYtBox(vids[vi]);
         }
         if(open&&window.__jtRescanYt)window.__jtRescanYt();
+        if(open&&window.__jtRefreshMaps)window.__jtRefreshMaps(inner);
       });
       more.appendChild(btn);fold.appendChild(more);
       return fold;
@@ -1688,6 +1690,30 @@
       h.style.setProperty('-webkit-line-clamp','unset','important');
       h.style.setProperty('display','block','important');
     }
+    /* 지도 iframe 은 display:none 이나 0px 박스에서 로드하면 Google Maps 가 빈 화면으로 굳는다.
+       박스가 실제 크기를 가질 때 src 를 넣고, 보이는 시점(폴드 펼치기·스크롤)에 다시 확인한다. */
+    function revealMap(mb){
+      var fr=mb.__jtMapFrame;
+      if(!fr||!mb.__jtMapSrc||fr.getAttribute('src'))return;
+      var r=mb.getBoundingClientRect();
+      if(!(r.width>0&&r.height>0))return;
+      fr.setAttribute('src',mb.__jtMapSrc);
+    }
+    var mapObserver=null;
+    if(window.IntersectionObserver){
+      mapObserver=new IntersectionObserver(function(list){
+        for(var i=0;i<list.length;i++){
+          if(!list[i].isIntersecting)continue;
+          mapObserver.unobserve(list[i].target);
+          revealMap(list[i].target);
+        }
+      },{rootMargin:'300px 0px'});
+    }
+    window.__jtRefreshMaps=function(root){
+      var sc=root&&root.querySelectorAll?root:document;
+      var ms=sc.querySelectorAll('.jt-map-embed');
+      for(var i=0;i<ms.length;i++)revealMap(ms[i]);
+    };
     function run(){
       var bodies=document.querySelectorAll('.post-body');
       var paragraph=/<p>\s*\[youtube\s+link\s*=\s*["']([^"']+)["']\s*\]\s*<\/p>/gi;
@@ -1761,20 +1787,21 @@
         note.textContent=noteText;
         mb.appendChild(note);
         var fr=document.createElement('iframe');
-        if(spec.url){
-          fr.src=spec.url;
-        }else if(places.length>1){
-          fr.src='https://maps.google.com/maps?saddr='+encodeURIComponent(places[0])
+        var srcUrl=spec.url||(places.length>1
+          ? 'https://maps.google.com/maps?saddr='+encodeURIComponent(places[0])
             +'&daddr='+places.slice(1).map(encodeURIComponent).join('+to:')
-            +'&output=embed&hl=ko';
-        }else{
-          fr.src='https://maps.google.com/maps?q='+encodeURIComponent(places[0])+'&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed';
-        }
+            +'&output=embed&hl=ko'
+          : 'https://maps.google.com/maps?q='+encodeURIComponent(places[0])+'&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed');
+        fr.className='jt-map-frame';
         fr.loading='eager';
         fr.referrerPolicy='no-referrer-when-downgrade';
         fr.allowFullscreen=true;
         fr.title=noteText+' 지도';
         mb.appendChild(fr);
+        mb.__jtMapFrame=fr;
+        mb.__jtMapSrc=srcUrl;
+        revealMap(mb);
+        if(!fr.getAttribute('src')&&mapObserver)mapObserver.observe(mb);
         if(!(mb.nextElementSibling&&mb.nextElementSibling.classList&&mb.nextElementSibling.classList.contains('jt-map-fallback'))){
           var link=document.createElement('a');
           link.className='jt-map-fallback';
@@ -2239,4 +2266,149 @@
         })
         ['catch'](function(){ul.style.display='none';});
     });
+  })();
+  /* ===== 글 끝 댓글: '댓글 쓰기 / 보이기' (YouTube 스타일) =====
+     네이티브 Blogger 댓글을 그대로 쓴다. 쓰기는 comment/frame iframe, 목록은 댓글 피드(JSONP). */
+  (function(){
+    if(window.__jtCmts)return; window.__jtCmts=1;
+    function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+    var COLORS=['#c0392b','#0a7d5a','#1a73e8','#7a5c1b','#8e44ad','#0b6f8a','#b3562a','#4b5563'];
+    function colorFor(name){var h=0,n=String(name||'');for(var i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%997;return COLORS[h%COLORS.length];}
+    function initial(name){var n=String(name||'?').trim();return n?n.charAt(0).toUpperCase():'?';}
+    function ago(iso){
+      var d=new Date(iso);if(isNaN(d))return '';
+      var diff=(Date.now()-d.getTime())/1000;
+      if(diff<60)return '방금 전';
+      if(diff<3600)return Math.floor(diff/60)+'분 전';
+      if(diff<86400)return Math.floor(diff/3600)+'시간 전';
+      if(diff<2592000)return Math.floor(diff/86400)+'일 전';
+      return d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';
+    }
+    function item(entry){
+      var author=(entry.author&&entry.author[0])||{};
+      var name=(author.name&&author.name.$t)||'익명';
+      var av=author.thumbnail&&author.thumbnail.url;
+      var row=document.createElement('div');row.className='jt-cmt-item';
+      var pic=document.createElement('div');pic.className='jt-cmt-avatar';
+      if(av){var img=document.createElement('img');img.src=av;img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';pic.appendChild(img);}
+      else{pic.style.background=colorFor(name);pic.textContent=initial(name);}
+      var main=document.createElement('div');main.className='jt-cmt-main';
+      var meta=document.createElement('div');meta.className='jt-cmt-meta';
+      var nm=document.createElement('span');nm.className='jt-cmt-name';nm.textContent=name;
+      var tm=document.createElement('span');tm.className='jt-cmt-time';tm.textContent=ago(entry.published&&entry.published.$t);
+      meta.appendChild(nm);meta.appendChild(tm);
+      var txt=document.createElement('div');txt.className='jt-cmt-text';
+      txt.innerHTML=(entry.content&&entry.content.$t)||'';
+      var links=txt.querySelectorAll('a');
+      for(var i=0;i<links.length;i++){links[i].target='_blank';links[i].rel='noopener';}
+      main.appendChild(meta);main.appendChild(txt);
+      row.appendChild(pic);row.appendChild(main);
+      return row;
+    }
+    function build(host,post){
+      var section=document.createElement('section');
+      section.className='jt-cmt';
+      var head=document.createElement('div');head.className='jt-cmt-head';
+      var title=document.createElement('h2');title.className='jt-cmt-title';
+      var countEl=document.createElement('span');countEl.className='jt-cmt-count';
+      var native=document.getElementById('comments');
+      countEl.textContent=(native&&native.getAttribute('data-num-comments'))||'0';
+      title.appendChild(document.createTextNode('댓글 '));title.appendChild(countEl);
+      var actions=document.createElement('div');actions.className='jt-cmt-actions';
+      var writeBtn=document.createElement('button');writeBtn.type='button';
+      writeBtn.className='jt-cmt-btn jt-cmt-write';writeBtn.textContent='댓글 쓰기';
+      writeBtn.setAttribute('aria-expanded','false');
+      var showBtn=document.createElement('button');showBtn.type='button';
+      showBtn.className='jt-cmt-btn jt-cmt-show';showBtn.textContent='보이기';
+      showBtn.setAttribute('aria-expanded','false');
+      actions.appendChild(writeBtn);actions.appendChild(showBtn);
+      head.appendChild(title);head.appendChild(actions);
+      var form=document.createElement('div');form.className='jt-cmt-form';form.hidden=true;
+      var list=document.createElement('div');list.className='jt-cmt-list';list.hidden=true;
+      section.appendChild(head);section.appendChild(form);section.appendChild(list);
+      if(host.parentNode)host.parentNode.insertBefore(section,host.nextSibling);
+      /* 폼이 열려 있으면 라벨은 '쓰기 취소', 닫혀 있으면 '댓글 쓰기'. (상태 변수를 명시해 혼동 방지) */
+      var writeOpen=false;
+      function syncWrite(){
+        form.hidden=!writeOpen;
+        writeBtn.classList.toggle('is-on',writeOpen);
+        writeBtn.setAttribute('aria-expanded',writeOpen?'true':'false');
+        writeBtn.textContent=writeOpen?'쓰기 취소':'댓글 쓰기';
+        writeBtn.title=writeOpen?'댓글 쓰기 닫기':'댓글 쓰기';
+      }
+      writeBtn.addEventListener('click',function(){
+        if(!writeOpen&&!form.firstChild){
+          var fr=document.createElement('iframe');
+          fr.src='https://www.blogger.com/comment/frame/'+post.blogId+'?po='+post.postId+'&hl=ko&skin=contempo&isAmp=false';
+          fr.title='댓글 쓰기';fr.loading='lazy';
+          form.appendChild(fr);
+        }
+        writeOpen=!writeOpen;
+        syncWrite();
+        if(writeOpen&&section.scrollIntoView)section.scrollIntoView({block:'start',behavior:'smooth'});
+      });
+      var loaded=false;
+      function finish(entries,total){
+        list.innerHTML='';
+        if(!entries||!entries.length){
+          var empty=document.createElement('div');empty.className='jt-cmt-empty';
+          empty.textContent='아직 댓글이 없습니다. 첫 댓글을 남겨 보세요.';
+          list.appendChild(empty);
+        }else{
+          for(var i=0;i<entries.length;i++)list.appendChild(item(entries[i]));
+        }
+        if(total)countEl.textContent=total;
+        else if(entries)countEl.textContent=String(entries.length);
+      }
+      function loadList(){
+        if(loaded)return;loaded=true;
+        list.innerHTML='';
+        var msg=document.createElement('div');msg.className='jt-cmt-empty';msg.textContent='댓글을 불러오는 중…';
+        list.appendChild(msg);
+        var cb='__jtCmt'+Date.now().toString(36)+Math.floor(Math.random()*1e4);
+        var script=document.createElement('script'),done=false;
+        function settle(entries,total){
+          if(done)return;done=true;
+          try{delete window[cb];}catch(e){window[cb]=null;}
+          if(script.parentNode)script.parentNode.removeChild(script);
+          finish(entries,total);
+        }
+        window[cb]=function(data){
+          var feed=(data&&data.feed)||{};
+          settle(feed.entry||[],(feed.openSearch$totalResults&&feed.openSearch$totalResults.$t)||0);
+        };
+        script.src='https://www.blogger.com/feeds/'+post.blogId+'/'+post.postId+'/comments/default?alt=json-in-script&max-results=50&callback='+cb;
+        script.onerror=function(){settle(null,0);};
+        setTimeout(function(){if(!done)settle(null,0);},9000);
+        document.head.appendChild(script);
+      }
+      var listOpen=false;
+      showBtn.addEventListener('click',function(){
+        listOpen=!listOpen;
+        list.hidden=!listOpen;
+        showBtn.textContent=listOpen?'숨기기':'보이기';
+        showBtn.title=listOpen?'댓글 숨기기':'댓글 보이기';
+        showBtn.classList.toggle('is-on',listOpen);
+        showBtn.setAttribute('aria-expanded',listOpen?'true':'false');
+        if(listOpen)loadList();
+      });
+    }
+    function init(){
+      if(!document.body.classList.contains('item-view'))return;
+      var body=document.querySelector('.post-body');
+      if(!body||body.closest('#jtInfiniteFeed'))return;
+      if(document.querySelector('.jt-cmt'))return;
+      var host=body.closest('.post-body-container')||body.closest('.post-outer')||body;
+      fetch('/feeds/posts/default?alt=json&path='+encodeURIComponent(location.pathname),{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){
+          var entry=j&&j.feed&&j.feed.entry&&j.feed.entry[0];
+          var id=(entry&&entry.id&&entry.id.$t)||'';
+          var m=id.match(/blog-([0-9]+)[.]post-([0-9]+)/);
+          if(!m)return;
+          build(host,{blogId:m[1],postId:m[2]});
+        })
+        ['catch'](function(){});
+    }
+    ready(init);
   })();

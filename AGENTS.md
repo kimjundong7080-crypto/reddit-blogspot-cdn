@@ -1,7 +1,7 @@
 # JUST TECH Blogger/CDN — Agent Index and Rules
 
 Last updated: 2026-11-27
-Current version: **1.2.144** — latest published tag `v1.2.144`, `package.json` `1.2.144`.
+Current version: **1.2.145** — latest published tag `v1.2.145`, `package.json` `1.2.145`.
 Source of truth for what is live: [`docs/status.md`](docs/status.md) §1.
 
 > This file is the entry point only. The detailed guide was 91 KB and was split into `docs/` on 2026-11-27.

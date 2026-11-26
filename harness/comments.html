@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>comments harness</title>
+<link rel="stylesheet" href="../assets/css/23-yt-posts.css">
+<style>
+  body{font-family:sans-serif;background:#fff;max-width:860px;margin:0 auto;padding:20px}
+  .post-body-container{border:0}
+</style>
+</head>
+<body class="container item-view">
+<div class="post-body-container">
+  <div class="post-body entry-content">
+    <p>본문 마지막 문단입니다.</p>
+  </div>
+</div>
+<section class="comments" id="comments" data-num-comments="3"></section>
+<script>
+  /* 댓글 피드(JSONP)는 실제 네트워크 대신 가짜 응답으로 바꾼다. */
+  (function () {
+    var native = document.head.appendChild.bind(document.head);
+    document.head.appendChild = function (node) {
+      if (node.tagName === 'SCRIPT' && String(node.src).indexOf('blogger.com/feeds/') > -1) {
+        var cb = (String(node.src).match(/callback=([^&]+)/) || [])[1];
+        setTimeout(function () {
+          if (typeof window[cb] === 'function') {
+            window[cb]({
+              feed: {
+                openSearch$totalResults: { $t: '3' },
+                entry: [
+                  { author: [{ name: { $t: '김테크' } }], published: { $t: new Date(Date.now() - 3600e3).toISOString() }, content: { $t: '<p>첫 번째 댓글입니다. 잘 봤습니다!</p>' } },
+                  { author: [{ name: { $t: 'lee' } }], published: { $t: new Date(Date.now() - 86400e3 * 2).toISOString() }, content: { $t: '<p>두 번째 댓글 <a href="https://example.com">링크</a></p>' } },
+                  { author: [{ name: { $t: '익명' } }], published: { $t: new Date(Date.now() - 86400e3 * 40).toISOString() }, content: { $t: '세 번째 댓글' } }
+                ]
+              }
+            });
+          }
+        }, 120);
+        return node;
+      }
+      return native(node);
+    };
+  })();
+</script>
+<script src="../assets/js/23-yt-posts.js"></script>
+</body>
+</html>

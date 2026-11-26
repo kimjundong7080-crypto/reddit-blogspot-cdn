@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-27 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.144**
+Latest published release: **v1.2.145**
 
-This is the consolidated English record through v1.2.144.
+This is the consolidated English record through v1.2.145.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -18,6 +18,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 
 | Version | Commit | Summary |
 |---|---|---|
+| v1.2.145 | — | **Maps inside infinite-feed clones are visible again, and every post ends with a YouTube-style comment bar.** The feed clone rule `iframe:not(.jt-yt-frame){display:none}` also hid the `[map]` iframe, so a map showed in the original post but vanished in the cloned card; that rule now excludes `.jt-map-frame`, and map iframes only get their `src` once their box has a real size (IntersectionObserver plus a rescan on fold open), so a hidden box no longer loads a blank Google Maps frame. Separately, the end of each post gets a `댓글 N` bar with `댓글 쓰기` (renders the native Blogger comment form in an iframe) and `보이기` (loads the comment feed as an avatar list and toggles to `숨기기`). |
 | v1.2.144 | — | **The rail fades no longer cover the first and last card text.** The viewport was exactly 838px — ten cards (82px each plus 2px gaps) — with two 38px gradients pinned to its edges, so they washed over the first and last titles. It is now `box-sizing:border-box; height:874px; padding:18px 0` (the inner area stays 838px, still ten cards), the gradients are 18px and live only in those padding bands, and the icon-only module keeps the same 874px box. Harness: box 874px, padding 18/18, first card top 18, tenth card bottom 856, fades 0–18 and 856–874, ten cards visible, one wheel still gives `translateY(-84px)`. |
 | v1.2.143 | — | **The recommended/popular rail wheels again.** v1.2.138 read "10 posts" as a total cap: the rail held ten cards in a ten-card-tall viewport, so `max = length - visible = 0`, the wheel handler never took the event and the page scrolled instead of the list — the hover carousel was gone. The cap is now `RAIL_VISIBLE = 10`, meaning ten cards on screen, while the feed loads 20 per page and every entry is kept (`while(i<entries.length)`, no forced `exhausted`). Harness (24 then 20 entries): 24 loaded, viewport 838px, card 82px, one wheel step `translateY(-84px)` per card, next page fetched at `idx=14` (24 → 44 items), the request that returns nothing sets `exhausted`, and only then does the wheel stop calling `preventDefault` so the page takes over. |
 | v1.2.142 | — | **Maps and videos no longer disappear inside `[md]` regions, and the contact page shows a click hint.** The shortcode expander (`run()`) could turn `[map ...]`/`[youtube ...]` into populated divs before the markdown region rendered, and `renderRegion()` builds its source with `toText()`, which strips every tag — so the map vanished and only the fallback link survived. New `restoreShortcodes()` turns an already-expanded `.jt-map-embed`/`.jt-yt-embed` back into its `[map "..."]`, `[map url="..."]`, `[youtube link=...]` or `[shorts link=...]` token (and drops the generated `.jt-map-note`/`.jt-map-fallback`) before the text conversion, so the order no longer matters. Harness: `[md]` + single map + multi-place route + `[youtube]` + `[shorts]` → 3 maps with iframes, 2 embeds (1 Shorts) with posters, 0 leftover `[map`/`[youtube` text; the `[md]`-less body is unchanged. `pages/contact.html` adds a `마우스 클릭` speech bubble (white pill + tail, 2.2s float, `prefers-reduced-motion` off) above the blurred phone/e-mail buttons, hidden once `.is-revealed`. Verified locally: content `"마우스 클릭"`, white on navy, blur kept at 4px, click reveals `010-4361-6611` with a `tel:` href and the bubble goes `display:none`. |

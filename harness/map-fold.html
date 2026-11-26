@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>map in fold / infinite clone harness</title>
+<link rel="stylesheet" href="../assets/css/23-yt-posts.css">
+<link rel="stylesheet" href="../assets/css/11-infinite.css">
+<style>
+  body{font-family:sans-serif;background:#fff}
+  .wrap{max-width:860px;margin:20px auto}
+  .spacer{height:600px;background:linear-gradient(#fff,#eee)}
+</style>
+</head>
+<body class="container item-view">
+<div class="wrap">
+  <h2>1) 접힌 무한스크롤 클론 안의 지도</h2>
+  <div id="jtInfiniteFeed">
+    <div class="jt-inf-post">
+      <div class="post-outer">
+        <article class="post-outer-container">
+          <div class="post-body entry-content jt-expandable">
+            <div>본문 첫 지도</div>
+            <div class="jt-map-embed" data-map='{"places":["서울시청"]}'></div>
+            <div class="spacer"></div>
+            <div>본문 두 번째 지도</div>
+            <div class="jt-map-embed" data-map='{"places":["압구정","광화문"]}'></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+  <h2>2) display:none 안에 있다가 나중에 보이는 지도</h2>
+  <div id="hiddenHost" style="display:none">
+    <div class="jt-map-embed" data-map='{"places":["부산역"]}'></div>
+  </div>
+  <button id="showHidden" type="button">보이기</button>
+</div>
+<script>
+  document.getElementById('showHidden').onclick = function () {
+    document.getElementById('hiddenHost').style.display = 'block';
+    if (window.__jtRefreshMaps) window.__jtRefreshMaps(document.getElementById('hiddenHost'));
+  };
+</script>
+<script src="../assets/js/23-yt-posts.js"></script>
+</body>
+</html>

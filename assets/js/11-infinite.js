@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post infinite scroll — v1.2.144 (stable end + dedupe + lazy) */
+/* Reddit-style Blogger post infinite scroll — v1.2.145 (stable end + dedupe + lazy) */
 (function(){
   /* ======================= 【 ⚙️ 설정 】 ======================= */
   var CFG={
@@ -76,7 +76,7 @@
     function cleanClone(article){
       var clone=article.cloneNode(true);
       var kill=clone.querySelectorAll(
-        '#comments,.comments,.comments-content,.comment-form,.comment-footer,'+
+        '#comments,.comments,.comments-content,.comment-form,.comment-footer,.jt-cmt,'+
         'script,iframe,style,.post-share-buttons,.share-buttons,.post-sidebar,'+
         '.inline-ad,.post-ads,.adsbygoogle,[data-ad-client]'
       );
