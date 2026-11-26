@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.135 */
+/* Reddit-style Blogger YouTube post list — v1.2.136 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -763,8 +763,8 @@ html[data-theme="dark"] #jtSearchApp .jt-sp-thumb{background:rgba(255,255,255,.0
     .post-body.jt-expandable{--jt-expand-fade:#fff;position:relative;max-height:900px;overflow:hidden}
     html[data-theme="dark"] .post-body.jt-expandable{--jt-expand-fade:#0f1113}
     .post-body.jt-expandable.is-open{max-height:none;overflow:visible}
-    .post-body.jt-expandable:not(.is-open)::before{content:'';position:absolute;left:0;right:0;bottom:0;height:240px;pointer-events:none;z-index:1;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.55) 55%,#000 100%);mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.55) 55%,#000 100%)}
-    .post-body.jt-expandable:not(.is-open)::after{content:'';position:absolute;left:0;right:0;bottom:0;height:240px;pointer-events:none;z-index:2;background:linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,.10) 16%,rgba(255,255,255,.42) 42%,rgba(255,255,255,.74) 66%,rgba(255,255,255,.93) 85%,var(--jt-expand-fade) 100%)}
+    .post-body.jt-expandable:not(.is-open)::before{content:'';position:absolute;display:block;left:0;right:0;bottom:0;width:auto;height:240px;pointer-events:none;z-index:1;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.55) 55%,#000 100%);mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.55) 55%,#000 100%)}
+    .post-body.jt-expandable:not(.is-open)::after{content:'';position:absolute;display:block;left:0;right:0;bottom:0;width:auto;height:240px;pointer-events:none;z-index:2;background:linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,.10) 16%,rgba(255,255,255,.42) 42%,rgba(255,255,255,.74) 66%,rgba(255,255,255,.93) 85%,var(--jt-expand-fade) 100%)}
     html[data-theme="dark"] .post-body.jt-expandable:not(.is-open)::after{background:linear-gradient(to bottom,rgba(15,17,19,0) 0%,rgba(15,17,19,.16) 16%,rgba(15,17,19,.50) 42%,rgba(15,17,19,.80) 66%,rgba(15,17,19,.95) 85%,var(--jt-expand-fade) 100%)}
 .jt-expand-btn{display:block;margin:16px auto 4px;padding:10px 28px;border:1px solid rgba(0,0,0,.16);border-radius:999px;background:#fff;color:#111;font:700 14px/1 inherit;letter-spacing:.2px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:transform .15s ease,box-shadow .15s ease}
 .jt-expand-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.16)}
