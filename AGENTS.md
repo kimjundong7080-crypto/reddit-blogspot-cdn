@@ -35,6 +35,14 @@ Read order for a fresh session: this file → `docs/status.md` §1 → the doc f
 - **Never read or edit the theme XML.** The asset URLs are fixed, and the files are token-expensive.
 - **`JT_NO_LANDING` is a hostname-local gate** for the home redirect/rotation only. Do not re-gate the
   expander or any other feature behind it (v1.2.134 shipped that regression).
+- **Feed clones strip embeds, so new iframes need their own class.** `11-infinite.css` hides
+  `iframe:not(.jt-yt-frame):not(.jt-map-frame)` inside `#jtInfiniteFeed .jt-inf-post`. A `[map]` iframe
+  vanished that way (block in the original post, `display:none` at 0x0 in the clone) until v1.2.145.
+  Add your class to that `:not()` chain, and to the `cleanClone` kill list if the block must not be copied.
+- **The post-end comment bar is native Blogger, not ours.** `댓글 쓰기` loads
+  `blogger.com/comment/frame/<blogId>?po=<postId>`; the list is the per-post comment feed via
+  `alt=json-in-script` (JSONP — the blogger.com feed sends no CORS header). The ids come from
+  `/feeds/posts/default?alt=json&path=<pathname>`; if that call fails the whole bar is absent.
 - **`assets/` is generated.** Edit `src/`, run `npm run build`, then `npm run check`; never hand-edit `assets/`.
 - **Verification is manual by design.** Live checks must run in an incognito tab on all three domains; a
   passing build proves syntax, not behavior. Report what was not checked.

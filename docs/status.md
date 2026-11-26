@@ -218,6 +218,16 @@ This document is the handoff for the next AI or engineer. Release **v1.2.134** i
 
 ## 8. Known open items
 
+- **The comment bar has never shown a real comment (2026-11-27).** `댓글 쓰기`/`보이기` shipped in v1.2.145 and works live, but all three blogs report `댓글 0`, so only the empty state is verified on production. The list layout was rendered from a fake feed. Post one comment (needs user approval) and re-check the row layout, the count and the submit path.
+
+- **Comment replies are flat.** Per-post feed entries carry `thr$in-reply-to`, but every entry is rendered as a top-level row. Group by that field if threaded display is wanted.
+
+- **The comment form iframe is a fixed 440 px / 400 px.** Blogger own auto-resize helper is not loaded, so a long form scrolls inside the frame.
+
+- **Nothing refreshes the list after a submit**, and the bar silently does nothing when `/feeds/posts/default?alt=json&path=` fails (no retry).
+
+- **Every new iframe needs a clone-rule class.** `11-infinite.css` hides `iframe:not(.jt-yt-frame):not(.jt-map-frame)` inside `#jtInfiniteFeed .jt-inf-post`; the map fix (v1.2.145) was exactly this bug. Live check: the cloned map now measures 752x423 with `display:block` (was `display:none` at 0x0).
+
 - **jsDelivr `@v1` alias is stale on some POPs after v1.2.138/v1.2.139.** After the releases and two purges, `cdn.jsdelivr.net` served `x-jsd-version: 1.2.139` (and `1.2.138` before that) while `fastly.jsdelivr.net`, `gcore.jsdelivr.net` and `testingcf.jsdelivr.net` still answered **1.2.132** for the same `@v1` paths; the versioned `@v1.2.138`/`@v1.2.139` paths were correct on all four hosts. Purge the changed files again later and re-check `x-jsd-version`; do not declare the alias live until every host reports the new version. After v1.2.140 the same hosts moved 1.2.132 → 1.2.137 on their own, so the alias does advance without action, only late.
 
 - **CDN status (2026-11-26, v1.2.132, verified):** tag `@v1.2.132` and `@v1` serve the new JS (`jtMapSpec`); `@v1/package.json` resolves `1.2.132`. `cdn.jsdelivr.net`, `fastly.jsdelivr.net`, `gcore.jsdelivr.net` and `testingcf.jsdelivr.net` all reported `x-jsd-version: 1.2.132` after the final purge. Live harness after release: **techlifeworld.com/2026/11/_1.html**, **shutupquick.com/2026/11/blog-post_855.html** and **deepstronglove.com/2026/11/s_0624977188.html** each produced 3 maps (route `saddr/daddr +to:`, My Maps `mid=TEST123`, single `q=`) with the expected notes/fallback links, 0 leftover `[map`, 0 console errors. When a purge reports `finished` but the edge still reports the old version/Age, re-purge once the tag appears in `data.jsdelivr.com`; alias POPs can differ for a few minutes.
