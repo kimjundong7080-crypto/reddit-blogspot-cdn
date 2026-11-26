@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.142 */
+/* Reddit-style Blogger YouTube post list — v1.2.143 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -697,9 +697,9 @@
     viewport.appendChild(list);
     root.appendChild(viewport);
 
-    /* v1.2.138: 추천·인기 글은 10개만 보여준다(더 불러오지 않는다). */
-    var RAIL_LIMIT=10;
-    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=RAIL_LIMIT;
+    /* v1.2.143: 한 화면에 10개를 보여주고, 휠/키로 캐러셀처럼 넘긴다(끝에 닿으면 다음 페이지를 더 불러온다). */
+    var RAIL_VISIBLE=10;
+    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=RAIL_VISIBLE;
     var relatedCtx={labels:[],tokens:[]};
 
     /* 현재 글의 라벨/제목을 모아 유사 글 점수에 사용한다. */
@@ -869,7 +869,7 @@
     function addEntries(entries,cb){
       var i=0,added=0;
       function step(){
-        while(i<entries.length&&list.children.length<RAIL_LIMIT){
+        while(i<entries.length){
           var a=makeItem(entries[i++]);
           if(!a)continue;
           list.appendChild(a);added++;
@@ -885,9 +885,8 @@
 
     function loadMore(cb){
       if(loading||exhausted){if(cb)cb();return;}
-      if(list.children.length>=RAIL_LIMIT){exhausted=true;if(cb)cb();return;}
       loading=true;
-      fetchFeed(nextStart,RAIL_LIMIT).then(function(data){
+      fetchFeed(nextStart,20).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           exhausted=true;loading=false;
@@ -902,7 +901,6 @@
         nextStart+=entries.length;
         entries.sort(function(a,b){return entryScore(b)-entryScore(a);});
         addEntries(entries,function(added){
-          if(list.children.length>=RAIL_LIMIT)exhausted=true;
           loading=false;
           if(cb)cb();
         });

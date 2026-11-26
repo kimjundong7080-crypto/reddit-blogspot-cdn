@@ -1,7 +1,7 @@
 # JUST TECH Blogger/CDN — Agent Index and Rules
 
 Last updated: 2026-11-27
-Current version: **1.2.142** — latest published tag `v1.2.142`, `package.json` `1.2.142`.
+Current version: **1.2.143** — latest published tag `v1.2.143`, `package.json` `1.2.143`.
 Source of truth for what is live: [`docs/status.md`](docs/status.md) §1.
 
 > This file is the entry point only. The detailed guide was 91 KB and was split into `docs/` on 2026-11-27.
@@ -31,6 +31,7 @@ Read order for a fresh session: this file → `docs/status.md` §1 → the doc f
   or it computes `width:0px` (v1.2.136).
 - **`@v1` is cached for up to 7 days and purge is throttled.** Purge both the alias and the new tag, then
   confirm `x-jsd-version`. A "finished" purge can still serve the old file; visitors can run mixed CSS/JS.
+- **Recommended rail:** `RAIL_VISIBLE = 10` is how many cards are on screen, not a loading cap. Keep the feed paging (20 per page) — with ten cards in a ten-card viewport `max = length - visible` is 0 and the wheel carousel silently dies. Only an empty feed response may set `exhausted`.
 - **Never read or edit the theme XML.** The asset URLs are fixed, and the files are token-expensive.
 - **`JT_NO_LANDING` is a hostname-local gate** for the home redirect/rotation only. Do not re-gate the
   expander or any other feature behind it (v1.2.134 shipped that regression).

@@ -1,4 +1,4 @@
-/* Reddit-style Blogger home landing — v1.2.142 */
+/* Reddit-style Blogger home landing — v1.2.143 */
 (function(){
   if(window.__jtHomeWidget)return; window.__jtHomeWidget=1;
   /* 홈 랜딩은 techlifeworld.com 전용 — shutupquick.com / deepstronglove.com에서는 렌더링하지 않는다. */
