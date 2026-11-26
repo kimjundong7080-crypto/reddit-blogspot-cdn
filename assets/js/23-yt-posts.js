@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.141 */
+/* Reddit-style Blogger YouTube post list — v1.2.142 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1291,6 +1291,33 @@
         .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi,'**$2**')
         .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi,'*$2*');
     }
+    /* v1.2.142: 숏코드 확장기(run)가 먼저 [map]/[youtube]를 div로 바꿔 둔 경우,
+       마크다운 변환은 태그를 모두 지우므로 지도/영상이 통째로 사라졌다. 원문 숏코드로 되돌린다. */
+    function restoreShortcodes(root){
+      var maps=root.querySelectorAll('.jt-map-embed');
+      for(var i=0;i<maps.length;i++){
+        var spec=null;
+        try{spec=JSON.parse(maps[i].getAttribute('data-map')||'');}catch(e){spec=null;}
+        var token='';
+        if(spec&&spec.url){token='[map url="'+spec.url+'"]';}
+        else if(spec&&spec.places&&spec.places.length){
+          var quoted=[];
+          for(var p=0;p<spec.places.length;p++)quoted.push('"'+spec.places[p]+'"');
+          token='[map '+quoted.join(', ')+']';
+        }
+        if(token&&maps[i].parentNode)maps[i].parentNode.replaceChild(document.createTextNode('\n'+token+'\n'),maps[i]);
+      }
+      var yts=root.querySelectorAll('.jt-yt-embed');
+      for(var k=0;k<yts.length;k++){
+        var id=yts[k].getAttribute('data-yt');
+        if(!id)continue;
+        var shorts=yts[k].classList.contains('jt-shorts')||yts[k].getAttribute('data-shorts')==='1';
+        var t=shorts?'[shorts link="https://www.youtube.com/shorts/'+id+'"]':'[youtube link="https://www.youtube.com/watch?v='+id+'"]';
+        if(yts[k].parentNode)yts[k].parentNode.replaceChild(document.createTextNode('\n'+t+'\n'),yts[k]);
+      }
+      var links=root.querySelectorAll('.jt-map-fallback');
+      for(var f=0;f<links.length;f++){if(links[f].parentNode)links[f].parentNode.removeChild(links[f]);}
+    }
     function renderRegion(region,info){
       var a=pointAt(region.contentStart,info.nodes),b=pointAt(region.contentEnd,info.nodes);
       if(!a||!b)return;
@@ -1298,6 +1325,7 @@
       try{range.setStart(a.node,a.offset);range.setEnd(b.node,b.offset);}catch(e){return;}
       var holder=document.createElement('div');
       try{holder.appendChild(range.cloneContents());}catch(e){return;}
+      restoreShortcodes(holder);
       var src=stripNbspLines(toText(inlineToMarkdown(holder.innerHTML))).replace(MD_TOKEN_RE,'');
       var wrap=document.createElement('div');
       wrap.className='markdown';
