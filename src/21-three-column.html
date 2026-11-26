@@ -647,7 +647,8 @@ body.item-view .main_content_container{
     aspect-ratio:1/1;
   }
   /* v1.2.139: 레일이 10개만 보여주므로 아이콘 전용 모드 높이도 10칸(838px)에 맞춘다 */
-  #ytPosts .yt-viewport{height:838px !important}
+  /* v1.2.144: 위·아래 페이드 여백 18px 씩을 포함한 874px(border-box) */
+  #ytPosts .yt-viewport{box-sizing:border-box !important;height:874px !important;padding:18px 0 !important}
 }
 </style>
 <script>

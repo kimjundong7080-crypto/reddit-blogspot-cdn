@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.143 */
+/* Reddit-style Blogger YouTube post list — v1.2.144 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -28,7 +28,11 @@
 }
 #ytPosts .yt-viewport{
   position:relative;
-  height:838px;
+  /* v1.2.144: 위·아래 페이드가 카드 글자를 덮지 않도록 안쪽 여백을 두고, 그만큼 박스를 키운다.
+     838px = 카드 10칸(82px × 10 + 간격 2px × 9) 이고, 여백 18px 씩이 위·아래 그림자 자리다. */
+  box-sizing:border-box;
+  height:874px;
+  padding:18px 0;
   overflow:hidden;
   /* 호버 시 카드가 살짝 커지고 그림자가 보이도록 잘림 여유를 둔다 */
   overflow:clip;
@@ -42,7 +46,8 @@
   position:absolute;
   left:0;
   right:0;
-  height:38px;
+  /* v1.2.144: 페이드는 여백(18px) 안에만 머문다 — 카드 첫 줄·마지막 줄 글자와 겹치지 않는다 */
+  height:18px;
   z-index:4;
   pointer-events:none;
 }
