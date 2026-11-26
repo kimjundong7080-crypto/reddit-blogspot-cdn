@@ -29,6 +29,7 @@ This document is the handoff for the next AI or engineer. Release **v1.2.133** i
   - Compatibility: a post with `[md]` and **no** `[/md]` (what `auto_blogger` writes today) keeps the v1.2.121 whole-body behavior, so existing posts render exactly as before. Unpaired markers are removed from the text so they never show as literal `[md]`; an empty `[md][/md]` block renders nothing and leaves no empty wrapper.
   - Fidelity: HTML left inside the region is converted back to Markdown before `marked` (`<img>`→`![]()`, `<a href>`→`[]()`, `<b>/<strong>`→`**`, `<i>/<em>`→`*`), so a region written partly in HTML no longer loses its image, link or bold; leading `&nbsp;` is stripped per line as before.
   - Verified: a browser harness (marked from CDN, the built IIFE on synthetic `.post-body` markup) covers 9 cases — pair with surrounding paragraphs, two pairs, legacy `[md]`-only, lone `[/md]`, marker sharing a paragraph with text, nested `div`, empty pair, stray inline `[md]`, and a region containing `<b>`/`<a>`/`<img>`: headings/tables/code/strong render, markers are gone, outside text survives, and empty blocks leave no wrapper. Live `ddd3.html` (legacy `[md]`, mid-body) still renders 1 `h2`, 2 `h3`, 2 tables, 40 `<code>`, `.markdown` wrapper, no `[md]`, 0 console errors; `@v1` serves `x-jsd-version: 1.2.122`.
+
 - **v1.2.121 is published.** Content (commit `68a8c95`, tag `v1.2.121`): **Markdown rendering no longer depends on `[md]` being the first line.**
   - Problem: a post whose `[md]` marker sat mid-body (live: `https://www.deepstronglove.com/2026/11/ddd3.html`) was not detected, so raw Markdown (`##` headings, `|` tables, backtick code) was printed as plain paragraphs and the literal `[md]` line stayed visible.
   - Fix: `scan()` treats any line that is exactly `[md]` as a Markdown trigger, renders the whole body with `marked`, and drops every `[md]` line. Each line also loses the leading `&nbsp;` Blogger writes for an indented paragraph, so `&nbsp;## heading` becomes an `<h2>`.
@@ -147,6 +148,7 @@ This document is the handoff for the next AI or engineer. Release **v1.2.133** i
 - Infinite scroll marks the Edge API unavailable for the rest of the page session after the first failed request, avoiding repeated 404/timeout calls.
 - YouTube shortcodes wrapped in other tags (e.g. inside an `h3` with `-webkit-line-clamp`) are now parsed, and the resulting embed is moved out of clipped wrappers.
 - Embed thumbnail sizing/visibility is forced with `!important` selectors that beat `22-post-image`'s body-image rules (16:9, no letterbox, play button above the poster).
+
 
 ## 2. Non-negotiable project rules
 
