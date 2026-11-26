@@ -1,4 +1,4 @@
-/* Reddit-style Blogger post image (R2 mapping) — v1.2.133 (index.json mapping + fallback) */
+/* Reddit-style Blogger post image (R2 mapping) — v1.2.134 (index.json mapping + fallback) */
 /* 22 post image — 본문 이미지를 R2(i/index.json) 매핑으로 치환
    1) https://pub-….r2.dev/i/index.json = { "파일명": "i/<hash>.ext" }
    2) 본문 <img> 의 URL 마지막 파일명이 매핑에 있으면 R2 원본으로 바꿈
