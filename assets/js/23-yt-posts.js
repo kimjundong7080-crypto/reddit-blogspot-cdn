@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.132 */
+/* Reddit-style Blogger YouTube post list — v1.2.133 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -547,6 +547,14 @@
     function apply(b){
       if(b.__jtExpand)return;
       if(b.querySelector('.jt-landing'))return;
+      /* 무한스크롤 클론은 11-infinite 의 jt-inf-fold-btn 이 접기를 담당한다.
+         23-yt-posts 가 같은 글에 '더보기'를 또 붙이면 버튼이 2개가 된다. */
+      if(b.closest&&b.closest('#jtInfiniteFeed,.jt-inf-post'))return;
+      /* [rede]/[rade] 수동 접기가 있으면 긴 글 자동 '더보기'를 추가하지 않는다.
+         두 개의 더보기/접기 버튼이 겹쳐 보이는 문제를 막고, 접기 밖 본문은
+         max-height 로 잘리지 않게 한다. (fold 는 나중에 렌더링될 수 있어 텍스트로 검사) */
+      if(b.querySelector('.ify-fold'))return;
+      if(/\[(?:\/)?(?:rede|rade)\]/i.test(b.innerHTML))return;
       if(b.getBoundingClientRect().height<LIMIT)return;
       b.__jtExpand=1;
       b.classList.add('jt-expandable');

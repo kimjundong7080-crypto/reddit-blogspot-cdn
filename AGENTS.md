@@ -1,8 +1,9 @@
 # JUST TECH Blogger/CDN — Handoff and Operating Guide
 
 Last updated: 2026-11-24
-Latest published release: **v1.2.132**
-Current local package version: **1.2.132**
+Latest published release: **v1.2.133**
+Current local package version: **1.2.133**
+- **v1.2.133 is published**: the collapsed `.jt-expandable` "더보기" cover is a 180px two-layer fade (`::before` blurred with a mask, `::after` multi-stop gradient at `z-index:2`, `--jt-expand-fade` light `#fff` / dark `#0f1113`). Infinite-scroll clones (`.jt-inf-post`/`#jtInfiniteFeed`) are skipped by `23-yt-posts`' auto `initExpanders`, so only `11-infinite`'s orange `.jt-inf-fold-btn` remains on a clone; manual `[rede]`/`[rade]` posts also skip the auto expander and its 900px clamp. Verified live with the built JS: original 1 dark expander, clone 0 dark + 1 orange fold, 0 duplicates, 0 console errors; overlay 180px/z2/gradient. Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.133.
 - **v1.2.132 is published**: multi-location maps. `[map "A", "B", "C"]` builds a keyless Google Maps **directions/waypoint** embed (`saddr` + `daddr` with `+to:`), showing the stops on one map with default route markers. `[map url="https://www.google.com/maps/d/embed?mid=..."]` embeds a pre-built **Google My Maps** map (multiple pins, per-pin icon/colour, no API key). Legacy one-address `[map "..."]` is unchanged. Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.132.
 - **v1.2.131 is published**: Markdown headings (`h1~h6` under `.post-body`) and tables now have decorated heading bars/gradients and visible light/dark table borders, with `wrapTables()` adding a responsive `.jt-table-wrap` (table `min-width:600px`, `560px` at ≤640px; cells wrap via `word-break:keep-all; overflow-wrap:anywhere`). Applies to all three domains through `@v1`. See `CHANGELOG.md` v1.2.131.
 
