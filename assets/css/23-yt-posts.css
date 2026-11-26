@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.136 */
+/* Reddit-style Blogger YouTube post list — v1.2.137 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -59,6 +59,26 @@ html[data-theme="dark"] #ytPosts .yt-viewport:before{
 }
 html[data-theme="dark"] #ytPosts .yt-viewport:after{
   background:linear-gradient(to top,rgba(15,17,19,1),rgba(15,17,19,0));
+}
+/* 추천·인기 글 레일: 키보드 포커스를 받아 화살표로도 넘길 수 있다 */
+#ytPosts[tabindex]:focus-visible{
+  outline:2px solid #FF4500;
+  outline-offset:3px;
+  border-radius:10px;
+}
+/* 터치 기기에는 휠이 없다. 변환 이동 대신 뷰포트 자체를 네이티브 스크롤한다. */
+@media (hover:none),(pointer:coarse){
+  #ytPosts .yt-viewport{
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+  }
+  #ytPosts .yt-viewport::-webkit-scrollbar{width:0;height:0}
+  #ytPosts .yt-list{transform:none !important;transition:none !important}
+  #ytPosts .yt-viewport:before,
+  #ytPosts .yt-viewport:after{display:none}
 }
 #ytPosts .yt-list{
   display:flex;

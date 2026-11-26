@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.136 */
+/* Reddit-style Blogger YouTube post list — v1.2.137 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -929,11 +929,8 @@
         setPos(idx,true);
       }else if(!exhausted){
         loadMore(function(){advance();});
-      }else{
-        outCurrent();
-        idx=0;
-        setPos(0,false);
       }
+      /* 목록 끝에서는 처음으로 되돌지 않는다. 휠·키보드 모두 더 내려갈 곳이 없으면 멈춘다. */
     }
 
     function retreat(){
@@ -944,9 +941,53 @@
 
     root.addEventListener('wheel',function(e){
       if(!e.deltaY)return;
+      var max=Math.max(0,list.children.length-visible);
+      /* 목록 끝/처음에서는 preventDefault 하지 않아 페이지 스크롤이 이어진다. */
+      if(e.deltaY>0){if(list.children.length&&idx>=max&&exhausted)return;}
+      else if(idx<=0)return;
       e.preventDefault();
       if(e.deltaY>0)advance();else retreat();
     },{passive:false});
+
+    /* 휠이 없는 입력(터치·키보드)에서도 같은 목록을 끝까지 볼 수 있어야 한다.
+       터치 기기는 위 @media 블록에서 뷰포트 네이티브 스크롤로 전환되므로
+       여기서는 키보드 이동과 스크롤 바닥에서의 추가 로딩을 맡는다. */
+    root.setAttribute('tabindex','0');
+    root.setAttribute('role','region');
+    root.setAttribute('aria-label','추천·인기 글 목록');
+    /* 터치 기기에서는 transform 이동이 꺼져 있으므로(네이티브 스크롤) 키 입력도 스크롤로 보낸다. */
+    function scrollMode(){
+      var o=getComputedStyle(viewport).overflowY;
+      return o==='auto'||o==='scroll';
+    }
+    root.addEventListener('keydown',function(e){
+      if(e.target!==root||e.altKey||e.ctrlKey||e.metaKey)return;
+      var n=list.children.length,max=Math.max(0,n-visible);
+      var down=e.key==='ArrowDown'||e.key==='PageDown'||(e.key===' '&&!e.shiftKey);
+      var up=e.key==='ArrowUp'||e.key==='PageUp'||(e.key===' '&&e.shiftKey);
+      if(down||up){
+        e.preventDefault();
+        if(scrollMode()){
+          var d=(e.key==='PageDown'||e.key==='PageUp')?Math.round(viewport.clientHeight*0.9):step;
+          viewport.scrollTop+=(down?d:-d);
+        }else if(down){
+          advance();
+        }else{
+          retreat();
+        }
+      }else if(e.key==='Home'||e.key==='End'){
+        e.preventDefault();
+        if(scrollMode()){
+          viewport.scrollTop=(e.key==='Home')?0:viewport.scrollHeight;
+        }else{
+          idx=(e.key==='Home')?0:max;
+          setPos(idx,true);
+        }
+      }
+    });
+    viewport.addEventListener('scroll',function(){
+      if(viewport.scrollHeight-viewport.scrollTop-viewport.clientHeight<320)loadMore();
+    },{passive:true});
 
     measure();
     loadRelatedContext().then(function(ctx){

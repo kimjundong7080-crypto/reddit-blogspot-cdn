@@ -1,0 +1,69 @@
+# Feature map and shortcode reference
+
+> Split out of the single-file `AGENTS.md` guide on 2026-11-27. Section numbers (§N) are preserved from the
+> original, so older references such as "AGENTS.md §11" resolve through the map in [`../AGENTS.md`](../AGENTS.md).
+> Per-release rows live in [`../CHANGELOG.md`](../CHANGELOG.md).
+> Covers: §5, §10.
+
+## 5. Current feature map
+
+### Home landing — `src/24-home.html`
+
+- Landing page is `/p/home.html`; `/` is the Blogger root and may render the blog listing instead.
+- Sections include hero, services, selected projects, feature carousel, about, CTA, and footer.
+- Project cards load Blogger feed data; recent data is cached in localStorage.
+- The carousel has six cards. MP4 playback is intended only on hover/focus, with `preload="none"` before interaction. Do not preload all six videos.
+- External carousel MP4 host: `pomf2.lain.la`. Include it in future network investigations if the home page still stalls.
+- Home layout supports dark mode and reduced-motion preferences.
+- Contact email is assembled at runtime from XOR-obfuscated character codes; do not put the plaintext address in source.
+
+### YouTube, search, SEO, and static pages — `src/23-yt-posts.html`
+
+- Supports `[youtube link="..."]`, Markdown `[md]`, and `[rede]`/`[rade]` folded sections.
+- Markdown sources are pre-processed by `jtFixTimeStamps()`: AI-style citations `[[mm:ss](url)]` become `[mm:ss](url)`, and `[[mm:ss]]` becomes `mm:ss` (v1.2.120). Keep this pass before `__jtPrepareYouTubeShortcodes`.
+- YouTube video ID `lyFcrrULyN0` is valid; YouTube oEmbed and its thumbnail have been checked previously.
+- Every embed uses click-to-play; the iframe is only created after a user click (autoplay removed in v1.2.76).
+- Center autoplay is suppressed inside collapsed `[rede]` folds and collapsed `.jt-expandable` bodies; collapsing pauses (iframe kept) and expanding rescans. Do not start autoplay from a collapse/expand handler without checking `jtInCollapsed`.
+- Search uses client-side filtering/pagination after loading Blogger feed data.
+- SEO code sets canonical, Open Graph/Twitter metadata, and JSON-LD. Blogger-host redirects/canonical handling are in this file.
+- Favicons are hostname-selected (`assets/img/favicon/shutupquick/`, `assets/img/favicon/deepstronglove/`, otherwise the flat `assets/img/*` set); add a new brand by creating its folder and extending the `brandIcon` check.
+- `/p/resume.html` and `/p/contact-us.html` fetch static HTML from jsDelivr and render it via iframe `srcdoc`. jsDelivr may serve these page files as `text/plain`, so test them through Blogger, not by opening the raw CDN URL directly.
+- Resume print CSS targets A4. A real A4 PDF render on 2026-11-20 produced **3 pages**.
+
+### Infinite scrolling — `src/11-infinite.html`
+
+- Runs only on single-post pages, inserts related/other posts, and clones their Blogger markup.
+- The clone wrapper is `.jt-inf-post`; scripts, iframes, comments, and ad elements are removed from cloned HTML.
+- Turnstile was temporarily removed in release `v1.2.60`. A challenge was nevertheless observed in a later live browser session; its source was not conclusively identified. The current repository code should remain without the Turnstile gate unless the user asks otherwise.
+- A circuit breaker avoids retrying a failed Edge API for every subsequently loaded post.
+
+### Contact page — `pages/contact.html`
+
+- Korean-language content, dark-mode styling, and parent-page theme synchronization were added and released in `v1.2.62`.
+- The contact action uses `mailto:ssii@naver.com`.
+
+## 10. Shortcode reference (v1.2.111)
+
+All shortcodes are processed by `src/23-yt-posts.html` and work on all three domains (`techlifeworld.com`, `shutupquick.com`, `deepstronglove.com`) because they share the same `@v1` CDN asset.
+
+| Shortcode | Syntax | Output | Autoplay |
+|---|---|---|---|
+| YouTube | `[youtube link="URL"]` | 16:9 poster + play button | No (click to play) |
+| Shorts | `[shorts link="URL"]` or `[shorts "URL"]` | 9:16 centered, max 360px | Yes: muted, only while it is the centered video |
+| Map (1 place) | `[map "address"]`, `[map 'address']`, `[map address]` | 16:9 Google Maps embed, one marker | No |
+| Map (multiple) | `[map "A", "B", "C"]` | 16:9 Google Maps **directions/waypoint** embed; route with default markers (no custom icons) | No |
+| Map (My Maps) | `[map url="https://www.google.com/maps/d/embed?mid=..."]` | 16:9 Google **My Maps** embed; multiple custom pins/icons | No |
+| Markdown | `[md]` ... `[/md]` (pair, any position, repeatable) | Only the enclosed range is rendered as Markdown | - |
+| Markdown (legacy) | `[md]` alone, no `[/md]` | Whole post rendered as Markdown, `[md]` line dropped | - |
+| Fold | `[rede]...[/rede]` or `[rade]...[/rade]` | Collapsed block with a "more" button | - |
+
+Behavior notes:
+
+- `[youtube]` accepts `youtu.be/`, `watch?v=`, `/embed/`, `/shorts/`, `/live/` URLs and a raw 11-character video id. A `/shorts/` URL is automatically upgraded to the Shorts layout and autoplay behavior.
+- **All autoplay is muted** (`mute=1`), including a manual click; do not describe it as audible playback. Center autoplay (v1.2.116 to v1.2.118) picks the embed nearest the viewport center and starts it after a 500 ms dwell; only that one plays and every other embed is paused with its position kept. v1.2.119 suppresses autoplay inside collapsed `[rede]`/`[rade]` folds and collapsed `.jt-expandable` bodies, and resumes after expanding. Shorts use a centered 9:16 box and the same muted player.
+- `[map]` uses keyless Google endpoints. One place → `https://maps.google.com/maps?q=<address>&t=m&z=15&hl=ko&ie=UTF8&iwloc=&output=embed`. Multiple quoted places → `https://maps.google.com/maps?saddr=<first>&daddr=<second>+to:<third>&output=embed` (route; fallback link uses `https://www.google.com/maps/dir/?api=1&...`). `url="..."` → the supplied Google My Maps/Maps embed URL is used directly (host/path validated to `https://(www.|maps.)?google.*/maps...`); use it for multiple pins with per-pin icons/colours. Marker colours/icons cannot be customised on the keyless single/route embeds. Map state is stored as JSON in `data-map`; renderer falls back to a legacy address string for old cached HTML.
+- `[md]` ... `[/md]` (v1.2.122) renders **only the range between the pair**; paragraphs outside it keep their HTML, including images and embeds. Several pairs are allowed and each is rendered separately. A `[md]` with no `[/md]` keeps the v1.2.121 whole-body behavior (this is what `auto_blogger` writes), so old posts are unchanged. Unpaired markers are stripped from the visible text. Leading `&nbsp;` that Blogger puts before an indented paragraph is stripped per line, so a `##` heading still becomes a heading. `<b>/<strong>`, `<i>/<em>`, `<a href>` and `<img>` inside the region are turned back into Markdown first, so they are not lost. The `[rede]`/`[rade]` fold also switches the post to Markdown rendering.
+- Shortcodes are parsed in post bodies only; titles and labels are ignored (`[youtube ...]` is stripped from feed titles).
+- YouTube timestamp citations pasted by AI summaries (`[[00:51](https://www.youtube.com/watch?v=...&t=51)]`) are normalized to a normal link showing `00:51`; a link-stripped `[[00:51]]` becomes plain `00:51` (v1.2.120). A destination URL containing `)` is not matched, so keep YouTube URLs intact.
+- Shortcode parsing runs in both the Markdown path (`__jtPrepareYouTubeShortcodes`) and the HTML path (`run()`), including infinite-scroll clones.
+- **Naver Clip is planned, not implemented** (`[clip "..."]`, `[naverclip "..."]`). See §12 for the working oEmbed URL, the `naver.me` resolution blocker, and the implementation plan.

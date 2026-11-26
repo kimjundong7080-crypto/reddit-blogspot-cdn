@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rail harness — 23-yt-posts</title>
+<link rel="stylesheet" href="../assets/css/23-yt-posts.css">
+<style>
+  html,body{margin:0;font-family:system-ui,sans-serif;background:#fff;color:#111}
+  .page{max-width:1024px;margin:0 auto;padding:24px}
+  .sidebar-container{width:320px}
+  .filler{height:1600px;margin-top:16px;background:linear-gradient(#fff,#e8f0ff);border-radius:8px}
+  .filler p{margin:0;padding:12px;font-size:13px;color:#444}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Rail harness</h1>
+  <div class="sidebar-container"><div id="ytPosts"></div></div>
+  <div class="filler"><p>page filler (휠이 목록 끝을 지나 페이지를 스크롤하는지 확인하는 영역)</p></div>
+</div>
+
+<script>
+/* 백그라운드 탭은 setTimeout(40ms)를 1초로 클램프해 항목이 한 개씩만 는다.
+   하네스에 한해 짧은 지연을 MessageChannel 로 돌려 실제 시간으로 진행시킨다. */
+(function () {
+  var native = window.setTimeout.bind(window);
+  window.setTimeout = function (fn, ms) {
+    if (typeof fn === 'function' && (ms || 0) <= 60) {
+      var ch = new MessageChannel();
+      ch.port1.onmessage = function () { ch.port1.close(); fn(); };
+      ch.port2.postMessage(0);
+      return -1;
+    }
+    return native(fn, ms);
+  };
+})();
+
+/* 오프라인 하네스: Blogger 피드를 가로챈다.
+   첫 페이지는 24개(visible=14 보다 많아야 이동을 시험할 수 있다), 이후 페이지는 빈 응답(=exhausted). */
+(function () {
+  function make(n, from) {
+    var entries = [], base = from || 1;
+    for (var k = 0; k < n; k++) {
+      var i = base + k;
+      entries.push({
+        title: { $t: '테스트 글 ' + i },
+        link: [{ rel: 'alternate', href: location.origin + '/post-' + i + '.html' }],
+        published: { $t: '2026-11-0' + ((i % 9) + 1) + 'T12:00:00+09:00' },
+        category: [{ term: 'CAD' }],
+        content: { $t: '<p>본문 ' + i + '</p>' }
+      });
+    }
+    return entries;
+  }
+  window.__feedCalls = [];
+  window.fetch = function (url) {
+    var u = String(url || '');
+    window.__feedCalls.push(u);
+    var m = /start-index=(\d+)/.exec(u);
+    var start = m ? parseInt(m[1], 10) : 1;
+    var entries = start === 1 ? make(24, 1) : (start === 25 ? make(20, 25) : []);
+    var payload = { feed: { entry: entries } };
+    return Promise.resolve({ ok: true, json: function () { return Promise.resolve(payload); } });
+  };
+})();
+</script>
+<script src="../assets/js/23-yt-posts.js"></script>
+</body>
+</html>
