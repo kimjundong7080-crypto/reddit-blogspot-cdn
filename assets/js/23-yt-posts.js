@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.137 */
+/* Reddit-style Blogger YouTube post list — v1.2.138 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -528,7 +528,7 @@
           .then(function(r){if(!r.ok)throw 0;return r.json();});
       });
   }
-  /* 접힌 [rede] 폴드나 '더보기' 긴 글 안인지 확인한다. 펼쳤을 때만 자동재생한다. */
+  /* 접힌 [rede] 폴드나 '더보기' 긴 글 안인지 확인한다. 접힌 영역은 완전히 보일 때만 자동재생한다. */
   function jtInCollapsed(el){
     var h=el&&el.parentNode;
     while(h&&h!==document.body){
@@ -625,11 +625,9 @@
       for(var i=0;i<boxes.length;i++){
         var box=boxes[i];
         if(!box.getAttribute('data-loaded')&&!box.querySelector('iframe'))continue;
-        if(jtInCollapsed(box)&&!box.__jtManual){stopBox(box);continue;}
-        var r=box.getBoundingClientRect();
-        var visible=Math.min(r.bottom,vh)-Math.max(r.top,0);
-        var ratio=r.height>0?Math.max(0,visible)/r.height:0;
-        if(ratio<0.5)stopBox(box);
+        /* 클립 사각형 기준이라 접힌 영역에 완전히 보이는 영상은 계속 재생된다. */
+        var info=ratioOf(box,vh);
+        if(!info||info.ratio<0.5)stopBox(box);
       }
       var hovered=document.querySelectorAll('#ytPosts .yt-item.is-yt-hover');
       for(var h=0;h<hovered.length;h++){
@@ -699,7 +697,9 @@
     viewport.appendChild(list);
     root.appendChild(viewport);
 
-    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=14;
+    /* v1.2.138: 추천·인기 글은 10개만 보여준다(더 불러오지 않는다). */
+    var RAIL_LIMIT=10;
+    var seen={},nextStart=1,loading=false,exhausted=false,idx=0,step=66,visible=RAIL_LIMIT;
     var relatedCtx={labels:[],tokens:[]};
 
     /* 현재 글의 라벨/제목을 모아 유사 글 점수에 사용한다. */
@@ -869,7 +869,7 @@
     function addEntries(entries,cb){
       var i=0,added=0;
       function step(){
-        while(i<entries.length){
+        while(i<entries.length&&list.children.length<RAIL_LIMIT){
           var a=makeItem(entries[i++]);
           if(!a)continue;
           list.appendChild(a);added++;
@@ -885,8 +885,9 @@
 
     function loadMore(cb){
       if(loading||exhausted){if(cb)cb();return;}
+      if(list.children.length>=RAIL_LIMIT){exhausted=true;if(cb)cb();return;}
       loading=true;
-      fetchFeed(nextStart,20).then(function(data){
+      fetchFeed(nextStart,RAIL_LIMIT).then(function(data){
         var entries=(data.feed&&data.feed.entry)||[];
         if(!entries.length){
           exhausted=true;loading=false;
@@ -901,6 +902,7 @@
         nextStart+=entries.length;
         entries.sort(function(a,b){return entryScore(b)-entryScore(a);});
         addEntries(entries,function(added){
+          if(list.children.length>=RAIL_LIMIT)exhausted=true;
           loading=false;
           if(cb)cb();
         });
@@ -1528,11 +1530,30 @@
       box.appendChild(play);
       /* 중앙 진입 자동재생은 initCenterAutoplay()가 담당한다. */
     }
+    /* 넘치는 조상(접힌 [rede] 폴드, 더보기 본문)의 경계로 잘라 실제로 보이는 높이만 센다.
+       v1.2.138: 접힌 상태에서도 화면에 완전히 보이면 자동재생하기 위한 계산. */
+    function clipRectOf(box){
+      var r=box.getBoundingClientRect();
+      var top=r.top,bottom=r.bottom;
+      var node=box.parentNode;
+      while(node&&node.nodeType===1&&node!==document.documentElement){
+        var cs=getComputedStyle(node);
+        if(cs.overflowY!=='visible'){
+          var pr=node.getBoundingClientRect();
+          var bt=parseFloat(cs.borderTopWidth)||0,bb=parseFloat(cs.borderBottomWidth)||0;
+          top=Math.max(top,pr.top+bt);bottom=Math.min(bottom,pr.bottom-bb);
+        }
+        node=node.parentNode;
+      }
+      return {top:top,bottom:bottom};
+    }
     function ratioOf(box,vh){
       var r=box.getBoundingClientRect();
       if(!r.height)return null;
-      var vis=Math.min(r.bottom,vh)-Math.max(r.top,0);
-      return {ratio:r.height>0?Math.max(0,vis)/r.height:0,center:Math.abs((r.top+r.bottom)/2-vh/2)};
+      var c=clipRectOf(box);
+      var vis=Math.min(c.bottom,vh)-Math.max(c.top,0);
+      if(vis<0)vis=0;
+      return {ratio:Math.max(0,vis)/r.height,center:Math.abs((r.top+r.bottom)/2-vh/2)};
     }
     /* 화면 밖 플레이어가 3개를 넘을 때만 iframe을 정리한다. */
     function prunePlaybacks(vh){
@@ -1564,17 +1585,16 @@
         var vh=window.innerHeight||document.documentElement.clientHeight;
         if(activePlaybackBox&&!document.documentElement.contains(activePlaybackBox))activePlaybackBox=null;
         /* 사용자가 직접 누른 영상은 다음 스크롤 전까지 그대로 둔다. */
-        /* 접힌 글/폴드 안에서 재생 중이던 영상은 즉시 멈춘다. */
-        if(activePlaybackBox&&!activePlaybackBox.__jtManual&&jtInCollapsed(activePlaybackBox))pauseBox(activePlaybackBox);
         if(activePlaybackBox&&activePlaybackBox.__jtUserPinned)return;
         var boxes=document.querySelectorAll('.jt-yt-embed[data-yt]');
         var best=null,bestInfo=null;
         for(var i=0;i<boxes.length;i++){
           var box=boxes[i];
           if(!box.getAttribute('data-yt'))continue;
-          if(jtInCollapsed(box))continue;
+          /* 접힌 폴드/더보기 안이라도 화면에 완전히 보이면 재생 후보다. */
+          var need=jtInCollapsed(box)?0.98:CENTER_START;
           var info=ratioOf(box,vh);
-          if(!info||info.ratio<CENTER_START)continue;
+          if(!info||info.ratio<need)continue;
           /* 방금 멈춘 영상은 잠시 후보에서 빼 두 영상이 번갈아 깜빡이지 않게 한다. */
           if(box.__jtPausedAt&&Date.now()-box.__jtPausedAt<RELOCK_MS)continue;
           if(!bestInfo||info.center<bestInfo.center-2||(Math.abs(info.center-bestInfo.center)<=2&&info.ratio>bestInfo.ratio)){
@@ -1588,9 +1608,10 @@
             }else if(!best.__jtCenterTimer){
               best.__jtCenterTimer=setTimeout(function(){
                 best.__jtCenterTimer=null;
-                if(!document.documentElement.contains(best)||jtInCollapsed(best))return;
+                if(!document.documentElement.contains(best))return;
                 var later=ratioOf(best,window.innerHeight||document.documentElement.clientHeight);
-                if(!later||later.ratio<CENTER_KEEP)return;
+                var needLater=jtInCollapsed(best)?0.98:CENTER_START;
+                if(!later||later.ratio<needLater)return;
                 playBox(best,best.getAttribute('data-yt'),false);
               },DWELL_MS);
             }

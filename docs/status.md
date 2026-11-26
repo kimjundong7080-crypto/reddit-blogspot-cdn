@@ -5,6 +5,18 @@
 > Per-release rows live in [`../CHANGELOG.md`](../CHANGELOG.md).
 > Covers: §1, §8.
 
+- **v1.2.138 is published** (tag `v1.2.138`): **top-10 rail, folded-embed autoplay, and an embed width that
+  matches post images.** `#ytPosts` stops at 10 posts (`RAIL_LIMIT`, one `max-results=10` request,
+  `visible=10`), the viewport is 1120→838px so exactly ten 82px cards fill it, and no further page is fetched,
+  so the wheel at the end scrolls the page. Center autoplay no longer skips a collapsed `[rede]` fold or a
+  collapsed `.jt-expandable` outright: `clipRectOf()` intersects the embed with every `overflow` ancestor,
+  `ratioOf()` counts only the visible height, a folded embed needs ≥98% visibility (normal embeds keep 0.6), and
+  `initViewportPlaybackGuard` uses the same clipped ratio (<0.5 stops). `.jt-yt-embed` is `calc(100% - 48px)`
+  (`calc(100% - 32px)` at ≤600px), the same box as `22-post-image`, instead of `min(100% - 32px, 900px)`.
+  Verified with the built assets: rail 10 items, one `?alt=json&max-results=10` call, viewport 838px, list
+  838px, no horizontal overflow, no extra load on wheel; 760px body — image 712px at left 180.3 and embed 712px
+  at left 180.3; a 401px embed inside a 520px collapsed fold plays when centred (`ready`, `data-loaded=1`), one
+  clipped to 200px does not, and a scrolled-away player pauses (`data-paused=1`, iframe kept).
 - **v1.2.137 is published**: **the recommended-posts rail works without a wheel.** `#ytPosts` is focusable
   (`tabindex=0`, `role=region`, `aria-label`) and moves with ArrowUp/Down, PageUp/PageDown, Space, Home/End; on
   touch devices `@media (hover:none),(pointer:coarse)` swaps the transform list for native scrolling and loads
