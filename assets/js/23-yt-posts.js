@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.155 */
+/* Reddit-style Blogger YouTube post list — v1.2.156 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1829,7 +1829,8 @@
       if(n<2)return;
       var vh=document.documentElement.clientHeight||window.innerHeight;
       var bottom=window.scrollY+vh;
-      // '펼침화면': 뷰포인트(clientHeight) + 그 아래 접힌 영역. 완전 밖으로 벗어나면 계속 접고 나머지는 펼친다.
+      // 렌더링 최적화: 3장 이상만 카루셀로 그린다. '펼침화면'(뷰포인트~하단)의 slide만 flex로 펼치고
+      // 그 밖은 display:none으로 접어 나머지에 리소스를 쓰지 않는다. 이미지는 각 slide의 lazy 로딩 사용.
       for(var i=0;i<slides.length;i++){
         var s=slides[i];
         var r=s.getBoundingClientRect();
@@ -1853,18 +1854,12 @@
       var onScroll=function(){clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){
         var h=document.documentElement.clientHeight||window.innerHeight;
         var bottom=window.scrollY+h;
-        var first=track.querySelector('.jt-imgcal-slide:not([style*="display"])');
-        var viewBottom=window.scrollY+h; // bottom 기준, '펼침화면' 영역
-        var needsBuild=false;
-        track.querySelectorAll('.jt-imgcal-slide').forEach(function(s,i){
-          if(s.style.display==='flex')return;
+        // 펼침화면(뷰포인트) 기준으로 slide 표시 상태를 다시 맞춘다.
+        for(var i=0;i<track.children.length;i++){
+          var s=track.children[i];
           var r=s.getBoundingClientRect();
-          // 펼침화면(뷰포인트에 완전히 포함되는 영역) 밖으로 완전히 벗어난 slide만 접는다.
-          if(i>=2&&r.bottom<=0)needsBuild=true;
-          else if(r.bottom>0&&r.bottom<viewBottom)needsBuild=true;
-          else needsBuild=true;
-          s.style.display=i>=2||!needsBuild?'none':'flex';
-        });
+          s.style.display=(i>=2&&r.bottom>vh&&r.bottom<bottom)?'flex':(r.top>=0&&r.bottom<=vh)?'flex':'none';
+        }
       },150);};
       el.addEventListener('scroll',onScroll,{passive:true});
       for(var d=0;d<dots.length;d++)(function(d){dots[d].addEventListener('click',function(){stop();go(d);start();});})(d);
