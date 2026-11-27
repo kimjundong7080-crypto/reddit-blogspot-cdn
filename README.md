@@ -42,19 +42,19 @@ npm run release -- 1.2.97      # 빌드 + 커밋 + 태그 + push
 
 ```html
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.158/assets/css/21-three-column.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.159/assets/css/21-three-column.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.158/assets/js/21-three-column.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.159/assets/js/21-three-column.js"
   defer></script>
 
 <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.158/assets/css/11-infinite.css">
+  href="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.159/assets/css/11-infinite.css">
 <script
-  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.158/assets/js/11-infinite.js"
+  src="https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1.2.159/assets/js/11-infinite.js"
   defer></script>
 ```
 
-> `@main` 대신 `@v1.2.158`처럼 버전을 고정하세요. 21·11 모두 **v1.2.158** 기준입니다.
+> `@main` 대신 `@v1.2.159`처럼 버전을 고정하세요. 21·11 모두 **v1.2.159** 기준입니다.
 > `@v1` 별칭은 2026-11-21 실측 기준 9개 에셋 모두 **v1.2.96 본문**을 서빙합니다(버전 주석 1줄 제외). 변경이 없었던 파일은 `x-jsd-version` 헤더만 이전 릴리스 값으로 남아 있습니다(예: `24-home.js` 1.2.92, `11-infinite.css` 1.2.88).
 
 ## Blogger 설치
