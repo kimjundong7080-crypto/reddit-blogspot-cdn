@@ -7,6 +7,13 @@ Latest published release: **v1.2.148**
 This is the consolidated English record through v1.2.148.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
+**Unreleased (on `main`, 2026-11-27, not tagged or purged):** `[imgcal]` carousel — every thumbnail now loads
+when the carousel enters the viewport (was `idx-1 … idx+6`, which left trailing thumbnails blank), the slide
+no longer paints a black `#000` background, the 4-second auto-advance and its pause/resume handlers are deleted,
+and the arrows are `z-index:5` above a `z-index:0` slide. Source: `src/23-yt-posts.html`; harness:
+`harness/imgcal-many.html`. See [`docs/history.md`](docs/history.md) §15 for the verification record and the
+remaining work (release, purge, live re-check).
+
 ## 1. Operating constraints
 
 - Work is confined to the `15-2` task folder. Do not read or write other project folders.

@@ -1830,7 +1830,8 @@
     }
     /* v1.2.157: 카루셀 지연 로딩/썸네일.
        - img 에는 data-src 만 두고, 카루셀이 뷰포트(+250px)에 들어올 때 현재·이웃 슬라이드와
-         가까운 썸네일만 실제로 로드한다. 화면을 벗어나면 자동 넘김을 멈춘다.
+         썸네일 전체를 로드한다(뒤쪽 썸네일이 빈칸으로 남지 않도록).
+       - 자동 넘김(4초 간격 슬라이드쇼)은 사용하지 않는다. 이동은 화살표·썸네일·스와이프만.
        - 1장짜리 [imgcal] 도 같은 경로로 로드되므로(화살표·썸네일 없음) 항상 보인다. */
     function mountImgcal(el){
       if(!el||el.__jtImgcal)return;el.__jtImgcal=1;
@@ -1840,7 +1841,7 @@
       if(!n)return;
       var thumbs=el.querySelectorAll('.jt-imgcal-thumb');
       var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next');
-      var idx=0,auto=null,paused=false,active=false;
+      var idx=0,active=false;
       function loadImg(node){
         if(!node)return;
         var src=node.getAttribute('data-src');
@@ -1848,11 +1849,11 @@
       }
       function loadSlide(i){var s=slides[(i%n+n)%n];if(s)loadImg(s.querySelector('img'));}
       function loadThumb(i){var t=thumbs[i];if(t)loadImg(t.querySelector('img'));}
-      /* 현재 위치 주변만 먼저 채운다(썸네일과 슬라이드는 같은 URL이라 캐시를 공유한다). */
+      /* 화면에 들어올 때 현재·이웃 슬라이드와 썸네일 전부를 채운다(같은 URL이라 캐시를 공유한다).
+         앞쪽만 채우던 시절에는 뒤쪽 썸네일이 빈칸으로 남았다. */
       function warm(){
         loadSlide(idx);loadSlide(idx+1);loadSlide(idx-1);
-        var from=Math.max(0,idx-1),to=Math.min(thumbs.length,idx+7);
-        for(var t=from;t<to;t++)loadThumb(t);
+        for(var t=0;t<thumbs.length;t++)loadThumb(t);
       }
       function paint(){
         for(var t=0;t<thumbs.length;t++)thumbs[t].classList.toggle('is-on',(+thumbs[t].getAttribute('data-i'))===idx);
@@ -1869,17 +1870,11 @@
         }
         paint();loadSlide(idx);loadSlide(idx+1);
       }
-      function stop(){if(auto){clearInterval(auto);auto=null;}}
-      function start(){
-        stop();
-        if(n<2||!active||paused||document.hidden)return;
-        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-        auto=setInterval(function(){go(idx+1);},4000);
-      }
-      if(prev)prev.addEventListener('click',function(){go(idx-1);start();});
-      if(next)next.addEventListener('click',function(){go(idx+1);start();});
+      /* 자동 넘김 없음: 이동은 화살표·썸네일·스와이프로만 일어난다. */
+      if(prev)prev.addEventListener('click',function(){go(idx-1);});
+      if(next)next.addEventListener('click',function(){go(idx+1);});
       for(var t=0;t<thumbs.length;t++)(function(t){
-        thumbs[t].addEventListener('click',function(){go(+thumbs[t].getAttribute('data-i')||0);start();});
+        thumbs[t].addEventListener('click',function(){go(+thumbs[t].getAttribute('data-i')||0);});
       })(t);
       /* 스와이프/스크롤로 이동해도 썸네일 강조·이미지 로드가 따라간다. */
       var st=null;
@@ -1891,27 +1886,22 @@
           loadSlide(idx);loadSlide(idx+1);
         },120);
       },{passive:true});
-      el.addEventListener('mouseenter',function(){paused=true;stop();});
-      el.addEventListener('mouseleave',function(){paused=false;start();});
-      el.addEventListener('focusin',function(){paused=true;stop();});
-      el.addEventListener('focusout',function(){paused=false;start();});
-      document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start();});
       if('IntersectionObserver' in window){
         var io=new IntersectionObserver(function(entries){
           for(var e=0;e<entries.length;e++){
             var en=entries[e];
             if(en.target!==el)continue;
-            if(en.isIntersecting){if(!active){active=true;warm();paint();start();}}
-            else if(active){active=false;stop();}
+            if(en.isIntersecting){if(!active){active=true;warm();paint();}}
+            else if(active){active=false;}
           }
         },{rootMargin:'250px 0px',threshold:0});
         io.observe(el);
         /* 콜백이 늦게 오는 경우(숨은 탭에서 렌더된 경우 등)를 대비해 지금 화면 안에 있으면 바로 채운다. */
         var vb=el.getBoundingClientRect();
         var vh2=document.documentElement.clientHeight||window.innerHeight;
-        if(vb.top<vh2+250&&vb.bottom>-250){active=true;warm();start();}
+        if(vb.top<vh2+250&&vb.bottom>-250){active=true;warm();}
       }else{
-        active=true;warm();paint();start();
+        active=true;warm();paint();
       }
       paint();
     }

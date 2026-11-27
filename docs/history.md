@@ -222,3 +222,84 @@ Remaining work and open issues (nothing here is broken; each item is unverified 
 9. **Rail numbers came from a not-found page once.** The v1.2.144 measurements were taken on `techlifeworld.com/2026/11/blog-post_500.html`, which returns the 404 page (it still renders `#ytPosts`). The CSS is shared, but re-measure on a real post the next time the rail changes.
 10. **jsDelivr `@v1` still lags by minutes.** After v1.2.145 the edge already served the new JS while `data.jsdelivr.com/resolved?specifier=v1` still answered `1.2.144`. Always confirm with `x-jsd-version` **and** the file body, not only the alias endpoint.
 11. `icon-preview.png` at the repository root is still untracked (a screenshot the user left there); do not commit or delete it without asking.
+
+## 15. Session record — 2026-11-27 (`[imgcal]` carousel, unreleased)
+
+Read this before touching `mountImgcal()` in `src/23-yt-posts.html` (≈ line 2750) or the `.jt-imgcal*` block
+of its CSS (≈ line 740). Nothing here is released yet: `package.json` is still `1.2.158`, the latest tag is
+`v1.2.158`, and no jsDelivr purge was requested, so **the three live domains keep the old carousel** until a
+release is approved.
+
+What the user reported
+----------------------
+
+On a multi-image `[imgcal]` carousel: (a) thumbnails at the end of the strip stayed blank boxes, (b) slides
+showed a black background around letterboxed images, (c) the carousel advanced on its own every ~4 s, and
+(d) the ‹ › arrows were painted under the picture.
+
+Root causes and fixes (all in `src/`, then `npm run build`)
+-----------------------------------------------------------
+
+1. **Blank trailing thumbnails — preload window, not `IntersectionObserver`.** `warm()` loaded the current
+   slide, its two neighbours and thumbnails from `idx-1` to `idx+6`. A 10-image block therefore never loaded
+   thumbnails 8–10 (and on a carousel that never moved, everything past the eighth). `warm()` now runs
+   `for(var t=0;t<thumbs.length;t++)loadThumb(t);` — every thumbnail is filled the first time the carousel is
+   within 250px of the viewport. Slide `<img>`s stay lazy (current + neighbours) on purpose; the thumbnail and
+   the slide share the same URL, so the browser cache absorbs the extra requests.
+2. **Black slide background.** `.jt-imgcal-slide` carried `background:#000`, which showed as black bars above
+   and below every 4:3 image inside the 16:9 slide. The declaration was removed; the frame keeps its own
+   `#f1f3f5` (light) / `#1b231f` (dark) background.
+3. **Auto-advance.** The carousel ran `auto=setInterval(… go(idx+1) …, 4000)` and restarted it from every arrow
+   click, thumbnail click, `mouseleave`, `focusout` and `visibilitychange`. That whole path was deleted: `start()`,
+   `stop()`, the `auto`/`paused` variables and the five pause/resume listeners are gone. Handlers are now only
+   `go(idx±1)` and `go(data-i)`. The `IntersectionObserver` keeps a single job — mark the carousel `active` and
+   call `warm()`.
+4. **Arrows under the image.** The arrows already had `z-index:3`, but the slide was a positioned element with
+   `z-index:auto`, so any theme rule that lifts a post image could still win. The slide now declares
+   `z-index:0` (its own stacking context) and the arrows `z-index:5`.
+
+Verification actually performed
+-------------------------------
+
+- `npm run build` (writes `assets/`), `npm run check` → "Assets are up to date (v1.2.158)", `node --check
+  assets/js/23-yt-posts.js` → OK, `git diff --check` → clean.
+- New harness `harness/imgcal-many.html` (one `[imgcal]` with 10 picsum images, the **real** built
+  `assets/js/23-yt-posts.js`, no stub). Measured in the preview browser on `127.0.0.1:8788`:
+  `data-count=10`, 10/10 thumbnails get `src` at mount, `getComputedStyle(.jt-imgcal-slide).backgroundColor`
+  = `rgba(0, 0, 0, 0)`, slide `z-index` 0 / arrow `z-index` 5, `document.elementFromPoint` at the arrow centre
+  returns `jt-imgcal-next`, arrow clicks moved the active thumbnail `is-on` 0→1→2→1, and clicking the tenth
+  thumbnail gave `is-on` 9 with slide 9's `src` set and `naturalWidth > 0`.
+- Grep audit of the built asset: no `start()`/`stop()`/`setInterval`/`4000` left inside `mountImgcal`
+  (the only `auto` hit is `scrollBehavior='auto'`).
+
+Environment limits hit during that verification
+-----------------------------------------------
+
+- **The preview tab was `document.hidden`.** In that state Chrome delivers no `IntersectionObserver` callbacks
+  and does not animate `scrollTo({behavior:'smooth'})`, so the `+250px` scroll trigger and the smooth slide
+  movement could not be observed directly. The mount-time synchronous viewport check
+  (`vb.top < vh2+250 && vb.bottom > -250`) is what made the loading measurable; re-check the scroll path in a
+  focused tab before claiming it live.
+- **A long harness body is clamped by our own `더보기` expander** (900px), so a carousel far down the page is
+  inside `overflow:hidden` and never intersects the viewport until the expander is opened. That is intended
+  product behavior, but it hides test content; hence the separate, short `imgcal-many.html` page.
+
+Remaining work and known issues
+-------------------------------
+
+1. **Release the change.** `npm run release -- 1.2.159` (only with user approval), then purge both `@v1` and
+   the new tag on jsDelivr, confirm `x-jsd-version` on all three domains, and re-check a real post. Until then
+   the live carousels still auto-advance and still show black bars.
+2. **No live post with many images was checked.** The evidence is the harness plus the built asset; the user's
+   original page was not re-tested. Pick a real post with a 8+ image `[imgcal]` after the release.
+3. **Scroll-triggered loading is still unverified** in a focused tab (see the limit above). Also unverified:
+   touch swipe on a real device, and behaviour with `prefers-reduced-motion` (which now changes nothing at all,
+   because there is no autoplay left).
+4. **Slides are still lazy, thumbnails are eager.** A very fast swipe can outrun the 120 ms scroll handler and
+   show an empty slide for a moment; the neighbouring slides are preloaded, so it needs two or more slides
+   per gesture to be visible. If it is ever reported, extend `warm()`/the scroll handler to load `idx±2`.
+5. **`harness/imgcal-many.html` is a new tracked test page** and needs the same tiny static server the other
+   harnesses use (`harness/_tmp_serve.mjs` was deleted in v1.2.145). It intentionally issues a Blogger feed
+   request that 404s locally; that 404 is expected, not a regression.
+6. `icon-preview.png` at the repository root is still untracked (a screenshot the user left there); do not
+   commit or delete it without asking.
