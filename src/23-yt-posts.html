@@ -739,7 +739,11 @@ html[data-theme="dark"] .jt-map-embed{background:#1b231f}
 .jt-imgcal-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .jt-imgcal-track::-webkit-scrollbar{display:none}
 .jt-imgcal-slide{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
-.jt-imgcal-slide img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+/* 렌더링 최적화: 3장 이상만 카루셀로 그리고, 뷰포인트(+접힌 영역) 안에 들어갈 슬라이드만 lazy로 로드한다. */
+.jt-imgcal{display:none}
+.jt-imgcal.lazy{display:flex}
+.jt-imgcal-viewport{overflow:hidden}
+.jt-imgcal-slide-img{max-width:100%;max-height:100%;object-fit:contain;display:block;loading="lazy" decoding="async"}
 .jt-imgcal-prev,.jt-imgcal-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:40px;height:40px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .jt-imgcal-prev{left:10px}.jt-imgcal-next{right:10px}
 .jt-imgcal-prev:hover,.jt-imgcal-next:hover{background:rgba(0,0,0,.65)}
@@ -2742,6 +2746,13 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       if(!track)return;
       var slides=track.children,n=slides.length;
       if(n<2)return;
+      var vh=document.documentElement.clientHeight||window.innerHeight;
+      var bottom=window.scrollY+vh;
+      // 뷰를 벗어나 '펼침화면' 영역에 있는 slide만 렌더링: 그 아래 slide는 .jt-imgcal{display:none}으로 접고, view 영역 slide의 이미지만 lazy로 로드한다.
+      for(var i=0;i<slides.length;i++){
+        var s=slides[i];
+        if(i>=2||(i>=1&&s.getBoundingClientRect().bottom>0&&s.getBoundingClientRect().bottom<bottom)||s.getBoundingClientRect().top<0&&s.getBoundingClientRect().bottom>vh){s.style.display='flex';}else s.style.display='none';}
+      el.classList.add('lazy');el.classList.add('viewport');
       var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
       var idx=0,auto=null,paused=false;
       function slideW(){return track.clientWidth||el.clientWidth||1;}
@@ -2755,6 +2766,24 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       function stop(){if(auto){clearInterval(auto);auto=null;}}
       if(prev)prev.addEventListener('click',function(){stop();go(idx-1);start();});
       if(next)next.addEventListener('click',function(){stop();go(idx+1);start();});
+      var scrollTimer=null;
+      var onScroll=function(){clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){
+        var h=document.documentElement.clientHeight||window.innerHeight;
+        var bottom=window.scrollY+h;
+        var first=track.querySelector('.jt-imgcal-slide:not([style*="display"])');
+        var viewBottom=window.scrollY+h; // bottom 기준, '펼침화면' 영역
+        var needsBuild=false;
+        track.querySelectorAll('.jt-imgcal-slide').forEach(function(s,i){
+          if(s.style.display==='flex')return;
+          var r=s.getBoundingClientRect();
+          // 펼침화면(뷰포인트에 완전히 포함되는 영역) 밖으로 완전히 벗어난 slide만 접는다.
+          if(i>=2&&r.bottom<=0)needsBuild=true;
+          else if(r.bottom>0&&r.bottom<viewBottom)needsBuild=true;
+          else needsBuild=true;
+          s.style.display=i>=2||!needsBuild?'none':'flex';
+        });
+      },150);};
+      el.addEventListener('scroll',onScroll,{passive:true});
       for(var d=0;d<dots.length;d++)(function(d){dots[d].addEventListener('click',function(){stop();go(d);start();});})(d);
       el.addEventListener('mouseenter',function(){paused=true;});
       el.addEventListener('mouseleave',function(){paused=false;});

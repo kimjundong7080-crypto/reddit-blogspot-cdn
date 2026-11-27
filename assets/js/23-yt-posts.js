@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.151 */
+/* Reddit-style Blogger YouTube post list — v1.2.152 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1827,6 +1827,13 @@
       if(!track)return;
       var slides=track.children,n=slides.length;
       if(n<2)return;
+      var vh=document.documentElement.clientHeight||window.innerHeight;
+      var bottom=window.scrollY+vh;
+      // 뷰를 벗어나 '펼침화면' 영역에 있는 slide만 렌더링: 그 아래 slide는 .jt-imgcal{display:none}으로 접고, view 영역 slide의 이미지만 lazy로 로드한다.
+      for(var i=0;i<slides.length;i++){
+        var s=slides[i];
+        if(i>=2||(i>=1&&s.getBoundingClientRect().bottom>0&&s.getBoundingClientRect().bottom<bottom)||s.getBoundingClientRect().top<0&&s.getBoundingClientRect().bottom>vh){s.style.display='flex';}else s.style.display='none';}
+      el.classList.add('lazy');el.classList.add('viewport');
       var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
       var idx=0,auto=null,paused=false;
       function slideW(){return track.clientWidth||el.clientWidth||1;}
@@ -1840,6 +1847,24 @@
       function stop(){if(auto){clearInterval(auto);auto=null;}}
       if(prev)prev.addEventListener('click',function(){stop();go(idx-1);start();});
       if(next)next.addEventListener('click',function(){stop();go(idx+1);start();});
+      var scrollTimer=null;
+      var onScroll=function(){clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){
+        var h=document.documentElement.clientHeight||window.innerHeight;
+        var bottom=window.scrollY+h;
+        var first=track.querySelector('.jt-imgcal-slide:not([style*="display"])');
+        var viewBottom=window.scrollY+h; // bottom 기준, '펼침화면' 영역
+        var needsBuild=false;
+        track.querySelectorAll('.jt-imgcal-slide').forEach(function(s,i){
+          if(s.style.display==='flex')return;
+          var r=s.getBoundingClientRect();
+          // 펼침화면(뷰포인트에 완전히 포함되는 영역) 밖으로 완전히 벗어난 slide만 접는다.
+          if(i>=2&&r.bottom<=0)needsBuild=true;
+          else if(r.bottom>0&&r.bottom<viewBottom)needsBuild=true;
+          else needsBuild=true;
+          s.style.display=i>=2||!needsBuild?'none':'flex';
+        });
+      },150);};
+      el.addEventListener('scroll',onScroll,{passive:true});
       for(var d=0;d<dots.length;d++)(function(d){dots[d].addEventListener('click',function(){stop();go(d);start();});})(d);
       el.addEventListener('mouseenter',function(){paused=true;});
       el.addEventListener('mouseleave',function(){paused=false;});
