@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.154 */
+/* Reddit-style Blogger YouTube post list — v1.2.155 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1829,12 +1829,11 @@
       if(n<2)return;
       var vh=document.documentElement.clientHeight||window.innerHeight;
       var bottom=window.scrollY+vh;
-      // '펼침화면': 뷰포인트(clientHeight) + 그 아래 접힌 영역(여기서는 아래에 보이는 전체). slide가 완전히 접혀 있으면 펼침/복귀할 때 다시 펼친다.
+      // '펼침화면': 뷰포인트(clientHeight) + 그 아래 접힌 영역. 완전 밖으로 벗어나면 계속 접고 나머지는 펼친다.
       for(var i=0;i<slides.length;i++){
         var s=slides[i];
-        // 표시 중이면 유지하고, 모두 접혀 있으면 지금은 펼치되(이미지는 lazy) 나머지 영역은 계속 접음
         var r=s.getBoundingClientRect();
-        s.style.display = (i>=2&&r.bottom>vh&&r.bottom<bottom)||(r.top<0&&r.bottom>vh)?'flex':'none';
+        s.style.display = (i>=2&&r.bottom>vh&&r.bottom<bottom)?'flex':(r.top>=0&&r.bottom<=vh)?'flex':'none';
       }
       el.classList.add('lazy');el.classList.add('viewport');
       var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
