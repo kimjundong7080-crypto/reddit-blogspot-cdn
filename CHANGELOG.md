@@ -2,9 +2,9 @@
 
 Last updated: 2026-11-27 (UTC)
 Repository: `reddit-blogspot-cdn`
-Latest published release: **v1.2.145**
+Latest published release: **v1.2.146**
 
-This is the consolidated English record through v1.2.145.
+This is the consolidated English record through v1.2.146.
 Detailed handoff and operating rules remain in `AGENTS.md`.
 
 ## 1. Operating constraints
@@ -18,6 +18,7 @@ Detailed handoff and operating rules remain in `AGENTS.md`.
 
 | Version | Commit | Summary |
 |---|---|---|
+| v1.2.146 | — | **A single map opens one step wider, fits the post-image width, and the sidebar Label gadget is hidden.** `[map "place"]` used `z=15` (street level), so the first frame showed a few blocks; it now loads at `z=13`, a district-level view (multi-place routes keep their fit-to-bounds URL). The map box was `min(calc(100% - 32px),900px)` — a 900px cap and a 16px side inset — while post images use `calc(100% - 48px)` (`calc(100% - 32px)` at ≤600px); `.post-body .jt-map-embed` now matches those insets with auto side margins and no cap, and inside `.markdown` it is `width:100%` with no side margin so the region's own 24px padding is not subtracted twice. Harness with the real built assets: 800px body → image 712px at left 64 and map 712px at left 64 (`.markdown` 712 = 712); 390px viewport → 358 = 358 and 342 = 342. `#Label1{display:none !important}` in `21-three-column` hides the `widget Label` gadget — deleting the gadget itself stays a Blogger Layout action, the theme XML is never edited. |
 | v1.2.145 | — | **Maps inside infinite-feed clones are visible again, and every post ends with a YouTube-style comment bar.** The feed clone rule `iframe:not(.jt-yt-frame){display:none}` also hid the `[map]` iframe, so a map showed in the original post but vanished in the cloned card; that rule now excludes `.jt-map-frame`, and map iframes only get their `src` once their box has a real size (IntersectionObserver plus a rescan on fold open), so a hidden box no longer loads a blank Google Maps frame. Separately, the end of each post gets a `댓글 N` bar with `댓글 쓰기` (renders the native Blogger comment form in an iframe) and `보이기` (loads the comment feed as an avatar list and toggles to `숨기기`). |
 | v1.2.144 | — | **The rail fades no longer cover the first and last card text.** The viewport was exactly 838px — ten cards (82px each plus 2px gaps) — with two 38px gradients pinned to its edges, so they washed over the first and last titles. It is now `box-sizing:border-box; height:874px; padding:18px 0` (the inner area stays 838px, still ten cards), the gradients are 18px and live only in those padding bands, and the icon-only module keeps the same 874px box. Harness: box 874px, padding 18/18, first card top 18, tenth card bottom 856, fades 0–18 and 856–874, ten cards visible, one wheel still gives `translateY(-84px)`. |
 | v1.2.143 | — | **The recommended/popular rail wheels again.** v1.2.138 read "10 posts" as a total cap: the rail held ten cards in a ten-card-tall viewport, so `max = length - visible = 0`, the wheel handler never took the event and the page scrolled instead of the list — the hover carousel was gone. The cap is now `RAIL_VISIBLE = 10`, meaning ten cards on screen, while the feed loads 20 per page and every entry is kept (`while(i<entries.length)`, no forced `exhausted`). Harness (24 then 20 entries): 24 loaded, viewport 838px, card 82px, one wheel step `translateY(-84px)` per card, next page fetched at `idx=14` (24 → 44 items), the request that returns nothing sets `exhausted`, and only then does the wheel stop calling `preventDefault` so the page takes over. |
