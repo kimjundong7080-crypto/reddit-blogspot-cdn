@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.156 */
+/* Reddit-style Blogger YouTube post list — v1.2.157 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1262,12 +1262,19 @@
       while((m=html.exec(text))!==null){var u=m[1].trim();if(u&&!seen[u]){seen[u]=1;urls.push(u);}}
       return urls;
     }
+    /* v1.2.157: 이미지 주소는 data-src 로만 두고(초기 네트워크 요청 없음), 카루셀이 뷰포트에
+       들어올 때 마운트가 실제 src 로 바꾼다. 1장짜리 [imgcal] 도 카루셀 없이 그대로 보인다. */
     function jtImgcalHtml(urls){
       if(!urls||!urls.length)return '';
-      var slides=urls.map(function(u){return '<div class="jt-imgcal-slide"><img src="'+String(u).replace(/"/g,'&quot;')+'" alt="" loading="lazy" decoding="async"></div>';}).join('');
-      var dots=urls.length>1?urls.map(function(_,i){return '<button type="button" class="jt-imgcal-dot" data-i="'+i+'" aria-label="'+(i+1)+'"></button>';}).join(''):'';
-      var nav=urls.length>1?'<button type="button" class="jt-imgcal-prev" aria-label="이전">‹</button><button type="button" class="jt-imgcal-next" aria-label="다음">›</button><div class="jt-imgcal-dots">'+dots+'</div>':'';
-      return '\n<div class="jt-imgcal" data-count="'+urls.length+'"><div class="jt-imgcal-track">'+slides+'</div>'+nav+'</div>\n';
+      var clean=urls.map(function(u){return String(u).replace(/"/g,'&quot;');});
+      var slides=clean.map(function(u){return '<div class="jt-imgcal-slide"><img data-src="'+u+'" alt="" decoding="async"></div>';}).join('');
+      var nav='';
+      var thumbs='';
+      if(clean.length>1){
+        nav='<button type="button" class="jt-imgcal-prev" aria-label="이전">‹</button><button type="button" class="jt-imgcal-next" aria-label="다음">›</button>';
+        thumbs='<div class="jt-imgcal-thumbs">'+clean.map(function(u,i){return '<button type="button" class="jt-imgcal-thumb" data-i="'+i+'" aria-label="'+(i+1)+' / '+clean.length+'"><img data-src="'+u+'" alt="" decoding="async"></button>';}).join('')+'</div>';
+      }
+      return '\n<div class="jt-imgcal" data-count="'+clean.length+'"><div class="jt-imgcal-frame"><div class="jt-imgcal-track">'+slides+'</div>'+nav+'</div>'+thumbs+'</div>\n';
     }
     function jtImgcalTransform(src){
       return String(src||'').replace(/\[imgcal\]([\s\S]*?)\[\/imgcal\]/gi,function(m,inner){
@@ -1821,54 +1828,88 @@
       schedule();
       window.__jtRescanYt=schedule;
     }
+    /* v1.2.157: 카루셀 지연 로딩/썸네일.
+       - img 에는 data-src 만 두고, 카루셀이 뷰포트(+250px)에 들어올 때 현재·이웃 슬라이드와
+         가까운 썸네일만 실제로 로드한다. 화면을 벗어나면 자동 넘김을 멈춘다.
+       - 1장짜리 [imgcal] 도 같은 경로로 로드되므로(화살표·썸네일 없음) 항상 보인다. */
     function mountImgcal(el){
       if(!el||el.__jtImgcal)return;el.__jtImgcal=1;
       var track=el.querySelector('.jt-imgcal-track');
       if(!track)return;
       var slides=track.children,n=slides.length;
-      if(n<2)return;
-      var vh=document.documentElement.clientHeight||window.innerHeight;
-      var bottom=window.scrollY+vh;
-      // 렌더링 최적화: 3장 이상만 카루셀로 그린다. '펼침화면'(뷰포인트~하단)의 slide만 flex로 펼치고
-      // 그 밖은 display:none으로 접어 나머지에 리소스를 쓰지 않는다. 이미지는 각 slide의 lazy 로딩 사용.
-      for(var i=0;i<slides.length;i++){
-        var s=slides[i];
-        var r=s.getBoundingClientRect();
-        s.style.display = (i>=2&&r.bottom>vh&&r.bottom<bottom)?'flex':(r.top>=0&&r.bottom<=vh)?'flex':'none';
+      if(!n)return;
+      var thumbs=el.querySelectorAll('.jt-imgcal-thumb');
+      var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next');
+      var idx=0,auto=null,paused=false,active=false;
+      function loadImg(node){
+        if(!node)return;
+        var src=node.getAttribute('data-src');
+        if(src&&!node.getAttribute('src')){node.setAttribute('src',src);node.removeAttribute('data-src');}
       }
-      el.classList.add('lazy');el.classList.add('viewport');
-      var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
-      var idx=0,auto=null,paused=false;
+      function loadSlide(i){var s=slides[(i%n+n)%n];if(s)loadImg(s.querySelector('img'));}
+      function loadThumb(i){var t=thumbs[i];if(t)loadImg(t.querySelector('img'));}
+      /* 현재 위치 주변만 먼저 채운다(썸네일과 슬라이드는 같은 URL이라 캐시를 공유한다). */
+      function warm(){
+        loadSlide(idx);loadSlide(idx+1);loadSlide(idx-1);
+        var from=Math.max(0,idx-1),to=Math.min(thumbs.length,idx+7);
+        for(var t=from;t<to;t++)loadThumb(t);
+      }
+      function paint(){
+        for(var t=0;t<thumbs.length;t++)thumbs[t].classList.toggle('is-on',(+thumbs[t].getAttribute('data-i'))===idx);
+      }
       function slideW(){return track.clientWidth||el.clientWidth||1;}
-      function go(i){
-        idx=(i+n)%n;
-        try{track.scrollTo({left:idx*slideW(),behavior:'smooth'});}catch(e){track.scrollLeft=idx*slideW();}
-        for(var d=0;d<dots.length;d++)dots[d].classList.toggle('is-on',d===idx);
-      }
-      function nextFn(){if(!paused)go(idx+1);}
-      function start(){if(!auto&&n>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){auto=setInterval(nextFn,4000);}}
-      function stop(){if(auto){clearInterval(auto);auto=null;}}
-      if(prev)prev.addEventListener('click',function(){stop();go(idx-1);start();});
-      if(next)next.addEventListener('click',function(){stop();go(idx+1);start();});
-      var scrollTimer=null;
-      var onScroll=function(){clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){
-        var h=document.documentElement.clientHeight||window.innerHeight;
-        var bottom=window.scrollY+h;
-        // 펼침화면(뷰포인트) 기준으로 slide 표시 상태를 다시 맞춘다.
-        for(var i=0;i<track.children.length;i++){
-          var s=track.children[i];
-          var r=s.getBoundingClientRect();
-          s.style.display=(i>=2&&r.bottom>vh&&r.bottom<bottom)?'flex':(r.top>=0&&r.bottom<=vh)?'flex':'none';
+      function go(i,instant){
+        idx=((i%n)+n)%n;
+        var w=slideW();
+        if(instant){
+          var old=track.style.scrollBehavior;
+          track.style.scrollBehavior='auto';track.scrollLeft=idx*w;track.style.scrollBehavior=old;
+        }else{
+          try{track.scrollTo({left:idx*w,behavior:'smooth'});}catch(e){track.scrollLeft=idx*w;}
         }
-      },150);};
-      el.addEventListener('scroll',onScroll,{passive:true});
-      for(var d=0;d<dots.length;d++)(function(d){dots[d].addEventListener('click',function(){stop();go(d);start();});})(d);
-      el.addEventListener('mouseenter',function(){paused=true;});
-      el.addEventListener('mouseleave',function(){paused=false;});
-      el.addEventListener('focusin',function(){paused=true;});
-      el.addEventListener('focusout',function(){paused=false;});
+        paint();loadSlide(idx);loadSlide(idx+1);
+      }
+      function stop(){if(auto){clearInterval(auto);auto=null;}}
+      function start(){
+        stop();
+        if(n<2||!active||paused||document.hidden)return;
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+        auto=setInterval(function(){go(idx+1);},4000);
+      }
+      if(prev)prev.addEventListener('click',function(){go(idx-1);start();});
+      if(next)next.addEventListener('click',function(){go(idx+1);start();});
+      for(var t=0;t<thumbs.length;t++)(function(t){
+        thumbs[t].addEventListener('click',function(){go(+thumbs[t].getAttribute('data-i')||0);start();});
+      })(t);
+      /* 스와이프/스크롤로 이동해도 썸네일 강조·이미지 로드가 따라간다. */
+      var st=null;
+      track.addEventListener('scroll',function(){
+        clearTimeout(st);
+        st=setTimeout(function(){
+          var i=Math.round(track.scrollLeft/slideW());
+          if(i!==idx){idx=((i%n)+n)%n;paint();}
+          loadSlide(idx);loadSlide(idx+1);
+        },120);
+      },{passive:true});
+      el.addEventListener('mouseenter',function(){paused=true;stop();});
+      el.addEventListener('mouseleave',function(){paused=false;start();});
+      el.addEventListener('focusin',function(){paused=true;stop();});
+      el.addEventListener('focusout',function(){paused=false;start();});
       document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start();});
-      go(0);start();
+      if('IntersectionObserver' in window){
+        var io=new IntersectionObserver(function(entries){
+          for(var e=0;e<entries.length;e++){
+            var en=entries[e];
+            if(en.target!==el)continue;
+            if(en.isIntersecting){if(!active){active=true;warm();paint();start();}}
+            else if(active){active=false;stop();}
+          }
+        },{rootMargin:'250px 0px',threshold:0});
+        io.observe(el);
+      }else{
+        active=true;warm();paint();start();
+      }
+      paint();
     }
     window.__jtMountImgcals=function(){
       var els=document.querySelectorAll('.jt-imgcal');
