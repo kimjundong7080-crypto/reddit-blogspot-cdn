@@ -2748,10 +2748,13 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
       if(n<2)return;
       var vh=document.documentElement.clientHeight||window.innerHeight;
       var bottom=window.scrollY+vh;
-      // 뷰를 벗어나 '펼침화면' 영역에 있는 slide만 렌더링: 그 아래 slide는 .jt-imgcal{display:none}으로 접고, view 영역 slide의 이미지만 lazy로 로드한다.
+      // '펼침화면': 뷰포인트(clientHeight) + 그 아래 접힌 영역(여기서는 아래에 보이는 전체). slide가 완전히 접혀 있으면 펼침/복귀할 때 다시 펼친다.
       for(var i=0;i<slides.length;i++){
         var s=slides[i];
-        if(i>=2||(i>=1&&s.getBoundingClientRect().bottom>0&&s.getBoundingClientRect().bottom<bottom)||s.getBoundingClientRect().top<0&&s.getBoundingClientRect().bottom>vh){s.style.display='flex';}else s.style.display='none';}
+        // 표시 중이면 유지하고, 모두 접혀 있으면 지금은 펼치되(이미지는 lazy) 나머지 영역은 계속 접음
+        var r=s.getBoundingClientRect();
+        s.style.display = (i>=2&&r.bottom>vh&&r.bottom<bottom)||(r.top<0&&r.bottom>vh)?'flex':'none';
+      }
       el.classList.add('lazy');el.classList.add('viewport');
       var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
       var idx=0,auto=null,paused=false;
