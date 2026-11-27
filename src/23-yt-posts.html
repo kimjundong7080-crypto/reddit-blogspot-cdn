@@ -3263,10 +3263,13 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
         if(document.querySelector('.post-body.entry-content'))return;
         if(!document.querySelector('.status-msg-body'))return;
       }
+      /* soft 404 방지: 404 상태 페이지에서는 robots를 index로 바꾸지 않는다.
+         (resume/contact도 noindex 유지, About만 index.로 바꾸려는 목적이므로 404이면 건너뜀) */
       document.documentElement.classList.add('jt-static-page');
       if(page.resume)document.documentElement.classList.add('jt-resume-page');
       document.title=page.title;
-      if(page.index){
+      // About(index)만 noindex 상태를 index로 올리고, 404 상태 페이지에서는 이대로 둔다(숫자를 붙이는 soft 404 방지).
+      if(page.index&&!document.querySelector('.status-msg-body')){
         var ix=document.querySelector('meta[name="robots"]');
         if(ix)ix.setAttribute('content','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
       }else if(!document.querySelector('meta[name="robots"]')){
