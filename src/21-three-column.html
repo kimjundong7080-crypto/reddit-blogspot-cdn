@@ -299,6 +299,27 @@ body.rd3-layout #Attribution1{
   display:none !important;
 }
 
+/* v1.2.147: 검색(/search) 페이지는 좌우 열을 없애고 결과만 전체 폭으로 보여준다. */
+body.search-view #rd3Left,
+body.search-view .rd3-left,
+body.search-view #jtLeftToggle,
+body.search-view .sidebar-container,
+body.search-view .sidebar-container.sidebar-invisible,
+body.search-view .sidebar-wrapper{display:none !important}
+body.search-view.rd3-layout .main_content_container{
+  display:block !important;
+  grid-template-columns:none !important;
+  width:100% !important;
+  max-width:var(--rd3-max) !important;
+  margin:0 auto !important;
+  padding:0 var(--rd3-pad) !important;
+}
+body.search-view.rd3-layout .main_content_container > .page{
+  grid-column:auto !important;
+  width:100% !important;
+  max-width:none !important;
+}
+
 /* 검색 결과: 썸네일 4열 반응형 그리드 */
 body.search-view .blog-posts.hfeed{
   display:grid !important;

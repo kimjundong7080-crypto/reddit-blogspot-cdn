@@ -1980,9 +1980,124 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
         .replace(/\[\[(\d{1,2}:\d{2}(?::\d{2})?)\]\(([^)\s]+)\)\]/g,'[$1]($2)')
         .replace(/\[\[(\d{1,2}:\d{2}(?::\d{2})?)\]\]/g,'$1');
     }
+    /* v1.2.147: 숏코드를 마크다운보다 먼저 <div>로 바꾸면 강조/기울임 안에 든 숏코드가
+       `****` 같은 빈 태그로 남고, 들여쓰기 된 본문은 코드블록이 되어 숏코드가 글자로 보인다.
+       그래서 숏코드는 불투명 토큰으로 바꿔 마크다운을 통과시키고, 파싱이 끝난 DOM에서
+       실제 임베드로 되돌린다. 코드블록/인라인 코드 안의 숏코드는 글자 그대로 둔다. */
+    var EMBED_TOKEN='\u0001jtemb';
+    var SHORTCODE_RE=/\[(map|youtube|shorts)\b[^\]\n]{0,400}\]/gi;
+    function stashShortcodes(src,store){
+      var fence=/```[\s\S]*?```|~~~[\s\S]*?~~~/g,out='',last=0,m;
+      var take=function(chunk){
+        if(!chunk)return '';
+        var out=chunk.replace(SHORTCODE_RE,function(full){
+          var html=window.__jtPrepareYouTubeShortcodes?window.__jtPrepareYouTubeShortcodes(full):full;
+          if(!html||html===full)return full;
+          store.push({html:html,text:full});
+          return EMBED_TOKEN+(store.length-1)+'\u0001';
+        });
+        /* 강조 표시가 숏코드만 감싸면 빈 굵게(****)/기운 글씨가 남으므로 표시를 걷어낸다. */
+        return out.replace(/(\*\*|__|~~|\*|_)\s*(\u0001jtemb\d+\u0001)\s*\1/g,'$2');
+      };
+      while((m=fence.exec(src))!==null){
+        out+=take(src.slice(last,m.index))+m[0];
+        last=fence.lastIndex;
+      }
+      return out+take(src.slice(last));
+    }
+    /* HTML 들여쓰기에서 온 공통 앞 여백을 걷어낸다(4칸 이상이면 코드블록이 된다).
+       펜스 코드블록 안과 상대 들여쓰기는 건드리지 않는다. */
+    function dedentSrc(src){
+      var lines=String(src||'').split('\n'),i,fenced=[],min=-1;
+      var fence=false;
+      for(i=0;i<lines.length;i++){
+        if(/^\s*(```|~~~)/.test(lines[i])){fence=!fence;fenced[i]=true;continue;}
+        if(fence||!lines[i].trim())continue;
+        /* 숏코드 줄은 어차피 블록 임베드로 바뀌므로 들여쓰기 기준에서 뺸다. */
+        if(/^\s*\[(map|youtube|shorts)\b/i.test(lines[i]))continue;
+        var m=lines[i].match(/^[ \t]+/),w=m?m[0].replace(/\t/g,'    ').length:0;
+        if(min<0||w<min)min=w;
+      }
+      if(min<=0)return src;
+      for(i=0;i<lines.length;i++){
+        if(fenced[i])continue;
+        var lead=lines[i].match(/^[ \t]*/)[0].replace(/\t/g,'    ').length;
+        if(!lines[i].trim()){lines[i]='';continue;}
+        lines[i]=lines[i].replace(new RegExp('^[ \\t]{0,'+Math.min(lead,min)+'}'),'');
+      }
+      return lines.join('\n');
+    }
+    /* 임베드는 블록으로 다룬다: <p> 안에 혼자 있으면 문단을 벗겨내고,
+       강조/링크 껍데기만 남으면 그 껍데기를 풀어 준다. */
+    function tidyEmbeds(container,store){
+      var embeds=container.querySelectorAll('.jt-map-embed,.jt-yt-embed');
+      for(var i=0;i<embeds.length;i++){
+        var el=embeds[i],up=el.parentNode;
+        while(up&&up!==container&&/^(STRONG|B|EM|I|A|SPAN)$/.test(up.tagName)&&!up.textContent.replace(/[\s\u00a0]+/g,'')){
+          var outer=up.parentNode;
+          if(!outer)break;
+          while(up.firstChild)outer.insertBefore(up.firstChild,up);
+          outer.removeChild(up);
+          up=el.parentNode;
+        }
+        var p=el.parentNode;
+        if(!p||p===container||p.nodeType!==1||!/^(P|H[1-6])$/.test(p.tagName))continue;
+        var onlySelf=true,kids=p.childNodes;
+        for(var k=0;k<kids.length;k++){
+          var n=kids[k];
+          if(n===el)continue;
+          if(n.nodeType===3&&n.nodeValue.replace(/[\s\u00a0]+/g,'')!=='')onlySelf=false;
+          else if(n.nodeType===1&&!/^BR$/.test(n.tagName))onlySelf=false;
+          if(!onlySelf)break;
+        }
+        if(onlySelf){
+          p.parentNode.insertBefore(el,p);
+          p.parentNode.removeChild(p);
+          continue;
+        }
+        /* 문장 중간의 지도/영상: 문단을 앞뒤로 나눠 임베드를 블록으로 넣는다. */
+        if(p.tagName!=='P'||!p.parentNode)continue;
+        var lead=document.createElement('p'),tail=document.createElement('p'),node;
+        while(p.firstChild&&p.firstChild!==el)lead.appendChild(p.firstChild);
+        while(el.nextSibling)tail.appendChild(el.nextSibling);
+        node=p.parentNode;
+        if(lead.textContent.replace(/[\s\u00a0]+/g,'')||lead.querySelector('img,br,video,table,pre'))node.insertBefore(lead,p);
+        node.insertBefore(el,p);
+        if(tail.textContent.replace(/[\s\u00a0]+/g,'')||tail.querySelector('img,br,video,table,pre'))node.insertBefore(tail,el.nextSibling);
+        node.removeChild(p);
+      }
+    }
+    function placeEmbeds(container,store){
+      if(!store.length)return;
+      var re=new RegExp(EMBED_TOKEN+'(\\d+)\u0001','g');
+      var walker=document.createTreeWalker(container,NodeFilter.SHOW_TEXT,null),list=[],n;
+      while((n=walker.nextNode()))list.push(n);
+      for(var i=0;i<list.length;i++){
+        var text=list[i],v=text.nodeValue;
+        if(v.indexOf(EMBED_TOKEN)<0)continue;
+        var inCode=text.parentNode&&text.parentNode.nodeType===1&&text.parentNode.closest
+          &&text.parentNode.closest('pre,code');
+        var frag=document.createDocumentFragment(),last=0,m;
+        re.lastIndex=0;
+        while((m=re.exec(v))!==null){
+          if(m.index>last)frag.appendChild(document.createTextNode(v.slice(last,m.index)));
+          var item=store[+m[1]];
+          if(!item){last=re.lastIndex;continue;}
+          if(inCode){frag.appendChild(document.createTextNode(item.text));last=re.lastIndex;continue;}
+          var box=document.createElement('div');
+          box.innerHTML=item.html;
+          while(box.firstChild)frag.appendChild(box.firstChild);
+          last=re.lastIndex;
+        }
+        if(last<v.length)frag.appendChild(document.createTextNode(v.slice(last)));
+        text.parentNode.replaceChild(frag,text);
+      }
+      tidyEmbeds(container,store);
+    }
     function renderInto(container,src){
       src=jtFixTimeStamps(src);
-      if(window.__jtPrepareYouTubeShortcodes)src=window.__jtPrepareYouTubeShortcodes(src);
+      var store=[];
+      src=stashShortcodes(dedentSrc(src),store);
       var re=/\[r[ea]de\]([\s\S]*?)\[\/r[ea]de\]/gi,last=0,m;
       container.innerHTML='';
       while((m=re.exec(src))!==null){
@@ -1991,6 +2106,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
         last=re.lastIndex;
       }
       if(last<src.length)appendHtml(container,window.marked.parse(src.slice(last)));
+      placeEmbeds(container,store);
     }
     function addCopy(root){
       var pres=root.querySelectorAll('pre');
@@ -2128,8 +2244,14 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
           label=String(label||'').replace(/<[^>]*>/g,'').trim();
           return label?'['+label+']('+href+')':href;
         })
-        .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi,'**$2**')
-        .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi,'*$2*');
+        /* v1.2.147: 지도/영상 div 를 지우면 <b></b> 처럼 빈 껍데기가 남는데,
+           그대로 **를 붙이면 `****` 가 글자로 보인다. 내용이 있을 때만 강조를 만든다. */
+        .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi,function(m,t,inner){
+          return inner.replace(/<[^>]*>/g,'').trim()?'**'+inner+'**':inner;
+        })
+        .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi,function(m,t,inner){
+          return inner.replace(/<[^>]*>/g,'').trim()?'*'+inner+'*':inner;
+        });
     }
     /* v1.2.142: 숏코드 확장기(run)가 먼저 [map]/[youtube]를 div로 바꿔 둔 경우,
        마크다운 변환은 태그를 모두 지우므로 지도/영상이 통째로 사라졌다. 원문 숏코드로 되돌린다. */
@@ -2569,6 +2691,11 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
         if(body.querySelector('.jt-landing'))continue;
         if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[shorts')===-1&&body.innerHTML.indexOf('[map')===-1)continue;
         var html=body.innerHTML,found=false;
+        /* v1.2.147: 코드블록/인라인 코드 안의 숏코드는 예시이므로 지도·영상으로 바꾸지 않는다. */
+        var codes=[];
+        html=html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi,function(m){
+          codes.push(m);return '\u0000JTC'+(codes.length-1)+'\u0000';
+        });
         html=html.replace(paragraph,function(full,link){
           var id=ytId(link);if(!id)return full;
           found=true;
@@ -2599,6 +2726,7 @@ html[data-theme="dark"] .jt-expand-btn{background:#1b231f;color:#eef2ef;border-c
           if(!spec)return full;
           found=true;return '<div class="jt-map-embed" data-map="'+jtMapAttr(spec)+'"></div>';
         });
+        if(codes.length)html=html.replace(/\u0000JTC(\d+)\u0000/g,function(m,i){return codes[+i];});
         if(found){
           body.innerHTML=html;
           body.setAttribute('data-yt-scanned','1');
