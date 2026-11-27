@@ -1,4 +1,4 @@
-/* Reddit-style Blogger 3-column layout — v1.2.147 */
+/* Reddit-style Blogger 3-column layout — v1.2.148 */
 (function(){
   if(window.__rd3Layout)return; window.__rd3Layout=1;
   function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
@@ -29,13 +29,16 @@
   function pageLinks(){
     var out=[],seen={};
     var noLanding=/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname);
-    var hidden={'/p/home.html':1,'/p/about.html':1,'/p/contact-us.html':1,'/p/contact.html':1};
+    var hidden={'/p/home.html':1,'/p/contact-us.html':1,'/p/contact.html':1};
+    /* about.html은 두 사이트에 새로 만든 소개 페이지라 메뉴에 노출하고, Blogger 페이지 제목 대신 한글 라벨을 쓴다. */
+    var labelMap={'/p/about.html':'소개','/p/contact-us.html':'문의','/p/contact.html':'문의'};
     var nodes=document.querySelectorAll('.centered-top-secondline .PageList a, .PageList a');
     for(var i=0;i<nodes.length;i++){
-      var a=nodes[i],t=(a.textContent||'').trim(),h=a.getAttribute('href')||'';
+      var a=nodes[i],t=(a.textContent||'').trim(),h=a.getAttribute('href')||'',p='';
       if(!t||!h||seen[h])continue;
-      if(noLanding){try{if(hidden[new URL(h,location.href).pathname])continue;}catch(e){}}
-      seen[h]=1;out.push({t:t,h:h});
+      try{p=new URL(h,location.href).pathname;}catch(e){}
+      if(noLanding&&hidden[p])continue;
+      seen[h]=1;out.push({t:(noLanding&&labelMap[p])||t,h:h});
     }
     return out;
   }
@@ -55,7 +58,7 @@
       ];
     }
     if(/(^|\.)(shutupquick|deepstronglove)\.com$/i.test(location.hostname)){
-      var hidden={'/p/home.html':1,'/p/about.html':1,'/p/contact-us.html':1,'/p/contact.html':1};
+      var hidden={'/p/home.html':1,'/p/contact-us.html':1,'/p/contact.html':1};
       links=links.filter(function(l){
         try{return !hidden[new URL(l.h,location.href).pathname];}catch(e){return true;}
       });

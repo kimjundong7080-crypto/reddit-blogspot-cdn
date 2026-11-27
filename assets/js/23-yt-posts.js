@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.147 */
+/* Reddit-style Blogger YouTube post list — v1.2.148 */
 (function(){
   if(window.__ytPosts)return; window.__ytPosts=1;
   /* 홈 랜딩은 techlifeworld.com 전용. shutupquick.com / deepstronglove.com은
@@ -1254,10 +1254,37 @@
       }
       tidyEmbeds(container,store);
     }
+    function jtImgUrls(text){
+      var urls=[],seen={};
+      var md=/!\[[^\]]*\]\(([^)\s]+)\)/g,m;
+      while((m=md.exec(text))!==null){var u=m[1].trim();if(u&&!seen[u]){seen[u]=1;urls.push(u);}}
+      var html=/<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']/gi;
+      while((m=html.exec(text))!==null){var u=m[1].trim();if(u&&!seen[u]){seen[u]=1;urls.push(u);}}
+      return urls;
+    }
+    function jtImgcalHtml(urls){
+      if(!urls||!urls.length)return '';
+      var slides=urls.map(function(u){return '<div class="jt-imgcal-slide"><img src="'+String(u).replace(/"/g,'&quot;')+'" alt="" loading="lazy" decoding="async"></div>';}).join('');
+      var dots=urls.length>1?urls.map(function(_,i){return '<button type="button" class="jt-imgcal-dot" data-i="'+i+'" aria-label="'+(i+1)+'"></button>';}).join(''):'';
+      var nav=urls.length>1?'<button type="button" class="jt-imgcal-prev" aria-label="이전">‹</button><button type="button" class="jt-imgcal-next" aria-label="다음">›</button><div class="jt-imgcal-dots">'+dots+'</div>':'';
+      return '\n<div class="jt-imgcal" data-count="'+urls.length+'"><div class="jt-imgcal-track">'+slides+'</div>'+nav+'</div>\n';
+    }
+    function jtImgcalTransform(src){
+      return String(src||'').replace(/\[imgcal\]([\s\S]*?)\[\/imgcal\]/gi,function(m,inner){
+        var urls=jtImgUrls(inner);
+        return urls.length?jtImgcalHtml(urls):'';
+      });
+    }
+    /* 숏코드 확장기(run())도 같은 수집·렌더 함수를 쓴다(중복 구현 방지). */
+    window.__jtImgUrls=jtImgUrls;
+    window.__jtImgcalHtml=jtImgcalHtml;
+    window.__jtImgcalTransform=jtImgcalTransform;
     function renderInto(container,src){
       src=jtFixTimeStamps(src);
       var store=[];
-      src=stashShortcodes(dedentSrc(src),store);
+      src=dedentSrc(src);
+      src=jtImgcalTransform(src);
+      src=stashShortcodes(src,store);
       var re=/\[r[ea]de\]([\s\S]*?)\[\/r[ea]de\]/gi,last=0,m;
       container.innerHTML='';
       while((m=re.exec(src))!==null){
@@ -1317,6 +1344,7 @@
         }
       }
       wrapTables();
+      if(window.__jtMountImgcals)window.__jtMountImgcals();
       if(window.__jtRunYouTubeShortcodes)window.__jtRunYouTubeShortcodes();
     }
     /* v1.2.122: [md] ... [/md] 사이만 Markdown으로 렌더한다.
@@ -1464,8 +1492,8 @@
       while((n=walker.nextNode()))list.push(n);
       for(i=0;i<list.length;i++){
         var v=list[i].nodeValue;
-        if(!v||v.toLowerCase().indexOf('md')<0)continue;
-        var cleaned=v.replace(MD_TOKEN_RE,'');
+        if(!v||v.indexOf('[')<0)continue;
+        var cleaned=v.replace(MD_TOKEN_RE,'').replace(/\[\s*\/?\s*imgcal\s*\]/gi,'');
         if(cleaned!==v)list[i].nodeValue=cleaned;
       }
     }
@@ -1511,9 +1539,9 @@
             if(lines[idx].trim().toLowerCase()==='[md]')continue;
             mdLines.push(lines[idx].replace(MD_TOKEN_RE,''));
           }
-          pending.push({el:body,src:mdLines.join('\n'),wrap:true});
+          pending.push({el:body,src:jtImgcalTransform(mdLines.join('\n')),wrap:true});
         }else if(/\[r[ea]de\][\s\S]*?\[\/r[ea]de\]/i.test(text)){
-          pending.push({el:body,src:lines.join('\n'),wrap:true});
+          pending.push({el:body,src:jtImgcalTransform(lines.join('\n')),wrap:true});
         }else{
           dropStrayMarkers(body);
         }
@@ -1793,6 +1821,37 @@
       schedule();
       window.__jtRescanYt=schedule;
     }
+    function mountImgcal(el){
+      if(!el||el.__jtImgcal)return;el.__jtImgcal=1;
+      var track=el.querySelector('.jt-imgcal-track');
+      if(!track)return;
+      var slides=track.children,n=slides.length;
+      if(n<2)return;
+      var prev=el.querySelector('.jt-imgcal-prev'),next=el.querySelector('.jt-imgcal-next'),dots=el.querySelectorAll('.jt-imgcal-dot');
+      var idx=0,auto=null,paused=false;
+      function slideW(){return track.clientWidth||el.clientWidth||1;}
+      function go(i){
+        idx=(i+n)%n;
+        try{track.scrollTo({left:idx*slideW(),behavior:'smooth'});}catch(e){track.scrollLeft=idx*slideW();}
+        for(var d=0;d<dots.length;d++)dots[d].classList.toggle('is-on',d===idx);
+      }
+      function nextFn(){if(!paused)go(idx+1);}
+      function start(){if(!auto&&n>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){auto=setInterval(nextFn,4000);}}
+      function stop(){if(auto){clearInterval(auto);auto=null;}}
+      if(prev)prev.addEventListener('click',function(){stop();go(idx-1);start();});
+      if(next)next.addEventListener('click',function(){stop();go(idx+1);start();});
+      for(var d=0;d<dots.length;d++)(function(d){dots[d].addEventListener('click',function(){stop();go(d);start();});})(d);
+      el.addEventListener('mouseenter',function(){paused=true;});
+      el.addEventListener('mouseleave',function(){paused=false;});
+      el.addEventListener('focusin',function(){paused=true;});
+      el.addEventListener('focusout',function(){paused=false;});
+      document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start();});
+      go(0);start();
+    }
+    window.__jtMountImgcals=function(){
+      var els=document.querySelectorAll('.jt-imgcal');
+      for(var i=0;i<els.length;i++)mountImgcal(els[i]);
+    };
     /* 숏코드가 제목(h1~h6)처럼 잘림(clamp) 스타일 안에 들어간 경우 임베드를 밖으로 꺼낸다 */
     function unclipEmbed(box){
       var h=box.parentNode;
@@ -1849,12 +1908,18 @@
            제목 데이터에 남은 [youtube ...] 문자열을 숏코드로 오인해 innerHTML을
            다시 쓰면 랜딩 DOM이 재생성되어 공개(reveal) 옵저버가 끊긴다. */
         if(body.querySelector('.jt-landing'))continue;
-        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[shorts')===-1&&body.innerHTML.indexOf('[map')===-1)continue;
+        if(body.getAttribute('data-yt-scanned')&&body.innerHTML.indexOf('[youtube')===-1&&body.innerHTML.indexOf('[shorts')===-1&&body.innerHTML.indexOf('[map')===-1&&body.innerHTML.indexOf('[imgcal')===-1)continue;
         var html=body.innerHTML,found=false;
         /* v1.2.147: 코드블록/인라인 코드 안의 숏코드는 예시이므로 지도·영상으로 바꾸지 않는다. */
         var codes=[];
         html=html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi,function(m){
           codes.push(m);return '\u0000JTC'+(codes.length-1)+'\u0000';
+        });
+        /* v1.2.148: [md] 영역은 마크다운 단계에서 처리한다(이미지 카루셀 포함).
+           여기서 먼저 바꿔 버리면 마크다운 변환 때 div가 벗겨지면서 카루셀 구조가 깨진다. */
+        var mdRegions=[];
+        html=html.replace(/\[\s*md\s*\][\s\S]*?\[\s*\/\s*md\s*\]/gi,function(m){
+          mdRegions.push(m);return '\u0000JTM'+(mdRegions.length-1)+'\u0000';
         });
         html=html.replace(paragraph,function(full,link){
           var id=ytId(link);if(!id)return full;
@@ -1886,7 +1951,13 @@
           if(!spec)return full;
           found=true;return '<div class="jt-map-embed" data-map="'+jtMapAttr(spec)+'"></div>';
         });
+        html=html.replace(/\[imgcal\]([\s\S]*?)\[\/imgcal\]/gi,function(m,inner){
+          var urls=window.__jtImgUrls?window.__jtImgUrls(inner):[];
+          if(!urls.length)return m;
+          found=true;return window.__jtImgcalHtml(urls);
+        });
         if(codes.length)html=html.replace(/\u0000JTC(\d+)\u0000/g,function(m,i){return codes[+i];});
+        if(mdRegions.length)html=html.replace(/\u0000JTM(\d+)\u0000/g,function(m,i){return mdRegions[+i];});
         if(found){
           body.innerHTML=html;
           body.setAttribute('data-yt-scanned','1');
@@ -1896,6 +1967,7 @@
       }
       var boxes=document.querySelectorAll('.jt-yt-embed');
       for(var i=0;i<boxes.length;i++)mount(boxes[i]);
+      if(window.__jtMountImgcals)window.__jtMountImgcals();
       var maps=document.querySelectorAll('.jt-map-embed');
       for(var mi=0;mi<maps.length;mi++){
         var mb=maps[mi];
@@ -2221,7 +2293,11 @@
   (function(){
     if(window.__jtStaticPage)return; window.__jtStaticPage=1;
     var BRAND_NAME=(window.__jtBrand&&window.__jtBrand.name)||'JUST TECH';
+    /* about.html은 사이트마다 다른 소개 글을 쓴다(없는 호스트는 기존 Blogger 페이지 그대로). */
+    var ABOUT_FILE=/(^|\.)shutupquick\.com$/i.test(location.hostname)?'pages/about-shutupquick.html'
+      :/(^|\.)deepstronglove\.com$/i.test(location.hostname)?'pages/about-deepstronglove.html':'';
     var PAGES={
+      '/p/about.html':ABOUT_FILE?{file:ABOUT_FILE,title:'About | '+BRAND_NAME,label:'소개',frame:'소개 페이지',index:true}:null,
       '/p/resume.html':{file:'pages/resume.html',title:'이력서 | '+BRAND_NAME,label:'이력서',frame:'이력서',resume:true},
       '/p/contact-us.html':{file:'pages/contact.html',title:'Contact | '+BRAND_NAME,label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'},
       '/p/contact.html':{file:'pages/contact.html',title:'Contact | '+BRAND_NAME,label:'문의',frame:'문의 페이지',css:'html,body{min-height:0 !important;height:auto !important}body{align-items:flex-start !important;padding:24px !important}'}
@@ -2267,12 +2343,18 @@
       box.appendChild(frame);
     }
     ready(function(){
-      if(document.querySelector('.post-body.entry-content'))return;
-      if(!document.querySelector('.status-msg-body'))return;
+      /* 빈 Blogger 페이지(status-msg-body)나, 본문에 <div id="jt-page-boot"> 마커만 둔 페이지에서 동작한다. */
+      if(!document.getElementById('jt-page-boot')){
+        if(document.querySelector('.post-body.entry-content'))return;
+        if(!document.querySelector('.status-msg-body'))return;
+      }
       document.documentElement.classList.add('jt-static-page');
       if(page.resume)document.documentElement.classList.add('jt-resume-page');
       document.title=page.title;
-      if(!document.querySelector('meta[name="robots"]')){
+      if(page.index){
+        var ix=document.querySelector('meta[name="robots"]');
+        if(ix)ix.setAttribute('content','index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+      }else if(!document.querySelector('meta[name="robots"]')){
         var rb=document.createElement('meta');rb.setAttribute('name','robots');rb.setAttribute('content','noindex, follow');
         (document.head||document.getElementsByTagName('head')[0]).appendChild(rb);
       }
@@ -2349,7 +2431,7 @@
     var path=location.pathname;
     if(path==='/search'||path.indexOf('/search/label/')===0)return;
     if(path==='/p/home.html'||path==='/')return;
-    if(path==='/p/resume.html'||path==='/p/contact-us.html'||path==='/p/contact.html')return;
+    if(path==='/p/resume.html'||path==='/p/contact-us.html'||path==='/p/contact.html'||path==='/p/about.html')return;
     function ready(fn){if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);}}
     function head(){return document.head||document.getElementsByTagName('head')[0];}
     function setMeta(attr,key,value){

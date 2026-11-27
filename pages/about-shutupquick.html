@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소개 | 삶의 지혜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #f8f6f0;
+        --card: #ffffff;
+        --ink: #23291f;
+        --ink-soft: #5c6657;
+        --accent: #2f6b4f;
+        --accent-soft: #edf2ea;
+        --border: #e3e0d6;
+        --shadow: 0 14px 34px -22px rgba(35, 41, 31, .45);
+    }
+
+    html[data-theme="dark"] {
+        --bg: #101412;
+        --card: #171d19;
+        --ink: #e7ece7;
+        --ink-soft: #a9b5ac;
+        --accent: #7dc7a2;
+        --accent-soft: #1b2520;
+        --border: #2a332c;
+        --shadow: 0 16px 36px -20px rgba(0, 0, 0, .7);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Noto Sans KR', system-ui, -apple-system, 'Malgun Gothic', sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+        padding: clamp(18px, 4vw, 48px) clamp(14px, 4vw, 44px) clamp(26px, 5vw, 56px);
+        max-width: 860px;
+        margin: 0 auto;
+        transition: background .25s ease, color .25s ease;
+    }
+
+    .about {
+        animation: rise .5s ease both;
+    }
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .about { animation: none; }
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        color: var(--accent);
+    }
+
+    .eyebrow::before {
+        content: "";
+        width: 22px;
+        height: 2px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+
+    h1 {
+        font-family: 'Noto Serif KR', 'Noto Sans KR', serif;
+        font-size: clamp(30px, 6vw, 44px);
+        line-height: 1.28;
+        letter-spacing: -.02em;
+        margin: 12px 0 10px;
+        font-weight: 700;
+    }
+
+    .lede {
+        font-size: clamp(15px, 2.2vw, 17px);
+        color: var(--ink-soft);
+        max-width: 46ch;
+        word-break: keep-all;
+    }
+
+    .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 20px 0 0;
+    }
+
+    .chip {
+        display: inline-block;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--card);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        white-space: nowrap;
+    }
+
+    .rule {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: clamp(26px, 5vw, 40px) 0;
+    }
+
+    h2 {
+        font-family: 'Noto Serif KR', 'Noto Sans KR', serif;
+        font-size: clamp(18px, 3vw, 21px);
+        line-height: 1.5;
+        letter-spacing: -.01em;
+        font-weight: 700;
+        margin: 0 0 14px;
+        padding-left: 12px;
+        border-left: 3px solid var(--accent);
+    }
+
+    p + p { margin-top: 12px; }
+
+    .story p {
+        color: var(--ink-soft);
+        word-break: keep-all;
+    }
+
+    .story strong {
+        color: var(--ink);
+        font-weight: 700;
+    }
+
+    .topics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+        margin-top: 4px;
+    }
+
+    .topic {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 16px 15px;
+        box-shadow: var(--shadow);
+        transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .topic:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+
+    .topic svg {
+        display: block;
+        width: 22px;
+        height: 22px;
+        margin-bottom: 10px;
+        color: var(--accent);
+    }
+
+    .topic h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .topic p {
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        word-break: keep-all;
+    }
+
+    .principles {
+        counter-reset: principle;
+        display: grid;
+        gap: 12px;
+        margin-top: 4px;
+    }
+
+    .principle {
+        counter-increment: principle;
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 12px;
+        align-items: start;
+        background: var(--accent-soft);
+        border-radius: 12px;
+        padding: 14px 16px;
+    }
+
+    .principle::before {
+        content: counter(principle);
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-size: 12.5px;
+        font-weight: 700;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    html[data-theme="dark"] .principle::before { color: #10140f; }
+
+    .principle h3 {
+        font-size: 14.5px;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .principle p {
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        word-break: keep-all;
+    }
+
+    .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: clamp(26px, 5vw, 38px);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--ink) !important;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff !important;
+        box-shadow: 0 12px 24px -16px var(--accent);
+    }
+
+    html[data-theme="dark"] .btn.primary { color: #10140f !important; }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .foot {
+        margin-top: clamp(24px, 4vw, 34px);
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--ink-soft);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+    }
+
+    @media screen and (max-width: 560px) {
+        body { font-size: 14.5px; }
+        .topics { grid-template-columns: 1fr; }
+        .principle { grid-template-columns: 26px 1fr; gap: 10px; padding: 13px 14px; }
+        .btn { flex: 1 1 auto; justify-content: center; }
+    }
+</style>
+</head>
+<body>
+<main class="about">
+    <p class="eyebrow">About</p>
+    <h1>삶의 지혜</h1>
+    <p class="lede">살아가며 배운 것들을 짧게 적어 둡니다. 거창한 처세술보다, 내일 아침에 바로 써먹을 수 있는 이야기.</p>
+    <div class="hero-meta">
+        <span class="chip">shutupquick.com</span>
+        <span class="chip">생활의 지혜 · 습관 · 돈 · 마음</span>
+        <span class="chip">짧은 글 위주</span>
+    </div>
+
+    <hr class="rule">
+
+    <section class="story">
+        <h2>이 블로그는</h2>
+        <p>살다 보면 <strong>한 번 알면 평생 쓰는 요령</strong>이 있습니다. 수도꼭지에서 물이 새는 밤에 검색해 찾은 방법, 월급날마다 되풀이하던 실수, 사람과 부딪히며 알게 된 말의 순서 같은 것들입니다. 그런 것들은 어디에도 정리되어 있지 않아서, 매번 잊고 다시 찾게 됩니다.</p>
+        <p>이 블로그는 그렇게 <strong>직접 겪고 나서 알게 된 것들</strong>을 잊지 않으려고 적어 두는 곳입니다. 누군가에게는 이미 아는 상식일 수 있고, 누군가에게는 오늘 밤 필요한 답일 수 있습니다. 그래서 가능한 한 짧게, 결론부터 씁니다.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section>
+        <h2>다루는 이야기</h2>
+        <div class="topics">
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6c0 2 1 3 1 4h10c0-1 1-2 1-4a6 6 0 0 0-6-6z"/><path d="M9 17h6M10 20h4"/></svg>
+                <h3>생활의 지혜</h3>
+                <p>집안에서, 차 안에서, 사무실에서 바로 써먹는 작은 요령.</p>
+            </article>
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10h5M9.5 14h5"/></svg>
+                <h3>돈과 절약</h3>
+                <p>고정지출 점검, 통신·보험·구독 정리처럼 매달 새는 돈을 막는 방법.</p>
+            </article>
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h4l2.5 5 4-13 2.5 8h5"/></svg>
+                <h3>건강과 습관</h3>
+                <p>의지력 대신 환경을 바꾸는 이야기. 잠, 걷기, 물, 하루의 순서.</p>
+            </article>
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3.5 19c0-2.7 2.5-4.5 5.5-4.5s5.5 1.8 5.5 4.5M15 14.5c2.6 0 4.5 1.6 4.5 4"/></svg>
+                <h3>인간관계</h3>
+                <p>말의 순서, 거절하는 법, 오래 가는 관계를 만드는 거리감.</p>
+            </article>
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.3-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.7-7 9-7 9z"/></svg>
+                <h3>마음가짐</h3>
+                <p>조급함을 다스리는 문장들. 비교하지 않고 하루를 마무리하는 법.</p>
+            </article>
+            <article class="topic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 6V4.5h8V6M3 11h18"/></svg>
+                <h3>일과 커리어</h3>
+                <p>일을 오래 하기 위한 기록, 배움의 순서, 이직 전에 점검할 것들.</p>
+            </article>
+        </div>
+    </section>
+
+    <hr class="rule">
+
+    <section>
+        <h2>글을 쓰는 원칙</h2>
+        <div class="principles">
+            <article class="principle">
+                <div>
+                    <h3>겪은 것만 씁니다</h3>
+                    <p>직접 해 보지 않은 이야기는 쓰지 않습니다. 남의 요약보다 내 경험이 오래 남습니다.</p>
+                </div>
+            </article>
+            <article class="principle">
+                <div>
+                    <h3>짧게, 결론부터</h3>
+                    <p>바쁜 날에도 한 문단이면 읽히도록 씁니다. 필요한 사람이 새벽에 찾아와도 바로 쓸 수 있게.</p>
+                </div>
+            </article>
+            <article class="principle">
+                <div>
+                    <h3>과장하지 않습니다</h3>
+                    <p>효과가 애매하면 애매하다고 적습니다. 확실한 것만 단정해서 말합니다.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <div class="cta">
+        <a class="btn primary" href="/search">전체 글 보기</a>
+        <a class="btn" href="/">홈으로</a>
+    </div>
+
+    <p class="foot">
+        <span>삶의 지혜 · shutupquick.com</span>
+        <span>글은 계속 고쳐 씁니다. 오늘 읽은 글이 내일 더 정확해질 수 있습니다.</span>
+    </p>
+</main>
+<script>
+    (function () {
+        var syncTheme = function () {
+            var mode = 'light';
+            try {
+                mode = window.parent.document.documentElement.getAttribute('data-theme') || 'light';
+            } catch (error) {}
+            // 값이 같을 때도 setAttribute는 MutationObserver를 깨우므로, 실제로 다를 때만 바꾼다(자기 자신을 관찰할 때 무한 루프 방지).
+            if (document.documentElement.getAttribute('data-theme') !== mode) {
+                document.documentElement.setAttribute('data-theme', mode);
+            }
+        };
+        syncTheme();
+        try {
+            new MutationObserver(syncTheme).observe(window.parent.document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
+        } catch (error) {}
+    })();
+</script>
+</body>
+</html>

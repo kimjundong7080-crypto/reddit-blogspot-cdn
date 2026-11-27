@@ -1,4 +1,4 @@
-/* Reddit-style Blogger YouTube post list — v1.2.147 */
+/* Reddit-style Blogger YouTube post list — v1.2.148 */
 #ytPosts{
   margin:4px 0 0;
   font-family:inherit;
@@ -601,6 +601,68 @@ html[data-theme="dark"] .post-body{--jt-md-title:#e6e8eb;--jt-md-border:rgba(255
 @media only screen and (max-width:640px){.jt-table-wrap table{min-width:560px}.post-body th,.post-body td{padding:8px 10px;font-size:14px}}
 .post-body .markdown u{text-decoration:underline;text-decoration-color:var(--main-color,#ec4899);text-decoration-thickness:2px;text-underline-offset:3px}
 .post-body .markdown mark{background-color:rgba(255,214,0,.45);color:inherit;padding:1px 4px;border-radius:3px}
+/* v1.2.148: 본문 글 제목(h3.post-title.entry-title)을 카드형 제목으로 꾸긴다.
+   왼쪽 강조선 + 그라데이션 + 하단 경계선, 라이트/다크 공통, 600px 이하에서 축소.
+   본문 글(item-view)에만 적용해 목록·무한스크롤 카드 제목은 그대로 둔다. */
+body.item-view .post-title-container{
+  --jt-pt-accent:var(--main-color,#ec4899);
+  --jt-pt-title:var(--title-color,#1f2328);
+  --jt-pt-border:var(--border-color,#dde2e7);
+  --jt-pt-soft:rgba(0,0,0,.035);
+  margin:4px 0 22px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+html[data-theme="dark"] body.item-view .post-title-container{
+  --jt-pt-title:#e6e8eb;
+  --jt-pt-border:rgba(255,255,255,.18);
+  --jt-pt-soft:rgba(255,255,255,.05);
+}
+body.item-view.rd3-layout .post-title-container .post-title{
+  display:block !important;
+  -webkit-line-clamp:unset !important;
+  line-clamp:unset !important;
+  max-height:none !important;
+  overflow:visible !important;
+  margin:0 !important;
+  padding:16px 20px 16px 19px !important;
+  border-left:5px solid var(--jt-pt-accent) !important;
+  border-bottom:1px solid var(--jt-pt-border) !important;
+  border-radius:6px 12px 12px 6px !important;
+  background:var(--jt-pt-soft);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--jt-pt-accent) 13%,transparent),transparent 78%) !important;
+  color:var(--jt-pt-title) !important;
+  font-size:clamp(21px,2.9vw,28px) !important;
+  line-height:1.35 !important;
+  font-weight:800 !important;
+  letter-spacing:-.015em !important;
+  text-align:left !important;
+  text-wrap:balance;
+  box-sizing:border-box !important;
+  word-break:keep-all;
+  overflow-wrap:anywhere;
+}
+body.item-view.rd3-layout .post-title-container .post-title > a,
+body.item-view.rd3-layout .post-title-container .post-title > a:visited{
+  color:inherit !important;
+  font-size:inherit !important;
+  line-height:inherit !important;
+  font-weight:inherit !important;
+  text-decoration:none !important;
+}
+body.item-view.rd3-layout .post-title-container .post-title > a:hover{color:var(--jt-pt-accent) !important}
+@media only screen and (max-width:600px){
+  body.item-view .post-title-container{margin:2px 0 16px !important}
+  body.item-view.rd3-layout .post-title-container .post-title{
+    padding:12px 14px 12px 12px !important;
+    border-left-width:4px !important;
+    border-radius:4px 10px 10px 4px !important;
+    font-size:clamp(19px,4.6vw,23px) !important;
+    line-height:1.32 !important;
+  }
+}
 .post-body .md-code{position:relative;margin:0 0 20px}
 .post-body .md-code pre{margin:0}
 .post-body .md-copy{position:absolute;top:8px;right:8px;z-index:2;padding:4px 10px;font-family:var(--meta-font,Arial,sans-serif);font-size:12px;font-weight:600;line-height:1;border:0;border-radius:4px;background:var(--main-color,#ec4899);color:#fff;cursor:pointer;opacity:.85;transition:opacity .2s ease}
@@ -671,6 +733,21 @@ html[data-theme="dark"] .jt-map-embed{background:#1b231f}
 .post-body .jt-map-embed{width:calc(100% - 48px);max-width:100%;margin-left:auto;margin-right:auto}
 .post-body .markdown .jt-map-embed{width:100%;max-width:100%;margin-left:0;margin-right:0}
 @media only screen and (max-width:600px){.post-body .jt-map-embed{width:calc(100% - 32px)}}
+/* v1.2.148: [imgcal]...[/imgcal] 안의 이미지들을 자동 카루셀로 묶는다. */
+.jt-imgcal{position:relative;margin:22px auto;width:calc(100% - 48px);max-width:100%;border-radius:12px;overflow:hidden;background:#f1f3f5;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.post-body .markdown .jt-imgcal{width:100%;max-width:100%;margin-left:0;margin-right:0}
+.jt-imgcal-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.jt-imgcal-track::-webkit-scrollbar{display:none}
+.jt-imgcal-slide{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+.jt-imgcal-slide img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.jt-imgcal-prev,.jt-imgcal-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:40px;height:40px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.jt-imgcal-prev{left:10px}.jt-imgcal-next{right:10px}
+.jt-imgcal-prev:hover,.jt-imgcal-next:hover{background:rgba(0,0,0,.65)}
+.jt-imgcal-dots{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
+.jt-imgcal-dot{width:8px;height:8px;border:0;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;padding:0}
+.jt-imgcal-dot.is-on{background:#fff;width:20px;border-radius:4px}
+@media only screen and (max-width:600px){.jt-imgcal{width:calc(100% - 32px);border-radius:10px;margin:16px auto}}
+html[data-theme="dark"] .jt-imgcal{background:#1b231f}
 /* ===== 글 끝 댓글: '댓글 쓰기 / 보이기' (YouTube 스타일) ===== */
 .jt-cmt{margin:26px 0 8px;font-family:inherit;color:inherit}
 .jt-cmt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 12px}
@@ -775,11 +852,9 @@ html.jt-search-app #blog-pager{display:none !important}
 #jtSearchApp .jt-sp-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 #jtSearchApp .jt-sp-thumb.is-empty{display:none}
 #jtSearchApp .jt-sp-body{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 auto}
-#jtSearchApp .jt-sp-title{font-size:15px;font-weight:700;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#jtSearchApp .jt-sp-snip{
-  font-size:13px;line-height:1.6;opacity:.72;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-}
+/* v1.2.148: /search 카드는 제목 2줄까지만 보이고 본문 발췌(jt-sp-snip)는 숨긴다. */
+#jtSearchApp .jt-sp-title{font-size:15px;font-weight:700;line-height:1.4;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-overflow:clip}
+#jtSearchApp .jt-sp-snip{display:none !important}
 #jtSearchApp .jt-sp-meta{font-size:11.5px;opacity:.55;margin-top:2px}
 #jtSearchApp .jt-sp-empty{padding:44px 0;text-align:center;font-size:14px;opacity:.7}
 #jtSearchApp .jt-sp-pager{

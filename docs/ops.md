@@ -25,6 +25,8 @@
 | Search | `https://www.techlifeworld.com/search` |
 | Resume | `https://www.techlifeworld.com/p/resume.html` |
 | Contact | `https://www.techlifeworld.com/p/contact-us.html` |
+| About (삶의 지혜) | `https://www.shutupquick.com/p/about.html` |
+| About (일상의 즐거움) | `https://www.deepstronglove.com/p/about.html` |
 | Edge API | `https://reddit-blogspot-edge.pages.dev` |
 | CDN alias | `https://cdn.jsdelivr.net/gh/kimjundong7080-crypto/reddit-blogspot-cdn@v1/` |
 | YouTube test post | `https://www.techlifeworld.com/2026/11/youtube-linkhttpsyoutubelyfcrrulyn0.html` |
@@ -42,7 +44,9 @@ reddit-blogspot-cdn/
 ├─ pages/
 │  ├─ resume.html            # Resume rendered via iframe srcdoc
 │  ├─ resume-photo.jpg       # Resume photo; include with resume release
-│  └─ contact.html           # Contact page rendered via iframe srcdoc
+│  ├─ contact.html           # Contact page rendered via iframe srcdoc
+│  ├─ about-shutupquick.html # About page for shutupquick.com (삶의 지혜)
+│  └─ about-deepstronglove.html # About page for deepstronglove.com (일상의 즐거움)
 ├─ assets/
 │  ├─ css/                   # Generated CSS; do not edit directly
 │  ├─ js/                    # Generated JavaScript; do not edit directly

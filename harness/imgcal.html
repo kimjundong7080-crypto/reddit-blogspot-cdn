@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>imgcal harness</title>
+<link rel="stylesheet" href="../assets/css/23-yt-posts.css">
+<style>
+  body{font-family:sans-serif;background:#fff;color:#222}
+  .wrap{max-width:860px;margin:20px auto;padding:0 16px}
+</style>
+</head>
+<body class="container item-view">
+<div class="wrap">
+  <article>
+    <div class="post-body entry-content">
+[md]
+## 카루셀 테스트
+
+일반 문단입니다.
+
+[imgcal]
+![a](https://picsum.photos/seed/a/600/400)
+![b](https://picsum.photos/seed/b/600/400)
+<img src="https://picsum.photos/seed/c/600/400" alt="c">
+[/imgcal]
+
+끝 문단.
+[/md]
+
+<p>HTML 영역 이미지:</p>
+[imgcal]
+<img src="https://picsum.photos/seed/d/600/400">
+<img src="https://picsum.photos/seed/e/600/400">
+[/imgcal]
+
+<p>한 장짜리(화살표/점 없음):</p>
+[imgcal]
+<img src="https://picsum.photos/seed/f/600/400">
+[/imgcal]
+
+<p>이미지 없는 블록(그대로 사라짐):</p>
+[imgcal]
+그냥 글자만
+[/imgcal]
+    </div>
+  </article>
+</div>
+<script src="../assets/js/23-yt-posts.js"></script>
+</body>
+</html>
