@@ -226,9 +226,9 @@ Remaining work and open issues (nothing here is broken; each item is unverified 
 ## 15. Session record — 2026-11-27 (`[imgcal]` carousel, unreleased)
 
 Read this before touching `mountImgcal()` in `src/23-yt-posts.html` (≈ line 2750) or the `.jt-imgcal*` block
-of its CSS (≈ line 740). Nothing here is released yet: `package.json` is still `1.2.158`, the latest tag is
-`v1.2.158`, and no jsDelivr purge was requested, so **the three live domains keep the old carousel** until a
-release is approved.
+of its CSS (≈ line 740). Shipped as **v1.2.159** (commit `680b733`, tag `v1.2.159`), purged on jsDelivr for all
+ten `@v1` assets (`status: finished`, `throttled: false`) and confirmed live: `@v1` and `v1.2.159` answer
+`x-jsd-version: 1.2.159`, and all three domains request `@v1`.
 
 What the user reported
 ----------------------
@@ -287,9 +287,13 @@ Environment limits hit during that verification
 Remaining work and known issues
 -------------------------------
 
-1. **Release the change.** `npm run release -- 1.2.159` (only with user approval), then purge both `@v1` and
-   the new tag on jsDelivr, confirm `x-jsd-version` on all three domains, and re-check a real post. Until then
-   the live carousels still auto-advance and still show black bars.
+1. **Release — done (v1.2.159).** `npm run release -- 1.2.159` bumped `package.json`, rebuilt the assets (all
+ten changed by the version header line), committed `680b733`, tagged and pushed `main` + tag. jsDelivr was
+purged for all ten `@v1` URLs (each `finished`, none throttled); `@v1` and `v1.2.159` serve 1.2.159, the JS body
+contains the all-thumbnail loop and no `idx+7`/autoplay interval, the CSS has `z-index:0` on the slide without
+`#000` and `z-index:5` on the arrows. A live techlifeworld post (`/2026/11/_2.html`) loads `__ytPosts` with the
+1.2.159 script and no new console errors. Still open: an actual live carousel, because **no post in the newest
+30 per domain contains `[imgcal]`**.
 2. **No live post with many images was checked.** The evidence is the harness plus the built asset; the user's
    original page was not re-tested. Pick a real post with a 8+ image `[imgcal]` after the release.
 3. **Scroll-triggered loading is still unverified** in a focused tab (see the limit above). Also unverified:
